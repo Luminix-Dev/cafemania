@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "lib": ["esnext", "dom"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "jsx": "react",
+    "allowJs": true,
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "inlineSources": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false
+  },
+  "include": ["./src/**/*"]
+}
