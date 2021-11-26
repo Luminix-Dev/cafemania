@@ -1,5 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { BaseObject } from "../baseObject/baseObject";
+import { Debug } from "../debug/debug";
 
 export class Network extends BaseObject {
     public static SERVER_ADDRESS: string = "https://sv.danilomaioli.repl.co";
@@ -25,6 +26,7 @@ export class Network extends BaseObject {
 
         this._socket.once('connect', () => {
             this._onConnectCallback?.();
+            Debug.log("connected")
         })
 
         /*
@@ -39,6 +41,8 @@ export class Network extends BaseObject {
     public connect(callback: () => void) {
         this._onConnectCallback = callback;
         this._socket.connect();
+
+        Debug.log("connecting to " + this.getAddress() + "...")
     }
 
     public update(dt: number) {

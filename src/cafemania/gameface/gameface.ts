@@ -1,6 +1,7 @@
 import { BaseObject } from "../baseObject/baseObject";
 import { Game } from "../game/game";
 import { Network } from "../network/network";
+import { DebugScene } from "../scenes/debugScene";
 import { LoadScene } from "../scenes/loadScene";
 import { config } from "./config";
 
@@ -43,6 +44,8 @@ export class Gameface extends BaseObject {
     }
 
     private onReady() {
+        this.phaser.scene.add('DebugScene', DebugScene, true) as DebugScene;
+
         const loadScene = this.phaser.scene.add('LoadScene', LoadScene, true, {a: 123}) as LoadScene;
 
         this.network.connect(() => {

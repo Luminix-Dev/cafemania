@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { BaseObject } from '../baseObject/baseObject';
+import { Debug } from '../debug/debug';
 import { World } from '../world/world';
 
 export class Game extends BaseObject {
