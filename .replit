@@ -1,1 +1,1 @@
-run = "echo a"
+run = "npm i & npm start"

@@ -3,7 +3,7 @@ import { BaseObject } from "../baseObject/baseObject";
 import { Debug } from "../debug/debug";
 
 export class Network extends BaseObject {
-    public static SERVER_ADDRESS: string = "https://sv.danilomaioli.repl.co";
+    public static SERVER_ADDRESS: string = "https://cafemania.danilomaioli.repl.co";
     public sendPacketIntervalMs: number = 80;
 
     public get socket() { return this._socket; }
