@@ -1,8 +1,9 @@
 import { BaseObject } from "../baseObject/baseObject";
+import { Camera } from "../camera/camera";
 import { Game } from "../game/game";
+import { Input } from "../input/input";
 import { Network } from "../network/network";
-import { DebugScene } from "../scenes/debugScene";
-import { LoadScene } from "../scenes/loadScene";
+import { MainScene } from "../scenes/mainScene";
 import { config } from "./config";
 
 enum PreloadState {
@@ -43,18 +44,12 @@ export class Gameface extends BaseObject {
         this.preload();
     }
 
+    public update(dt: number) {
+        Camera.update(dt);
+    }
+
     private onReady() {
-        this.phaser.scene.add('DebugScene', DebugScene, true) as DebugScene;
-
-        const loadScene = this.phaser.scene.add('LoadScene', LoadScene, true, {a: 123}) as LoadScene;
-
-        this.network.connect(() => {
-            this.log("network connected")
-        });
-
-        loadScene.startLoad(() => {
-            this.log("loaded")
-        });
+        this.phaser.scene.add('MainScene', MainScene, true);
     }
 
     public toggleFullscreen() {

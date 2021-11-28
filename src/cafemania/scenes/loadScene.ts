@@ -1,9 +1,19 @@
+import { Debug } from "../debug/debug";
+
+interface ILoadTask {
+    name: string
+    fn: () => Promise<void>
+}
+
 export class LoadScene extends Phaser.Scene {
     public static Instance: LoadScene;
 
+    private _text: Phaser.GameObjects.Text;
     private _loadingBar: Phaser.GameObjects.Graphics;
-    private _loadingBarProgress = 0.1;
+    private _loadingBarProgress = 0;
     private _loadingBarSize = new Phaser.Structs.Size(500, 30);
+    private _loadTasks: ILoadTask[] = [];
+    private _title: string = "";
 
     constructor() {
         super({});
@@ -12,23 +22,41 @@ export class LoadScene extends Phaser.Scene {
         window['LoadScene'] = LoadScene;
     }
 
-    public preload() {
-        this.load.setPath('cafemania/assets');
-        this.load.image('button/zoom_in', 'button/zoom_in.png');
-        this.load.image('button/zoom_out', 'button/zoom_out.png');
-        this.load.image('button/fullscreen', 'button/fullscreen.png');
-    }
-
     public create() {
         this._loadingBar = this.add.graphics();
+        this._text = this.add.text(0, 0, '');
     }
 
     public update(time: number, delta: number) {
         this.updateLoadingBar();
     }
 
-    public startLoad(callback: () => void) {
-        callback();
+    public async loadAll() {
+        Debug.log("begin load");
+        
+        return new Promise<void>(async (resolve) => {
+
+            var i = 0;
+        
+            for (const task of this._loadTasks) {
+                this._title = task.name;
+                Debug.log(task.name);
+                this.updateLoadingBar();
+                await task.fn();
+                i++;
+                this.setProgress(i / this._loadTasks.length)
+                this.updateLoadingBar();
+            }
+
+            resolve();
+        })
+    }
+
+    public addLoadTask(name: string, fn: () => Promise<void>) {
+        this._loadTasks.push({
+            name: name,
+            fn: fn
+        })
     }
 
     public setProgress(progress: number) {
@@ -51,5 +79,9 @@ export class LoadScene extends Phaser.Scene {
         const centerPos = new Phaser.Structs.Size(gameSize.width / 2, gameSize.height / 2);
 
         loadingBar.setPosition(centerPos.width - size.width/2, gameSize.height - size.height - 20);
+
+        const text = this._text;
+        text.setPosition(centerPos.width - size.width/2, gameSize.height - size.height - 20 - 20);
+        text.setText(this._title);
     }
 }
