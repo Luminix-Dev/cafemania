@@ -54,17 +54,6 @@ export class TileItemRender extends BaseObject {
             Debug.log("TileItemRender createSprites");
 
             this.generateSprites();
-
-            //change this
-            this.getSprites().map(sprite => {
-
-                if(this.tileItemInfo.type == TileItemType.FLOOR) {
-                    GameScene.Instance.layerFloor.add(sprite.image!);
-                } else {
-                    GameScene.Instance.layerObjects.add(sprite.image!);
-                }
-
-            })
         }
 
         this.checkCreateCollision();
@@ -122,6 +111,8 @@ export class TileItemRender extends BaseObject {
         const tileItemInfo = this._tileItemInfo;
         const sheetTextureKey = `${tileItemInfo.name}_sheet`
 
+        this._currentSpriteLayer.set(0, 0);
+
         if(!scene.textures.exists(sheetTextureKey)) {
             Debug.log("generating texture " + sheetTextureKey + "...")
 
@@ -160,6 +151,8 @@ export class TileItemRender extends BaseObject {
                         image.setOrigin(0, 1)
                         image.setFrame(key)
                         //image.texture.setFilter(Phaser.Textures.FilterMode.LINEAR)
+                    } else {
+                        console.error("no key found")
                     }
 
                     this._sprites[extraLayer][key] = sprite
@@ -173,7 +166,10 @@ export class TileItemRender extends BaseObject {
         this.updateSprites();
     }
 
+    
     public updateSprites() {
+        Debug.log('updateSprites');
+
         const changeRotation = this._rotChangeRotation
         const flipCells = this._rotFlipCells
 
@@ -254,6 +250,8 @@ export class TileItemRender extends BaseObject {
             }
         }
     }
+
+
 
     public getSprites() {
         const sprites: Sprite[] = []

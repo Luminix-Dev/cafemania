@@ -2,10 +2,16 @@ import { BaseObject } from "../baseObject/baseObject";
 import { GameScene } from "../scenes/gameScene";
 import { TileItemDoor } from "../tileItem/items/tileItemDoor";
 import { TileItemWall } from "../tileItem/items/tileItemWall";
-import { TileItem } from "../tileItem/tileItem";
+import { ITileItemSerializedData, TileItem } from "../tileItem/tileItem";
 import { TileItemPlaceType, TileItemType } from "../tileItem/tileItemInfo";
 import { Direction } from "../utils/direction";
 import { TileMap } from "../world/tileMap";
+
+export interface ITileSerializedData {
+    x: number
+    y: number
+    tileItems: ITileItemSerializedData[]
+}
 
 export class Tile extends BaseObject {
     public static SIZE = new Phaser.Math.Vector2(170, 85);
@@ -18,6 +24,7 @@ export class Tile extends BaseObject {
 
     public readonly x: number;
     public readonly y: number;
+    public isSidewalk: boolean = false;
 
     private _tileMap: TileMap;
     private _position = new Phaser.Math.Vector2();
@@ -46,12 +53,18 @@ export class Tile extends BaseObject {
         tileItem.setTile(undefined);
     }
 
-    public render() {
+    public update(dt: number) {
+        this._tileItems.map(tileItem => {
+            tileItem.update(dt);
+        })
+    }
+
+    public render(dt: number) {
         this.renderSprite();
 
         this._tileItems.map(tileItem => {
             tileItem.setPosition(this.position.x, this.position.y);
-            tileItem.render()
+            tileItem.render(dt);
         })
     }
 
@@ -92,7 +105,8 @@ export class Tile extends BaseObject {
     public getIsWalkable() {
         const tileItems = this.getTileItemsThatOcuppesThisTile()
     
-        for (const tileItem of tileItems)
+        try {
+            for (const tileItem of tileItems)
         {
             if(tileItem.tileItemInfo.type == TileItemType.WALL)
             {
@@ -113,11 +127,18 @@ export class Tile extends BaseObject {
             
         }
         
+        } catch (error) {
+            console.error(error);
+            console.log(this);
+        }
+
+        
         return true
     }
 
     private getTileItemsThatOcuppesThisTile() {
-        const items = this.tileMap.grid.getCell(this.x, this.y).ocuppiedByItems;
+        const cell = this.tileMap.grid.getCell(this.x, this.y);
+        const items = cell.ocuppiedByItems;
 
         return items.map(item => {
             const cell = item.getOriginCell()
@@ -130,6 +151,29 @@ export class Tile extends BaseObject {
     public getDoor() {
         const doors = this.getTileItemsOfType(TileItemType.DOOR);
         return doors[0] as TileItemDoor;
+    }
+
+    public getAdjacentTiles() {
+        const directions = [Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST]
+        const tiles: Tile[] = []
+
+        for (const direction of directions) {
+            const offset = Tile.getOffsetFromDirection(direction)
+            const tile = this.getTileInOffset(offset.x, offset.y)
+
+            if(tile) tiles.push(tile)
+        }
+
+        return tiles
+    }
+
+    public serialize() {
+        const data: ITileSerializedData = {
+            x: this.x,
+            y: this.y,
+            tileItems: this.tileItems.map(tileItem => tileItem.serialize())
+        }
+        return data;
     }
     
     //

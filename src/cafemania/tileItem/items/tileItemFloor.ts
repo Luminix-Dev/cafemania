@@ -6,12 +6,18 @@ import { Tile } from "../../tile/tile"
 import { TileItem } from "../tileItem"
 
 export class TileItemFloor extends TileItem {
-    public render() {
-        super.render();
+
+    constructor(til) {
+        super(til);
+    }
+
+    public render(dt: number) {
+        super.render(dt);
 
         const scene = GameScene.Instance;
 
-        
+
+
         /*
         const mouseWorldPos = Input.getMouseWorldPosition();
 
@@ -33,6 +39,6 @@ export class TileItemFloor extends TileItem {
     public onLeftClick() {
         super.onLeftClick();
 
-        this.tile.tileMap.world.getPlayerCheff().walkToTile(this.tile.x, this.tile.y);
+        this.tile.tileMap.world.getPlayerCheff().taskWalkToTile(this.tile);
     }
 }

@@ -74,6 +74,8 @@ export class GameScene extends Phaser.Scene {
             }
         }, 100)
         */
+
+        
     }
 
 
@@ -81,7 +83,7 @@ export class GameScene extends Phaser.Scene {
         
         Gameface.Instance.update(delta);
 
-        this.world.update(delta);
+        //this.world.update(delta);
         this.world.render(delta);
 
         const scene = this;

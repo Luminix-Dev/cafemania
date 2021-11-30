@@ -1,16 +1,40 @@
+import { Dish } from "../../dish/dish";
+import { DishPlate } from "../../dish/dishPlate";
+import { Player } from "../../player/player";
 import { Tile } from "../../tile/tile"
 import { TileItem } from "../tileItem"
 import { TileItemType } from "../tileItemInfo";
 import { TileItemTable } from "./tileItemTable";
 
 export class TileItemChair extends TileItem {
+    public get isEmpty() { return this._playerSitting == undefined; }
+    public get isReserved() { return this._isReserved; }
+
+    private _playerSitting?: Player
+    private _isReserved: boolean = false
+
     public onCreateTileItemRender() {
         super.onCreateTileItemRender();
-        this.setCollisionEnabled(true);
+        //this.setCollisionEnabled(true);
+    }
+
+    public render(dt: number) {
+        super.render(dt);
+
+        this.debugText.setTextLine('chair', `${this.isEmpty ? "empty" : "ocuppied"} | ${this.isReserved ? 'reserved' : 'not reserverd'}`);
     }
     
-    public render() {
-        super.render();
+    public setPlayerSitting(player?: Player) {
+        this._playerSitting = player
+        this.setIsReserved(false)
+    }
+
+    public setIsReserved(value: boolean) {
+        this._isReserved = value
+    }
+
+    public getPlayerSitting() {
+        return this._playerSitting
     }
 
     public getTableInFront() {

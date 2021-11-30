@@ -21,13 +21,12 @@ server.listen(port, () => {
 });
 
 
-/*
+
 console.log("Starting geckos...")
 
 import '@geckos.io/phaser-on-nodejs'
 global['phaserOnNodeFPS'] = 30
 
-*/
 
 import { ServerHost } from '../cafemania/serverHost/serverHost';
 import { BaseObject } from '../cafemania/baseObject/baseObject';

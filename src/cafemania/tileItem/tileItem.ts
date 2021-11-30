@@ -4,9 +4,18 @@ import { BaseObject } from "../baseObject/baseObject";
 import { Debug } from "../debug/debug";
 import { GameScene } from "../scenes/gameScene";
 import { Tile } from "../tile/tile";
+import { DebugText } from '../utils/debugText';
 import { Direction } from '../utils/direction';
+import { WorldEvent } from '../world/worldEvents';
 import { TileItemInfo, TileItemPlaceType, TileItemRotationType, TileItemType } from "./tileItemInfo";
 import { TileItemRender } from "./tileItemRender";
+
+export interface ITileItemSerializedData {
+    id: string
+    tileItemInfo: string
+    direction: number
+    data?: any
+}
 
 export class TileItem extends BaseObject {
     public id: string = uuidv4();
@@ -16,32 +25,40 @@ export class TileItem extends BaseObject {
     public get isAtAnyTile() { return this._tile != undefined; }
     public get direction() { return this._direction; }
     public get position() { return this._position; }
+    public get debugText() { return this._debugText; }
+    public get world() { return this.tile.tileMap.world; }
     public animIndex: number = 0;
     public layerIndex: number = 0;
-    public rotateOnLeftClick = true;
+    public rotateOnLeftClick = false;
+    public showDebugText: boolean = false;
     
     private _tileItemInfo: TileItemInfo;
     private _position = new Phaser.Math.Vector2()
     private _hasCreatedSprites: boolean = false;
     private _tileItemRender?: TileItemRender;
-    private _debugText?: Phaser.GameObjects.Text;
     private _tile?: Tile;
     private _direction: Direction = Direction.SOUTH;
     private _collisionEnabled: boolean = false;
     
+    private _debugText = new DebugText();
+
     constructor(tileItemInfo: TileItemInfo) {
         super();
         this._tileItemInfo = tileItemInfo;
     }
 
+    public update(dt: number) {
+        
+    }
     
-    public render() {
+    public render(dt: number) {
         const scene = GameScene.Instance;
         
         if(!this._hasCreatedSprites) {
             this._hasCreatedSprites = true;
 
             this._tileItemRender = new TileItemRender(this.tileItemInfo);
+            
 
             if(this.tileItemInfo.placeType == TileItemPlaceType.WALL) {
 
@@ -55,39 +72,58 @@ export class TileItem extends BaseObject {
                 this._tileItemRender.depth =-2;
             }
 
+            this.tileItemRender.render();
             this.updateSprites();
+            this.updateSpritesLayer();
 
             //
             this.tileItemRender.events.on("pointerdown", () => {
                 this.onLeftClick();
-                this.log("onLeftClick");
-
-                if(this.rotateOnLeftClick) this.rotate();
             })
+            this.tileItemRender.events.on("pointerover", () => {
+                this.onPointerOver();
+            });
+            this.tileItemRender.events.on("pointerout", () => {
+                this.onPointerOut();
+            });
+            
             //
             
             this.onCreateTileItemRender();
-
-            //const debugText = this._debugText = scene.add.text(0, 0, '');
-            //debugText.setFontSize(10);
-            //GameScene.Instance.layerTop.add(debugText);
         }
 
+        
         const debugText = this._debugText;
-        if(debugText) {
-            debugText.setText(`${this.tileItemInfo.name}`);
-            debugText.setPosition(this._position.x, this._position.y)
-        }
+        debugText.setEnabled(this.showDebugText);
+        debugText.setTextLine('default', `${this.tileItemInfo.id}`);
+        debugText.setPosition(this._position.x, this._position.y);
+        debugText.update();
+        
 
         const tileItemRender = this._tileItemRender;
         if(tileItemRender) {
-            tileItemRender.setPosition(this._position.x, this._position.y);
             tileItemRender.render();
         }
 
     
     }
-    
+
+    protected updateSpritesLayer() {
+        const scene = GameScene.Instance;
+
+        Debug.log('updateSpritesLayer');
+
+        let layer = scene.layerObjects;
+        if(this.tileItemInfo.type == TileItemType.FLOOR) layer = scene.layerFloor;
+
+
+        this.tileItemRender.getSprites().map(sprite =>
+        {
+            if(sprite.image) layer.add(sprite.image)
+            if(sprite.collision) layer.add(sprite.collision)
+        })
+    }
+
     public getAvaliableRotations() {
         const rotationMap = [0, 2, 1, 3];
 
@@ -152,9 +188,9 @@ export class TileItem extends BaseObject {
 
             const changeLayer = this.direction == Direction.NORTH || this.direction == Direction.WEST
 
+            tileItemRender.setPosition(this.position.x, this.position.y);
             tileItemRender.setRotation(os[0], os[1]);
             tileItemRender.setLayer(this.animIndex, this.layerIndex + (changeLayer ? 1 : 0));
-
             tileItemRender.setCollisionEnabled(this._collisionEnabled);
         }
     }
@@ -165,8 +201,7 @@ export class TileItem extends BaseObject {
         this._hasCreatedSprites = false;
         this._tileItemRender?.destroy();
         this._tileItemRender = undefined;
-        this._debugText?.destroy();
-        this._debugText = undefined;
+        this._debugText.setEnabled(false);
     }
 
     public setPosition(x: number, y: number) {
@@ -205,14 +240,58 @@ export class TileItem extends BaseObject {
         this.setDirection(nextDirection);
     }
 
+    public getTileInFront() {
+        const offset = Tile.getOffsetFromDirection(this.direction);
+        const tile = this.tile.getTileInOffset(offset.x, offset.y);
+        return tile;
+    }
+
+    public getTileBehind(distance: number = 1) {
+        const offset = Tile.getOffsetFromDirection(this.direction)
+        const tile = this.tile.getTileInOffset(offset.x * -1 * distance, offset.y * -1 * distance)
+        return tile;
+    }
+
     public startRandomlyRotate(time: number) {
-        return;
-        
         setInterval(() => {
             this.rotate();
         }, time)
     }
 
     public onCreateTileItemRender() {}
-    public onLeftClick() {}
+
+    public onLeftClick() {
+        this.log("onLeftClick");
+        if(this.rotateOnLeftClick) this.rotate();
+    }
+
+    public onPointerOver() {
+        this.showDebugText = true;
+    }
+
+    public onPointerOut() {
+        this.showDebugText = false;
+    }
+
+    public serialize() {
+        const data: ITileItemSerializedData = {
+            id: this.id,
+            tileItemInfo: this.tileItemInfo.id,
+            direction: this.direction
+        }
+
+        const d = this.serializeData();
+        if(d) data.data = d;
+
+        return data;
+    }
+
+    public serializeData(): any {}
+    public unserializeData(data: any) {};
+
+    public setAsChangedState() {
+        this.log("state changed");
+
+        this.world.events.emit(WorldEvent.TILE_ITEM_CHANGED, this);
+    }
 }

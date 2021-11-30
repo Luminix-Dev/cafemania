@@ -44,7 +44,7 @@ export class TileMap extends BaseObject {
     }
 
     public putTileItemVisualsAtTile(tileItem: TileItem, tile: Tile) {
-        if(tileItem.isAtAnyTile) tileItem.tile.removeTileItem(tileItem);
+        if(tileItem.isAtAnyTile) this.removeTileItemFromItsTile(tileItem)
 
         tile.addTileItem(tileItem);
     }

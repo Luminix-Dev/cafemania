@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import Three, { ThreeModel } from '../../three/three';
+import Three, { ThreeModel } from '../three/three';
 import { Debug } from '../debug/debug';
 import { PlayerAnimation } from '../player/playerAnimation';
 import { MainScene } from '../scenes/mainScene';
@@ -16,6 +16,8 @@ export class PlayerTextureFactory {
     private static _canvas: Phaser.Textures.CanvasTexture
 
     public static get canvas() { return this._canvas; }
+
+    public static skinColor: string = "#FFFFFF";
 
     public static async init(textureName: string) {
         console.log(`[PlayerTextureFactory] Init`);
@@ -54,18 +56,26 @@ export class PlayerTextureFactory {
     public static async updateBodySkins() {
         const textureManager = this.getTextureManager();
 
-        /*
+        const skinColor = this.skinColor;
+        
         if(textureManager.exists('PlayerTextureFactory_SkinTexture')) textureManager.get('PlayerTextureFactory_SkinTexture').destroy();
-        const skinTexture = await this.createPixelColorTexture('PlayerTextureFactory_SkinTexture', this._skinColor);
+        const skinTexture = await this.createPixelColorTexture('PlayerTextureFactory_SkinTexture', skinColor);
 
+        /*
         const headTexture = await this.generateTempSkin('PlayerTextureFactory_HeadTexture', [skinTexture, textureManager.get('player/eye')!], 300, 300)
         const bodyTexture = await this.generateTempSkin('PlayerTextureFactory_BodyTexture', [skinTexture, textureManager.get('player/body2')!], 300, 300)
         const legsTexture = await this.generateTempSkin('PlayerTextureFactory_LegsTexture', [skinTexture, textureManager.get('player/eye')!], 300, 300)
+        */
+
+        const headTexture = await this.generateTempSkin('PlayerTextureFactory_HeadTexture', [skinTexture], 300, 300)
+        const bodyTexture = await this.generateTempSkin('PlayerTextureFactory_BodyTexture', [skinTexture], 300, 300)
+        const legsTexture = await this.generateTempSkin('PlayerTextureFactory_LegsTexture', [skinTexture], 300, 300)
+     
 
         await this.applyTextureToObject(headTexture, this._playerModel.object.children[0].getObjectByName("Head_1")!)
         await this.applyTextureToObject(bodyTexture, this._playerModel.object.children[0].getObjectByName("Body")!)
         await this.applyTextureToObject(legsTexture, this._playerModel.object.children[0].getObjectByName("Legs")!)
-        */
+        
    
         console.log("updated")
 

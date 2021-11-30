@@ -1,4 +1,5 @@
 import { Debug } from "../debug/debug";
+import { DebugScene } from "./debugScene";
 
 interface ILoadTask {
     name: string
@@ -33,6 +34,8 @@ export class LoadScene extends Phaser.Scene {
 
     public async loadAll() {
         Debug.log("begin load");
+
+        DebugScene.Instance?.updateText();
         
         return new Promise<void>(async (resolve) => {
 
@@ -46,6 +49,8 @@ export class LoadScene extends Phaser.Scene {
                 i++;
                 this.setProgress(i / this._loadTasks.length)
                 this.updateLoadingBar();
+
+                DebugScene.Instance?.updateText();
             }
 
             resolve();

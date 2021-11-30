@@ -62,7 +62,7 @@ export class PathFindVisualizer {
                 if(!isPath) drawCircle = false;
             }
 
-            if(drawCircle) graphics.fillCircle(position.x, position.y, 10);
+            if(drawCircle) graphics.fillCircle(position.x, position.y, 5);
 
 
             if(node.cameFrom) {

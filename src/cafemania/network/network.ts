@@ -1,7 +1,8 @@
 import { io, Socket } from "socket.io-client";
 import { BaseObject } from "../baseObject/baseObject";
 import { Debug } from "../debug/debug";
-import { IPacket, PACKET_TYPE } from "./packet";
+import { WorldSyncHelper } from "../world/worldSyncHelper";
+import { IPacket, IPacketData_WorldData, PACKET_TYPE } from "./packet";
 
 export class Network extends BaseObject {
     public static SERVER_ADDRESS: string = "https://cafemania.danilomaioli.repl.co";
@@ -26,6 +27,10 @@ export class Network extends BaseObject {
 
         this._socket.once('connect', () => {
             this._onConnectCallback?.();
+        })
+
+        this._socket.on('p', (packet: IPacket) => {
+            this.onReceivePacket(packet);
         })
 
         this.log(`address: (${this.getAddress()})`)
@@ -55,9 +60,17 @@ export class Network extends BaseObject {
             data: data
         }
         this._socket.emit('p', packet);
+        this.log(`sent packet '${packet.type}'`);
     }
 
     public onReceivePacket(packet: IPacket) {
-       
+        this.log(`reiceved packet '${packet.type}'`);
+
+        if(packet.type == PACKET_TYPE.WORLD_DATA) {
+            const packetData: IPacketData_WorldData = packet.data;
+
+            if(!WorldSyncHelper.world) return;
+            WorldSyncHelper.processWorldData(packetData.worldData);
+        }
     }
 }

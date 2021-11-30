@@ -119,6 +119,8 @@ export class PathFind {
 
         //console.log(`Processing ${current.id}`)
 
+      
+
         for (const neighbour of this.getAvaliableNeighborsOfNode(current)) {
             
             if(frontier.includes(neighbour)) continue;
@@ -132,7 +134,20 @@ export class PathFind {
             frontier.push(neighbour);
         }
 
+        for (const neighbour of this.getNeighborsOfNode(current)) {
+            let isAtDiagonals = (Math.abs(neighbour.x - current.x) == 1 && Math.abs(neighbour.y - current.y) == 1)
+
+            if(isAtDiagonals) continue;
+
+            if(neighbour == this._endNode) {
+                neighbour.cameFrom = current;
+            }
+            if(this.checkEndGoal(neighbour)) return;
+        }
+
         this.removeNodeFromArray(current, frontier);
+
+        
 
         //console.log(`${frontier.length} left`)
     }

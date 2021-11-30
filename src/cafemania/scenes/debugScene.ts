@@ -2,10 +2,12 @@ import { Debug } from "../debug/debug";
 
 export class DebugScene extends Phaser.Scene {
     public static Instance: DebugScene;
-    public maxMessages: number = 30;
 
     private _text: Phaser.GameObjects.Text;
     
+    private _updateTextTime: number = -1;
+    private _i = 0;
+
     constructor() {
         super({});
         DebugScene.Instance = this;
@@ -16,20 +18,26 @@ export class DebugScene extends Phaser.Scene {
         this._text.setColor("#FFFF00");
         this._text.setFontSize(16);
     }
+    
+    public updateText() {
+        if(!this._text) return;
 
-    public update(time: number, delta: number) {
+        this._updateTextTime = 0;
+
         let str = ``;
 
-        str += `${this.game.loop.actualFps} FPS\n`;
+        str += `${this.game.loop.actualFps.toFixed(2)} FPS [${this._i++}]\n`;
 
-        let i = 0;
         Debug.messages.map(message => {
-            if(i > Debug.messages.length - this.maxMessages) {
-                str += `${((message.time - Debug.startedAt)/1000).toFixed(2)} | ${message.text}\n`;
-            }
-            i++;
+            str += `${((message.time - Debug.startedAt)/1000).toFixed(2)} | ${message.text}\n`;
         })
 
         this._text.setText(str);
+    }
+
+    public update(time: number, delta: number) {
+        this._updateTextTime += delta;
+        if(this._updateTextTime < 300 && this._updateTextTime != -1) return;
+        this.updateText();
     }
 }

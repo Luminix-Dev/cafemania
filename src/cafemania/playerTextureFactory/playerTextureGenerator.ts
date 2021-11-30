@@ -1,4 +1,4 @@
-import Three from "../../three/three";
+import Three from "../three/three";
 import { PlayerAnimation } from "../player/playerAnimation";
 import { MainScene } from "../scenes/mainScene";
 import { Direction } from "../utils/direction";

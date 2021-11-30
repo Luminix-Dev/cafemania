@@ -6,4 +6,8 @@ export class TileItemWallDecoration extends TileItem {
         super.onCreateTileItemRender();
         this.setCollisionEnabled(true);
     }
+
+    public onLeftClick() {
+        super.onLeftClick();
+    }
 }

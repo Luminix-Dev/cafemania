@@ -1,5 +1,6 @@
 import { BaseObject } from "../baseObject/baseObject";
-import { TileItemChair } from "./items/TileItemChair";
+import { Debug } from "../debug/debug";
+import { TileItemChair } from "./items/tileItemChair";
 import { TileItemCounter } from "./items/tileItemCounter";
 import { TileItemDoor } from "./items/tileItemDoor";
 import { TileItemFloor } from "./items/tileItemFloor";
@@ -16,6 +17,8 @@ export class TileItemFactory extends BaseObject {
 
     private _tileItemInfoList: {[id: string]: TileItemInfo} = {}
     
+    private _createdTileItems = new Phaser.Structs.Map<string, TileItem>([]);
+
     constructor() {
         super();
         this.init();
@@ -263,7 +266,11 @@ export class TileItemFactory extends BaseObject {
         return this._tileItemInfoList[id];
     }
 
-    public createTileItem<T extends TileItem>(id: string) {
+    public hasTileItemCreated(id: string) {
+        return this._createdTileItems.has(id);
+    }
+
+    public createTileItem<T extends TileItem>(id: string, customTileItemId?: string) {
         if(!this.hasTileItemInfo(id)) throw `Invalid TileItemInfo '${id}'`
 
         const tileItemInfo = this.getTileItemInfo(id)
@@ -288,6 +295,16 @@ export class TileItemFactory extends BaseObject {
 
         if(!tileItem) tileItem = new TileItem(tileItemInfo)
 
+        if(customTileItemId) tileItem.id = customTileItemId;
+
+        this._createdTileItems.set(tileItem.id, tileItem);
+
+        Debug.log(`TileItem ${tileItem.id} created`);
+        
         return tileItem as T
+    }
+
+    public getTileItem(id: string) {
+        return this._createdTileItems.get(id)!;
     }
 }
