@@ -1,5 +1,5 @@
 import { Direction } from "../utils/direction";
-import { Player } from "./Player";
+import { Player } from "./player";
 
 export interface IPlayerAnim {
     name: string

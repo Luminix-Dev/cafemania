@@ -8,7 +8,8 @@ import { Player } from "./player";
 export enum PlayerTaskType {
     OTHER,
     WALK_TO_TILE,
-    PLAY_ANIM
+    PLAY_ANIM,
+    SPECIAL_ACTION
 }
 
 export interface IPlayerTaskSerializedData {
@@ -21,6 +22,9 @@ export interface IPlayerTaskSerializedData {
 
     anim?: string
     time?: number
+
+    action?: string
+    args?: any[]
 }
 
 export class Task extends BaseObject {
@@ -110,15 +114,36 @@ export class TaskPlayAnimation extends Task {
 
     public start() {
         super.start();
-        
-        this.log("time", this.time)
 
-        setTimeout(() => {
+        this.player.playAnimation(this.animation, this.time, () => {
             this.complete();
-        }, this.time);
+        })
     }
 }
 
+
+export class TaskPlaySpecialAction extends Task {
+    public player: Player;
+    public action: string;
+    public args: any[];
+
+    
+    constructor(player: Player, action: string, args: any[]) {
+        super();
+
+        this.player = player;
+        this.action = action;
+        this.args = args;
+    }
+
+    public async start() {
+        super.start();
+        
+        await this.player.startSpecialAction(this.action, this.args);
+
+        this.complete();
+    }
+}
 
 export class TaskExecuteAction extends Task {
     public action: () => Promise<void>;

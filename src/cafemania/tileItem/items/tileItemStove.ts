@@ -95,7 +95,8 @@ export class TileItemStove extends TileItem {
         const cheff = this.world.getPlayerCheff();
 
         cheff.taskWalkNearToTile(this.tile);
-        cheff.taskPlayAnimation('test', 500);
+        cheff.taskPlaySpecialAction('look_to_tile', [this.tile.x, this.tile.y]);
+        cheff.taskPlayAnimation('Eat', 500);
         cheff.taskExecuteAction(async () => {
             this.startCookingSomething();
         })

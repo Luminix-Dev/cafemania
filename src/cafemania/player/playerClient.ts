@@ -2,6 +2,7 @@ import { Debug } from "../debug/debug";
 import { Tile } from "../tile/tile";
 import { TileItemChair } from "../tileItem/items/tileItemChair";
 import { TileItemDoor } from "../tileItem/items/tileItemDoor";
+import { TileItemType } from "../tileItem/tileItemInfo";
 import { Direction } from "../utils/direction";
 import { Utils } from "../utils/utils";
 import { SyncType, World } from "../world/world";
@@ -41,12 +42,14 @@ export class PlayerClient extends Player {
 
     private _goingToChair?: TileItemChair;
 
+    private _isExitingCafe: boolean = false;
+
     constructor(world: World) {
         super(world);
         this._type = PlayerType.CLIENT;
         this._spriteTextureName = "PlayerSpriteTexture_Client";
 
-        this.speed = 3;
+        this.speed = 10;
     }
 
     public update(dt: number) {
@@ -56,24 +59,26 @@ export class PlayerClient extends Player {
             this.updateClientBehavior(dt);
         }
 
+        const chair = this.getChairPlayerIsSitting();
+        if(chair) {
+            const table = chair.getTableInFront();
+            if(table) {
+                if(!table.isEmpty) {
+                    this.setState(PlayerState.EATING);
+                    table.eatTime -= dt;
 
+                    if(table.eatTime <= 0) {
 
-        /*
-        //check sitting
-        if(this.clientStatus.state == PlayerClientState.SITTING) {
-            this.debugText.setTextLine('state', 'SITTING')
+                        
+                        if(this.world.sync != SyncType.SYNC) {
+                            this.taskPlaySpecialAction('client_exit_cafe', []);
+                        }
 
-            const chair = this.world.game.tileItemFactory.getTileItem(this.clientStatus.goingToChairId!) as TileItemChair;
-            const tile = chair.tile;
-
-            if(this.atTile == tile) {
-                if(!this.getChairPlayerIsSitting()) {
-                    this.sitAtChair(chair);
-                    this.log("sat");
+                    }
                 }
             }
+            
         }
-        */
     }
 
     private updateClientBehavior(dt: number) {
@@ -121,27 +126,7 @@ export class PlayerClient extends Player {
 
             }
         }
-        
-
-        //
-        const chair = this.getChairPlayerIsSitting();
-        if(chair) {
-            const table = chair.getTableInFront();
-            if(table) {
-                if(!table.isEmpty) {
-                    this.setState(PlayerState.EATING);
-                    table.eatTime -= dt;
-
-                    if(table.eatTime <= 0) {
-                        this.liftUpfromChair();
-                        this.exitCafe();
-
-                        table.clearDish();
-                    }
-                }
-            }
-            
-        }
+       
     }
 
     
@@ -168,7 +153,6 @@ export class PlayerClient extends Player {
                 /*
                 if(this._findChairAttempts >= PlayerClient.MAX_FIND_CHAIR_ATTEMPS) {
                     this._waitingForChair = false;
-                    this.exitCafe();
                 }
                 */
             }
@@ -225,17 +209,41 @@ export class PlayerClient extends Player {
     }
 
     public exitCafe() {
+        if(this._isExitingCafe) return;
+        this._isExitingCafe = true;
+
         let exitTile = this._exitTile;
 
         if(!exitTile) exitTile = this.world.getLeftSideWalkSpawn();
 
-        this.taskWalkToTile(exitTile);
+        this.taskWalkToTile(exitTile, () => {
+            this.world.removePlayer(this);
+            this.world.events.emit(WorldEvent.PLAYER_CLIENT_DESTROYED, this);
+        });
 
-        this.world.events.emit(WorldEvent.PLAYER_CLIENT_DESTROYED, this);
     }
 
     public log(...args) {
         super.log.apply(this, [`${this.id}: `].concat(args));
     }
-    
+
+   
+    public async startSpecialAction(action: string, args: any[]) {
+        await super.startSpecialAction(action, args);
+
+        if(action == "client_exit_cafe") {
+            
+            const chair = this.getChairPlayerIsSitting();
+
+            if(chair) {
+                this.liftUpfromChair();
+
+                const table = chair.getTableInFront()!;
+                table.clearDish();
+            }
+
+            this.exitCafe();
+
+        }
+    }
 }

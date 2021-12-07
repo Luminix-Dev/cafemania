@@ -9,6 +9,8 @@ export interface TableData {
 }
 
 export class TileItemTable extends TileItem {
+    public isWaitingForDish: boolean = false;
+
     private _dishPlate?: DishPlate
     
     private _data: TableData = {
@@ -80,6 +82,9 @@ export class TileItemTable extends TileItem {
     }
 
     public unserializeData(data: TableData) {
+
+        if(this.isWaitingForDish) return;
+
         this._data = data;
     };
 }

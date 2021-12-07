@@ -5,7 +5,7 @@ import { IPacketData_StoveBeginCookData, IPacketData_WorldData, PACKET_TYPE } fr
 import { Player, PlayerType } from "../player/player";
 import { PlayerClient, PlayerClientState } from "../player/playerClient";
 import { PlayerWaiter } from "../player/playerWaiter";
-import { PlayerTaskType, TaskPlayAnimation, TaskWalkToTile } from "../player/taskManager";
+import { PlayerTaskType, TaskPlayAnimation, TaskPlaySpecialAction, TaskWalkToTile } from "../player/taskManager";
 import { TileItemStove } from "../tileItem/items/tileItemStove";
 import { IWorldSerializedData, World } from "./world";
 import { WorldEvent } from "./worldEvents";
@@ -103,6 +103,8 @@ export class WorldSyncHelper {
 
                     if(!player.taskManager.hasTask(taskData.taskId)) {
                         console.warn("add task")
+                        console.log(taskData)
+                        console.warn("--")
 
                         if(taskData.taskType == PlayerTaskType.WALK_TO_TILE) {
                             const tile = player.world.tileMap.getTile(taskData.tileX!, taskData.tileY!);
@@ -115,6 +117,12 @@ export class WorldSyncHelper {
 
                         if(taskData.taskType == PlayerTaskType.PLAY_ANIM) {
                             const task = new TaskPlayAnimation(player, taskData.anim!, taskData.time!);
+                            task.id = taskData.taskId;
+                            player.taskManager.addTask(task);
+                        }
+
+                        if(taskData.taskType == PlayerTaskType.SPECIAL_ACTION) {
+                            const task = new TaskPlaySpecialAction(player, taskData.action!, taskData.args!);
                             task.id = taskData.taskId;
                             player.taskManager.addTask(task);
                         }

@@ -14,7 +14,7 @@ import { Utils } from '../utils/utils';
 import { World } from "../world/world";
 import { WorldEvent } from '../world/worldEvents';
 import { PlayerAnimation } from './playerAnimation';
-import { IPlayerTaskSerializedData, PlayerTaskType, TaskExecuteAction, TaskManager, TaskPlayAnimation, TaskWalkToTile } from './taskManager';
+import { IPlayerTaskSerializedData, PlayerTaskType, TaskExecuteAction, TaskManager, TaskPlayAnimation, TaskPlaySpecialAction, TaskWalkToTile } from './taskManager';
 
 export enum PlayerState {
     IDLE,
@@ -51,6 +51,7 @@ class PlayerPathFindMovement {
     private _prevIndex: number = 0;
     private _currentIndex: number = 0;
 
+    
     public setStart(position: Phaser.Math.Vector2) {
         this._startPosition.set(position.x, position.y);
         this._positions = [];
@@ -197,6 +198,8 @@ export class Player extends BaseObject {
     private _world: World;
     private _taskManager: TaskManager;
 
+    private _playingAnimation?: string;
+
 
     private _direction: Direction = Direction.NORTH;
     private _debugText = new DebugText();
@@ -239,9 +242,20 @@ export class Player extends BaseObject {
     public walkToTile(x: number, y: number, callback?: () => void) {
         Debug.log("player walk to " + x + ', ' + y);
 
+        this.setState(PlayerState.WALKING);
+
         if(this._sittingAtChair) this.liftUpfromChair();
 
-        this.pathFindToCoord(x, y, callback);
+        var self = this;
+        var cb = function() {
+            self.setState(PlayerState.IDLE);
+
+            self.setAtTile(self.world.tileMap.getTile(x, y), true);
+
+            callback?.();
+        }
+
+        this.pathFindToCoord(x, y, cb);
     }
 
     public taskWalkToTile(tile: Tile, callback?: () => void) {
@@ -253,11 +267,7 @@ export class Player extends BaseObject {
 
         this._taskManager.addTask(task);
 
-        console.log('changed')
         this.setAsChangedState();
-
-        console.log(this.taskManager.tasks)
-        console.log(this.serialize())
     }
 
     public taskPlayAnimation(animation: string, time: number, callback?: () => void) {
@@ -268,6 +278,49 @@ export class Player extends BaseObject {
         if(callback) task.onComplete.push(callback);
 
         this._taskManager.addTask(task);
+
+        this.setAsChangedState();
+    }
+
+    public playAnimation(animation: string, time: number, callback?: () => void) {
+        console.log("playAnimation", animation, time)
+
+        this._playingAnimation = animation;
+
+        setTimeout(() => {
+            this._playingAnimation = undefined;
+            console.log("stopped playAnimation")
+            callback?.();
+        }, time);
+    }
+
+    public taskPlaySpecialAction(action: string, args: any[], callback?: () => void) {
+        console.log("added task", action, args)
+
+        const task = new TaskPlaySpecialAction(this, action, args);
+        this._taskManager.addTask(task);
+
+        if(callback) task.onComplete.push(callback);
+
+        this.setAsChangedState();
+    }
+
+    public async startSpecialAction(action: string, args: any[]) {
+        console.warn(action, args);
+
+        if(action == "look_to_tile") {
+        
+            const tile = this.world.tileMap.getTile(args[0], args[1]);
+            this.lookToTile(tile);
+        }
+    }
+
+    public lookToTile(tile: Tile) {
+        const offset = {
+            x: tile.x - this.atTile.x,
+            y: tile.y - this.atTile.y
+        }
+        this.setDirection(Tile.getDirectionFromOffset(Math.sign(offset.x), Math.sign(offset.y)));
     }
 
     public taskExecuteAction(action: () => Promise<void>, callback?: () => void) {
@@ -441,6 +494,9 @@ export class Player extends BaseObject {
 
 
         this._pathFindMovement.onFinishCallback = () => {
+            
+            
+
             const lastPosition = this._pathFindMovement.getLastPosition();
 
             this.setPosition(lastPosition.x, lastPosition.y);
@@ -513,9 +569,6 @@ export class Player extends BaseObject {
             this._direction = chair.direction;
         }
         
-
-
-
         let animKey = 'Idle';
         switch (this._state) {
             case PlayerState.EATING:
@@ -528,6 +581,11 @@ export class Player extends BaseObject {
                 animKey = 'Walk';
                 break
         }
+
+        if(this._playingAnimation) {
+            animKey = this._playingAnimation;
+        }
+        
 
         this._animation.play(animKey)
         this._animation.update(dt);
@@ -635,6 +693,12 @@ export class Player extends BaseObject {
                 taskData.anim = task.animation;
                 taskData.time = task.time;
             }
+
+            if(task instanceof TaskPlaySpecialAction) {
+                taskData.taskType = PlayerTaskType.SPECIAL_ACTION;
+                taskData.action = task.action;
+                taskData.args = task.args;
+            }
             
             if(taskData.taskType == PlayerTaskType.OTHER) {
                 return;
@@ -660,8 +724,15 @@ export class Player extends BaseObject {
     public serializeStatus(): any {}
 
     public setAsChangedState() {
-        this.log("state changed");
+        this.log(">> state changed");
 
         this.world.events.emit(WorldEvent.PLAYER_STATE_CHANGED, this);
+    }
+
+    public destroy() {
+        this._sprite?.destroy();
+        this._container?.destroy();
+        this._debugText.setEnabled(false);
+        this._pathFindVisuals?.destroy();
     }
 }

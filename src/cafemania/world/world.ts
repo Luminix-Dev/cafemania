@@ -47,8 +47,8 @@ export class World extends BaseObject {
     private _sidewalkSize: number = 0;
 
     public canSpawnPlayer: boolean = true;
-    public maxSpawnPlayers: number = 3;
-    public spawnPlayerInterval: number = 5000;
+    public maxSpawnPlayers: number = 1;
+    public spawnPlayerInterval: number = 500;
     private _lastSpawnedPlayer: number = 0;
     private _spawnedPlayersAmount: number = 0;
 
@@ -181,7 +181,6 @@ export class World extends BaseObject {
 
         if(now - this._lastSpawnedPlayer >= this.spawnPlayerInterval && this._spawnedPlayersAmount < this.maxSpawnPlayers) {
             this._lastSpawnedPlayer = now;
-            this._spawnedPlayersAmount++;
 
             this.spawnPlayerClient();
         }
@@ -206,7 +205,14 @@ export class World extends BaseObject {
         return this.addPlayer(player);
     }
 
+    public removePlayer(player: Player) {
+        this._players.delete(player.id);
+        player.destroy();
+    }
+
     public spawnPlayerClient() {
+        this._spawnedPlayersAmount++;
+
         const player = new PlayerClient(this);
         this.addPlayer(player);
 

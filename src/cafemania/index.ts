@@ -4,6 +4,7 @@ import { Gameface } from "./gameface/gameface";
 import { Input } from "./input/input";
 import { DebugScene } from "./scenes/debugScene";
 import { GameScene } from "./scenes/gameScene";
+import { Tile } from "./tile/tile";
 
 console.log("cafemania index");
 
@@ -16,3 +17,4 @@ window['DebugScene'] = DebugScene;
 window['GameScene'] = GameScene;
 window['Camera'] = Camera;
 window['Input'] = Input;
+window['Tile'] = Tile;

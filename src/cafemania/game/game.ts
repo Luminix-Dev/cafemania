@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { BaseObject } from '../baseObject/baseObject';
 import { Debug } from '../debug/debug';
-import { DishFactory } from '../dish/DishFactory';
+import { DishFactory } from '../dish/dishFactory';
 import { TileItemFactory } from '../tileItem/tileItemFactory';
 import { World } from '../world/world';
 
