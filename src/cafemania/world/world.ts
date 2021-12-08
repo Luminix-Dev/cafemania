@@ -47,7 +47,7 @@ export class World extends BaseObject {
     private _sidewalkSize: number = 0;
 
     public canSpawnPlayer: boolean = true;
-    public maxSpawnPlayers: number = 1;
+    public maxSpawnPlayers: number = 12;
     public spawnPlayerInterval: number = 500;
     private _lastSpawnedPlayer: number = 0;
     private _spawnedPlayersAmount: number = 0;
@@ -65,6 +65,11 @@ export class World extends BaseObject {
 
         this.events.on(WorldEvent.PLAYER_CLIENT_DESTROYED, () => {
             if(this.canSpawnPlayer) this._spawnedPlayersAmount--;
+        })
+
+
+        this.events.on(WorldEvent.TILE_ITEM_POINTER_DOWN, (tileItem: TileItem) => {
+
         })
 
         window['world'] = this;
@@ -141,8 +146,9 @@ export class World extends BaseObject {
 
         
 
-        this.spawnPlayerWaiter(2, 5);
-        this.spawnPlayerWaiter(2, 6);
+        this.spawnPlayerWaiter(2, 7);
+        this.spawnPlayerWaiter(2, 8);
+        this.spawnPlayerWaiter(2, 9);
         
 
         //player.pathFindToCoord(5, 2);
@@ -154,9 +160,38 @@ export class World extends BaseObject {
         this.addDoor(0, 2)
         this.addDoor(2, 0)
         
-        this.setFloorAndWallsCollision(true)
+        this.toggleFloorCollision(true)
       
         //this.spawnPlayerClient();
+    }
+
+    public toggleFloorCollision(enabled: boolean) {
+        
+        let tileItems = this.getAllTileItemsOfType(TileItemType.FLOOR);
+
+        tileItems.map(tileItem => {
+            tileItem.setCollisionEnabled(enabled);
+        })
+    }
+
+    public toggleWallCollision(enabled: boolean) {
+        
+        let tileItems = this.getAllTileItemsOfType(TileItemType.WALL);
+
+        tileItems.map(tileItem => {
+            tileItem.setCollisionEnabled(enabled);
+        })
+    }
+
+    public toggleShopTileItemsCollision(enabled: boolean) {
+        let tileItems = this.getAllTileItems();
+
+        for (const tileItem of tileItems) {
+            if(tileItem.tileItemInfo.type == TileItemType.FLOOR) continue;
+            if(tileItem.tileItemInfo.type == TileItemType.WALL) continue;
+
+            tileItem.setCollisionEnabled(enabled);
+        }
     }
 
     public addDoor(x: number, y: number) {
@@ -359,6 +394,16 @@ export class World extends BaseObject {
         return tileItems
     }
 
+    public getAllTileItems() {
+        const tileItems: TileItem[] = []
+
+        this.tileMap.tiles.map(tile =>
+        {
+            tile.tileItems.map(tileItem => tileItems.push(tileItem));
+        })
+        return tileItems
+    }
+
     public getDoors(): TileItemDoor[]
     {
         return this.getAllTileItemsOfType(TileItemType.DOOR) as TileItemDoor[]
@@ -401,14 +446,4 @@ export class World extends BaseObject {
         
     }
 
-    public setFloorAndWallsCollision(enabled: boolean) {
-
-        let tileItems = this.getAllTileItemsOfType(TileItemType.WALL);
-        tileItems = tileItems.concat(this.getAllTileItemsOfType(TileItemType.FLOOR));
-
-        tileItems.map(tileItem => {
-            tileItem.setCollisionEnabled(enabled);
-            
-        })
-    }
 }

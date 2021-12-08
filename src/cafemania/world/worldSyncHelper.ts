@@ -2,7 +2,7 @@ import { Debug } from "../debug/debug";
 import { Dish } from "../dish/dish";
 import { Gameface } from "../gameface/gameface";
 import { IPacketData_StoveBeginCookData, IPacketData_WorldData, PACKET_TYPE } from "../network/packet";
-import { Player, PlayerType } from "../player/player";
+import { IPlayerSerializedData, Player, PlayerType } from "../player/player";
 import { PlayerClient, PlayerClientState } from "../player/playerClient";
 import { PlayerWaiter } from "../player/playerWaiter";
 import { PlayerTaskType, TaskPlayAnimation, TaskPlaySpecialAction, TaskWalkToTile } from "../player/taskManager";
@@ -37,11 +37,7 @@ export class WorldSyncHelper {
         if(worldData.sidewalkSize)
             world.generateSideWalks(worldData.sidewalkSize);
 
-        console.log(worldData)
-
-        if(worldData.tiles.length > 0) {
-            //Debug.log(`${}`);
-        }
+        //console.log(worldData)
 
         worldData.tiles.map(tileData => {
             if(!world.tileMap.tileExists(tileData.x, tileData.y)) {
@@ -96,55 +92,116 @@ export class WorldSyncHelper {
             player = world.getPlayer(playerData.id);
 
             if(player) {
-
-
-                for (const taskData of playerData.tasks) {
-                    
-
-                    if(!player.taskManager.hasTask(taskData.taskId)) {
-                        console.warn("add task")
-                        console.log(taskData)
-                        console.warn("--")
-
-                        if(taskData.taskType == PlayerTaskType.WALK_TO_TILE) {
-                            const tile = player.world.tileMap.getTile(taskData.tileX!, taskData.tileY!);
-                            
-                            const task = new TaskWalkToTile(player, tile);
-                            task.id = taskData.taskId;
-                            player.taskManager.addTask(task);
-
-                        }
-
-                        if(taskData.taskType == PlayerTaskType.PLAY_ANIM) {
-                            const task = new TaskPlayAnimation(player, taskData.anim!, taskData.time!);
-                            task.id = taskData.taskId;
-                            player.taskManager.addTask(task);
-                        }
-
-                        if(taskData.taskType == PlayerTaskType.SPECIAL_ACTION) {
-                            const task = new TaskPlaySpecialAction(player, taskData.action!, taskData.args!);
-                            task.id = taskData.taskId;
-                            player.taskManager.addTask(task);
-                        }
-                    }
-                    
-                    
-                }
-
-                //player.clearMovements();
-                //player.setAtTileCoord(playerData.x, playerData.y);
-
-                /*
-                if(player.type == PlayerType.CLIENT) {
-                    (player as PlayerClient).data = playerData.data;
-                }
-
-                if(player.type == PlayerType.WAITER) {
-                    (player as PlayerWaiter).data = playerData.data;
-                }
-                */
-
+                this.checkPlayerTasks(player, playerData);
             }
         });
+    }
+
+    private static checkPlayerTasks(player: Player, playerData: IPlayerSerializedData) {
+        /*
+        console.log(`Checking ${playerData.tasks.length} tasks (player has ${player.taskManager.tasks.length})`);
+        console.log(`Currently doing: ${player.taskManager.tasks[0]?.id}`);
+        console.log(`Should be doing: ${playerData.tasks[0]?.taskId}`);
+        console.log(`----`);
+        */
+
+        const currentlyDoing = player.taskManager.tasks[0];
+        const shouldBeDoing = playerData.tasks[0];
+        
+        if(shouldBeDoing) {
+
+            var index = -1;
+            
+            //console.warn("--");
+
+            for (const task of player.taskManager.tasks) {
+                
+
+                if(task.id == shouldBeDoing.taskId) {
+                    index = player.taskManager.tasks.indexOf(task);
+                }
+            }
+
+            if(index != -1) {
+                //console.warn(index)
+
+                if(index > 0) {
+                    for (let i = 0; i < index; i++) {
+                        
+                        player.taskManager.forceCompleteTask(player.taskManager.tasks[i]);
+
+                    }
+                }
+            }
+
+            //console.warn("--");
+
+        }
+
+        if(currentlyDoing && shouldBeDoing) {
+
+            if(currentlyDoing instanceof TaskWalkToTile) {
+
+                currentlyDoing.targetWalkDistance = shouldBeDoing.distance;
+
+                if(currentlyDoing.id != shouldBeDoing.taskId) {
+                    player.taskManager.forceCompleteTask(currentlyDoing);
+                }
+            }
+        }
+        
+
+
+
+        for (const taskData of playerData.tasks) {
+            
+            
+
+
+            if(!player.taskManager.hasTask(taskData.taskId)) {
+                /*
+                console.warn("add task")
+                console.log(taskData)
+                console.warn("--")
+                */
+
+                if(taskData.taskType == PlayerTaskType.WALK_TO_TILE) {
+                    const tile = player.world.tileMap.getTile(taskData.tileX!, taskData.tileY!);
+                    
+                    const task = new TaskWalkToTile(player, tile);
+                    task.id = taskData.taskId;
+                    player.taskManager.addTask(task);
+
+                }
+
+                if(taskData.taskType == PlayerTaskType.PLAY_ANIM) {
+                    const task = new TaskPlayAnimation(player, taskData.anim!, taskData.time!);
+                    task.id = taskData.taskId;
+                    player.taskManager.addTask(task);
+                }
+
+                if(taskData.taskType == PlayerTaskType.SPECIAL_ACTION) {
+                    const task = new TaskPlaySpecialAction(player, taskData.action!, taskData.args!);
+                    task.id = taskData.taskId;
+                    player.taskManager.addTask(task);
+                }
+            }
+            
+            
+        }
+
+        //player.clearMovements();
+        //player.setAtTileCoord(playerData.x, playerData.y);
+
+        /*
+        if(player.type == PlayerType.CLIENT) {
+            (player as PlayerClient).data = playerData.data;
+        }
+
+        if(player.type == PlayerType.WAITER) {
+            (player as PlayerWaiter).data = playerData.data;
+        }
+        */
+
     }
 }

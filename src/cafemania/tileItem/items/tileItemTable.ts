@@ -21,12 +21,7 @@ export class TileItemTable extends TileItem {
     public get isEmpty() { return this._data.dish == undefined; }
     public get eatTime() { return this._data.eatTime; }
     public set eatTime(value: number) { this._data.eatTime = value; }
-    
 
-    public onCreateTileItemRender() {
-        super.onCreateTileItemRender();
-        this.setCollisionEnabled(true);
-    }
 
     public getDish() {
         return this.world.game.dishFactory.getDish(this._data.dish!)

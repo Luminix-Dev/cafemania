@@ -11,7 +11,7 @@ import { TileItemCounter } from "./tileItemCounter";
 
 interface StoveData {
     cookingDish?: string
-    startedAt: number
+    cookTime: number
 }
 
 
@@ -22,22 +22,21 @@ export class TileItemStove extends TileItem {
 
     private _data: StoveData = {
         cookingDish: undefined,
-        startedAt: -1
+        cookTime: -1
     }
     private _dishPlate?: DishPlate;
     
     public onCreateTileItemRender() {
         super.onCreateTileItemRender();
         this.setCollisionEnabled(true);
-
-        
-        //this.startCookingSomething();
     }
 
     public update(dt: number) {
         super.update(dt);
 
         if(this.isCooking) {
+            this._data.cookTime += dt;
+
             if(this.isDishReady) {
                 this.onDishReady();
             }
@@ -53,7 +52,7 @@ export class TileItemStove extends TileItem {
 
     public clearDish() {
         this._data.cookingDish = undefined;
-        this._data.startedAt = -1;
+        this._data.cookTime = -1;
     }
 
     public onDishReady() {
@@ -84,8 +83,8 @@ export class TileItemStove extends TileItem {
         }
     }
 
-    public onLeftClick() {
-        super.onLeftClick();
+    public onPointerUp() {
+        super.onPointerUp();
 
         if(this.world.sync == SyncType.SYNC) {
             this.startCookingSomething();
@@ -106,7 +105,7 @@ export class TileItemStove extends TileItem {
 
     public startCook(dish: Dish) {
         this._data.cookingDish = dish.id;
-        this._data.startedAt = new Date().getTime();
+        this._data.cookTime = 0;
 
         this.setAsChangedState();
     }
@@ -132,9 +131,8 @@ export class TileItemStove extends TileItem {
 
     public getCookingProgress() {
         if(!this._data.cookingDish) return 0;
-        const now = Date.now();
-        const delta = now - this._data.startedAt;
-        return Phaser.Math.Clamp(delta / this.getCookingDish().cookTime, 0, 1);
+        const cookTime = this._data.cookTime;
+        return Phaser.Math.Clamp(cookTime / this.getCookingDish().cookTime, 0, 1);
     }
 
     public getCookingDish() {

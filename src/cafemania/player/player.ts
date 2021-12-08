@@ -501,7 +501,7 @@ export class Player extends BaseObject {
 
             this.setPosition(lastPosition.x, lastPosition.y);
 
-            this.log("ended movement");
+            //this.log("ended movement");
 
             this._pathFind = undefined;
 
@@ -525,13 +525,6 @@ export class Player extends BaseObject {
         this._pathFindMovement.onFinishCallback = undefined;
         this._canWalk = false;
         this._movingToTile = undefined;
-
-        /*
-        //this._canMoveToPosition = false;
-        this._pathFind = undefined;
-        this._movingToTile = undefined;
-        this._moveCallback = undefined;
-        */
     }
 
     public render(dt: number) {
@@ -543,22 +536,10 @@ export class Player extends BaseObject {
         this.debugText.setTextLine('index', `${this._pathFindMovement.getCurrentIndex()}`);
 
         this.renderSprite();
-        this.renderDebugText(dt);
-        this.renderPathFind(dt);
+        //this.renderDebugText(dt);
+        //this.renderPathFind(dt);
 
  
-        /*
-        if(this._movingToTile && this._atTile) {
-            const delta = new Phaser.Math.Vector2(
-                this._movingToTile.x - this._atTile.x,
-                this._movingToTile.y - this._atTile.y,
-            );
-
-            try {
-                this._direction = Tile.getDirectionFromOffset(delta.x, delta.y);
-            } catch (error) {}
-        }
-        */
 
         const chair = this.getChairPlayerIsSitting();
         if(chair) {
@@ -708,7 +689,7 @@ export class Player extends BaseObject {
 
         })
 
-        console.log(tasks.length + " tasks")
+        //console.log(tasks.length + " tasks")
 
         const data: IPlayerSerializedData = {
             id: this.id,
@@ -724,7 +705,7 @@ export class Player extends BaseObject {
     public serializeStatus(): any {}
 
     public setAsChangedState() {
-        this.log(">> state changed");
+        //this.log(">> state changed");
 
         this.world.events.emit(WorldEvent.PLAYER_STATE_CHANGED, this);
     }

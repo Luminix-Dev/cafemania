@@ -1,7 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
+import { MoveTileItem } from '../../shop/moveTileItem';
 
 import { BaseObject } from "../baseObject/baseObject";
 import { Debug } from "../debug/debug";
+import { Input } from '../input/input';
 import { GameScene } from "../scenes/gameScene";
 import { Tile } from "../tile/tile";
 import { DebugText } from '../utils/debugText';
@@ -32,6 +34,10 @@ export class TileItem extends BaseObject {
     public rotateOnLeftClick = false;
     public showDebugText: boolean = false;
     
+    private _isPointerOver: boolean = false;
+
+    private _canStartMove = false;
+
     private _tileItemInfo: TileItemInfo;
     private _position = new Phaser.Math.Vector2()
     private _hasCreatedSprites: boolean = false;
@@ -78,13 +84,21 @@ export class TileItem extends BaseObject {
 
             //
             this.tileItemRender.events.on("pointerdown", () => {
-                this.onLeftClick();
+                this.onPointerDown();
+                this.world.events.emit(WorldEvent.TILE_ITEM_POINTER_DOWN, this);
+            });
+            this.tileItemRender.events.on("pointerup", () => {
+                this.onPointerUp();
+                this.world.events.emit(WorldEvent.TILE_ITEM_POINTER_UP, this);
             })
             this.tileItemRender.events.on("pointerover", () => {
                 this.onPointerOver();
+                this.world.events.emit(WorldEvent.TILE_ITEM_POINTER_OVER, this);
+
             });
             this.tileItemRender.events.on("pointerout", () => {
                 this.onPointerOut();
+                this.world.events.emit(WorldEvent.TILE_ITEM_POINTER_OUT, this);
             });
             
             //
@@ -106,6 +120,18 @@ export class TileItem extends BaseObject {
         }
 
     
+        /*
+        if(this._isPointerOver) {
+            if(Input.isDragging) {
+                if(!MoveTileItem.isMovingAnyTileItem) {
+                    MoveTileItem.startMove(this);
+                    this.world.toggleFloorCollision(true)
+
+                    console.log("started moving")
+                }
+            }
+        }
+        */
     }
 
     protected updateSpritesLayer() {
@@ -260,16 +286,26 @@ export class TileItem extends BaseObject {
 
     public onCreateTileItemRender() {}
 
-    public onLeftClick() {
-        this.log("onLeftClick");
+    public onPointerDown() {
+        this.log("onPointerDown");
+    }
+
+    public onPointerUp() {
+        this.log("onPointerUp");
         if(this.rotateOnLeftClick) this.rotate();
     }
 
     public onPointerOver() {
+        this._isPointerOver = true;
+
+        MoveTileItem.setHoveringTileItem(this);
+
         this.showDebugText = true;
     }
 
     public onPointerOut() {
+        this._isPointerOver = false;
+
         this.showDebugText = false;
     }
 

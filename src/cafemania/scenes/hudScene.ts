@@ -44,7 +44,7 @@ export class HudScene extends Phaser.Scene {
         fullscreen.on('pointerdown', this.goFullscreen.bind(this))
         test.on('pointerdown', () => {
             state = !state;
-            Gameface.Instance.game.worlds[0].setFloorAndWallsCollision(state);
+            Gameface.Instance.game.worlds[0].toggleFloorCollision(state);
         })
 
         const updateButtonsPosition = () => {

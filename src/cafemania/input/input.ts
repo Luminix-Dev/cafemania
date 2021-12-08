@@ -1,9 +1,11 @@
+import { MoveTileItem } from "../../shop/moveTileItem";
 import { Camera } from "../camera/camera";
 import { GameScene } from "../scenes/gameScene";
 
 export class Input {
     public static mousePosition = new Phaser.Math.Vector2();
     public static mouseDown: boolean = false;
+    public static isDragging: boolean = false;
     private static _sceneWorldPosition = new Phaser.Math.Vector2();
     private static _scene: Phaser.Scene;
 
@@ -18,6 +20,9 @@ export class Input {
 
         scene.input.on('pointerup', () => {
             self.mouseDown = false;
+            self.isDragging = false;
+
+            MoveTileItem.stopMoving();
         });
 
         scene.input.on('pointermove', pointer => {
@@ -26,6 +31,8 @@ export class Input {
 
             self._sceneWorldPosition.x = scene.input.activePointer.worldX;
             self._sceneWorldPosition.y = scene.input.activePointer.worldY;
+
+            if(self.mouseDown) self.isDragging = true;
         });
     }
 

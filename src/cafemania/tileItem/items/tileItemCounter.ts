@@ -56,7 +56,12 @@ export class TileItemCounter extends TileItem {
     public getDishAmount() { return this._data.amount; }
 
     public addDishAmount(amount: number) {
-        this._data.amount += amount
+        this._data.amount += amount;
+
+        if(this._data.amount <= 0) {
+            this._data.amount = 0;
+            this._data.dish = undefined;
+        }
     }
 
     public addDish(dish: Dish) {
@@ -74,7 +79,9 @@ export class TileItemCounter extends TileItem {
 
     public setDish(dish: Dish, amount?: number) {
         this._data.dish = dish.id;
-        this._data.amount = amount == undefined ? dish.servings : amount;
+        this._data.amount = 0;
+        
+        this.addDishAmount(amount == undefined ? dish.servings : amount);
     }
     
     public serializeData() {

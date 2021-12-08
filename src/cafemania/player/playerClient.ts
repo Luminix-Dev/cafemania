@@ -49,7 +49,7 @@ export class PlayerClient extends Player {
         this._type = PlayerType.CLIENT;
         this._spriteTextureName = "PlayerSpriteTexture_Client";
 
-        this.speed = 10;
+        this.speed = 1.7;
     }
 
     public update(dt: number) {
@@ -182,7 +182,8 @@ export class PlayerClient extends Player {
             return;
         }
 
-        const door = Utils.shuffleArray(doors)[0];
+        const tiles = doors.map(door => door.tile);
+        const door = Tile.getClosestTile(this.position, tiles).getDoor()!;
 
         this.log("walkInFrontAnyDoor " + door.id)
 

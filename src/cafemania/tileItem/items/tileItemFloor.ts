@@ -1,3 +1,4 @@
+import { MoveTileItem } from "../../../shop/moveTileItem";
 import { Camera } from "../../camera/camera";
 import { Debug } from "../../debug/debug";
 import { Input } from "../../input/input";
@@ -36,9 +37,9 @@ export class TileItemFloor extends TileItem {
         */
     }
 
-    public onLeftClick() {
-        super.onLeftClick();
+    public onPointerUp() {
+        super.onPointerUp();
 
-        this.tile.tileMap.world.getPlayerCheff().taskWalkToTile(this.tile);
+        this.tile.tileMap.world.getPlayerCheff()?.taskWalkToTile(this.tile);
     }
 }

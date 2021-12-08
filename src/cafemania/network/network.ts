@@ -64,7 +64,7 @@ export class Network extends BaseObject {
     }
 
     public onReceivePacket(packet: IPacket) {
-        this.log(`reiceved packet '${packet.type}'`);
+        //this.log(`reiceved packet '${packet.type}'`);
 
         if(packet.type == PACKET_TYPE.WORLD_DATA) {
             const packetData: IPacketData_WorldData = packet.data;

@@ -33,19 +33,19 @@ export class Task extends BaseObject {
     public onComplete: (() => void)[] = [];
 
     public start() {
-        this.log("task started")
+        //this.log("task started")
     }
 
     public update(dt: number) {}
 
     public forceComplete() {
         this.complete();
-        this.log("task force complete")
+        //this.log("task force complete")
     }
 
     public complete() {
         if(!this.completed) this.completed = true;
-        this.log("task completed")
+        //this.log("task completed")
         this.onComplete.map(fn => fn());
     }
 }
@@ -56,6 +56,8 @@ export class TaskWalkToTile extends Task {
 
     public targetWalkDistance?: number;
     public distanceWalked?: number;
+
+    private _sendUpdateTime = 0;
 
     constructor(player: Player, tile: Tile) {
         super();
@@ -84,6 +86,7 @@ export class TaskWalkToTile extends Task {
     public update(dt: number) {
         super.update(dt);
 
+        
         this.distanceWalked = this.player.pathFindMovement.distanceWalked;
 
         if(this.targetWalkDistance != undefined) {
@@ -91,9 +94,16 @@ export class TaskWalkToTile extends Task {
             if(this.player.pathFindMovement.distanceWalked < this.targetWalkDistance) {
                 this.player.pathFindMovement.distanceWalked = this.targetWalkDistance;
 
-                console.warn("fixed");
+                //console.warn("fixed");
             }
 
+        }
+
+        this._sendUpdateTime += dt;
+        if(this._sendUpdateTime >= 1000) {
+            this._sendUpdateTime = 0;
+
+            this.player.setAsChangedState();
         }
     }
 }
@@ -180,26 +190,11 @@ export class TaskManager extends BaseObject {
         }
 
         if(this._doingTask) this.tasks[0].update(dt); 
-
-        /*
-        if(!this._doingTask && this._tasks.length > 0) {
-            this._doingTask = true;
-
-            const task = this._tasks[0];
-            this._tasks.shift();
-
-            task.onComplete = () => {
-                this._doingTask = false;
-            }
-            task.start();
-            
-        }
-        */
     }
     
     public addTask(task: Task) {
         this._tasks.push(task);
-        this.log("task added")
+        //this.log("task added")
         return task;
     }
 
@@ -220,7 +215,7 @@ export class TaskManager extends BaseObject {
         task.onComplete.push(() => {
             this._doingTask = false;
 
-            this.log("not doing tasks")
+            //this.log("not doing tasks")
 
             this._tasks.shift();
 

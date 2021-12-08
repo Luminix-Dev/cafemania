@@ -15,15 +15,15 @@ export class PlayerWaiter extends Player {
     private _dishPlate?: DishPlate;
     private _carryingDish?: Dish;
     
-    private _goingToCounter?: TileItemCounter;
     private _goingToTable?: TileItemTable;
+    private _goingToCounter?: TileItemCounter;
 
     constructor(world: World) {
         super(world);
         this._type = PlayerType.WAITER;
         this._spriteTextureName = "PlayerSpriteTexture_Waiter";
 
-        this.speed = 3;
+        this.speed = 1.7;
     }
     
     public update(dt: number) {
@@ -95,41 +95,18 @@ export class PlayerWaiter extends Player {
         //this.taskWalkNearToTile(counter.tile);
 
         console.warn("vai krl")
+
+        counter.amountWaitersComing++;
+
         this.taskWalkNearToTile(counter.tile);
         this.taskPlaySpecialAction('look_to_tile', [counter.tile.x, counter.tile.y]);
-        this.taskPlayAnimation("Eat", 2000);
-        this.taskPlaySpecialAction('waiter_get_counter_dish', [counter.id, table.id]);
-
+        this.taskPlayAnimation("Eat", 1000);
+        this.taskPlaySpecialAction('waiter_get_counter_dish', [dish.id, counter.id, table.id]);
+        this.taskExecuteAction(async() => {
+            counter.amountWaitersComing--;
+        })
         this.taskWalkNearToTile(table.tile);
         this.taskPlaySpecialAction('waiter_serve_dish', []);
-       
-
-        //this.taskPlaySpecialAction('waiter_get_counter_dish', [counter.id, table.id]);
-        //this.taskWalkNearToTile(table.tile);
-
-
-        /*
-        this.taskWalkNearToTile(counter.tile);
-        this.taskPlaySpecialAction('waiter_get_counter_dish', [counter.id, table.id]);
-        this.taskWalkNearToTile(table.tile);
-        this.taskPlaySpecialAction('waiter_serve_dish', []);
-        return;
-        */
-
-        /*
-        this.taskWalkNearToTile(counter.tile);
-        this.taskExecuteAction(async () => {
-            this._carryingDish = dish
-        });
-        this.taskWalkNearToTile(table.tile);
-        this.taskExecuteAction(async () => {
-            this._carryingDish = undefined;
-            table.eatTime = 20000;
-            table.setDish(dish);
-            this._isBusy = false;
-        });
-        */
-
     }
 
 
@@ -159,29 +136,35 @@ export class PlayerWaiter extends Player {
             
             this.setDirection(0);
             
-            this._goingToCounter = this.world.game.tileItemFactory.getTileItem(args[0]) as TileItemCounter;
-            this._goingToTable = this.world.game.tileItemFactory.getTileItem(args[1]) as TileItemTable;
+            this._carryingDish = this.world.game.dishFactory.getDish(args[0]);
+
+            this._goingToCounter = this.world.game.tileItemFactory.getTileItem(args[1]) as TileItemCounter;
+            this._goingToCounter.addDishAmount(-1);
+            this._goingToCounter.setAsChangedState();
+
+            this._goingToTable = this.world.game.tileItemFactory.getTileItem(args[2]) as TileItemTable;
             this._goingToTable.isWaitingForDish = true;
             
-            this._carryingDish = this._goingToCounter.getDish();
         }
 
         if(action == "waiter_serve_dish") {
-            this._carryingDish = undefined;
+           
 
             try {
                 const table = this._goingToTable!;
-                const dish = this._goingToCounter!.getDish();
+                const dish = this._carryingDish!;
                 
         
-                table.eatTime = 8000;
+                table.eatTime = 20000;
                 table.setDish(dish);
                 table.isWaitingForDish = false;
             } catch (error) {
                 console.warn(error);
             }
 
-
+            this._goingToCounter = undefined;
+            this._goingToTable = undefined;
+            this._carryingDish = undefined;
             this._isBusy = false;
 
         }

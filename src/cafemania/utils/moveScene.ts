@@ -2,6 +2,7 @@
 Need to fix this mess someday..
 */
 
+import { MoveTileItem } from "../../shop/moveTileItem"
 import { Camera } from "../camera/camera"
 
 export interface MPixelConfig
@@ -47,6 +48,7 @@ export class MoveScene
 
         scene.input.on('pointermove', pointer => {
             if(!pointerDown) return
+            if(MoveTileItem.isMovingAnyTileItem) return;
             
             const delta = new Phaser.Math.Vector2(startPos.x - pointer.x, startPos.y - pointer.y);
 

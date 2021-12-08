@@ -38,7 +38,7 @@ export class Client extends BaseObject {
         game.worlds.map(world => {
 
             world.events.on(WorldEvent.PLAYER_STATE_CHANGED, (player: Player) => {
-                console.log("changed");
+                //console.log("changed");
 
                 const playerData = player.serialize();
 
@@ -50,11 +50,11 @@ export class Client extends BaseObject {
                 }
                 this.send(PACKET_TYPE.WORLD_DATA, packetData);
 
-                console.log(playerData.tasks)
+                //console.log(playerData.tasks)
             })
 
             world.events.on(WorldEvent.TILE_ITEM_CHANGED, (tileItem: TileItem) => {
-                console.log("changed");
+                //console.log("changed");
 
                 const packetData: IPacketData_WorldData = {
                     worldData: {
@@ -81,11 +81,11 @@ export class Client extends BaseObject {
         }
         this.socket.emit('p', packet);
 
-        this.log(`sent packet '${packet.type}'`);
+        //this.log(`sent packet '${packet.type}'`);
     }
 
     public onReceivePacket(packet: IPacket) {
-        this.log(`reiceved packet '${packet.type}'`);
+        //this.log(`reiceved packet '${packet.type}'`);
 
         const world = this.game.worlds[0];
 
