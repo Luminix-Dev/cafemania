@@ -99,8 +99,8 @@ export class TileTextureGenerator
         sheet.organize()
 
         const canvas = this._scene!.textures.createCanvas(this._generatedTexureKey, sheet.width, sheet.height)
-        canvas.context.fillStyle = "red"
-        canvas.context.fillRect(0, 0, canvas.width, canvas.height)
+        //canvas.context.fillStyle = "red"
+        //canvas.context.fillRect(0, 0, canvas.width, canvas.height)
         canvas.refresh()
         canvas.setFilter(Phaser.Textures.FilterMode.LINEAR)
         //canvas.setFilter(Phaser.Textures.FilterMode.NEAREST)

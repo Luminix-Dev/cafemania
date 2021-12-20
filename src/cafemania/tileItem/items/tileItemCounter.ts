@@ -90,5 +90,12 @@ export class TileItemCounter extends TileItem {
 
     public unserializeData(data: CounterData) {
         this._data = data;
-    };
+    }
+
+    public destroy() {
+        super.destroy();
+
+        this._dishPlate?.destroy();
+        this._dishPlate = undefined;
+    }
 }

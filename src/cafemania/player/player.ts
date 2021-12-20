@@ -14,6 +14,7 @@ import { Utils } from '../utils/utils';
 import { World } from "../world/world";
 import { WorldEvent } from '../world/worldEvents';
 import { PlayerAnimation } from './playerAnimation';
+import { PlayerType } from './playerType';
 import { IPlayerTaskSerializedData, PlayerTaskType, TaskExecuteAction, TaskManager, TaskPlayAnimation, TaskPlaySpecialAction, TaskWalkToTile } from './taskManager';
 
 export enum PlayerState {
@@ -23,12 +24,7 @@ export enum PlayerState {
     EATING
 }
 
-export enum PlayerType {
-    NONE,
-    CLIENT,
-    WAITER,
-    CHEFF
-}
+
 
 export interface IPlayerSerializedData {
     id: string
@@ -51,6 +47,7 @@ class PlayerPathFindMovement {
     private _prevIndex: number = 0;
     private _currentIndex: number = 0;
 
+    private _totalDistance: number = 0;
     
     public setStart(position: Phaser.Math.Vector2) {
         this._startPosition.set(position.x, position.y);
@@ -58,8 +55,13 @@ class PlayerPathFindMovement {
         this._tiles = [];
         this.distanceWalked = 0;
         this._callbacks = {};
+        this._totalDistance = 0;
     }
     
+    public getTotalDistance() {
+        return this._totalDistance;
+    }
+
     public getCurrentIndex() {
         return this._currentIndex;
     }
@@ -69,6 +71,17 @@ class PlayerPathFindMovement {
     }
 
     public addPosition(position: Phaser.Math.Vector2, tile: Tile, whenReachCallback?: () => void) {
+
+        if(this._positions.length > 0) {
+
+            const prevPos = this._positions[this._positions.length-1];
+            const distance = Phaser.Math.Distance.BetweenPoints(prevPos, position);
+
+            this._totalDistance += distance;
+            
+            //console.log("d", distance, this._totalDistance)
+        }
+
         this._positions.push(position);
         this._tiles.push(tile);
 
@@ -179,6 +192,8 @@ class PlayerPathFindMovement {
 }
 
 export class Player extends BaseObject {
+    public test_1: number = 0;
+
     public id: string = uuidv4();
     //public data: any = undefined;
     public get position() { return this._position; }
@@ -229,7 +244,7 @@ export class Player extends BaseObject {
         this._animation = new PlayerAnimation(this);
         this._taskManager = new TaskManager();
 
-        this.speed = 3;
+        this.speed = 10;
     }
 
 
@@ -242,13 +257,14 @@ export class Player extends BaseObject {
     public walkToTile(x: number, y: number, callback?: () => void) {
         Debug.log("player walk to " + x + ', ' + y);
 
-        this.setState(PlayerState.WALKING);
 
         if(this._sittingAtChair) this.liftUpfromChair();
 
+        this.setState(PlayerState.WALKING);
+
         var self = this;
         var cb = function() {
-            self.setState(PlayerState.IDLE);
+            //self.setState(PlayerState.IDLE);
 
             self.setAtTile(self.world.tileMap.getTile(x, y), true);
 
@@ -258,49 +274,45 @@ export class Player extends BaseObject {
         this.pathFindToCoord(x, y, cb);
     }
 
-    public taskWalkToTile(tile: Tile, callback?: () => void) {
+    public taskWalkToTile(tile: Tile) {
         this.log(`taskWalkToTile ${tile.id}`);
         
         const task = new TaskWalkToTile(this, tile);
 
-        if(callback) task.onComplete.push(callback);
-
         this._taskManager.addTask(task);
 
         this.setAsChangedState();
     }
 
-    public taskPlayAnimation(animation: string, time: number, callback?: () => void) {
+    public taskPlayAnimation(animation: string, time: number) {
         this.log(`taskPlayAnimation ${animation} ${time}`);
         
         const task = new TaskPlayAnimation(this, animation, time);
 
-        if(callback) task.onComplete.push(callback);
-
         this._taskManager.addTask(task);
 
         this.setAsChangedState();
     }
 
-    public playAnimation(animation: string, time: number, callback?: () => void) {
-        console.log("playAnimation", animation, time)
+    public playAnimation(animation: string) {
+        console.log("playAnimation", animation)
 
         this._playingAnimation = animation;
+    }
 
-        setTimeout(() => {
-            this._playingAnimation = undefined;
-            console.log("stopped playAnimation")
-            callback?.();
-        }, time);
+    public stopPlayingAnimation() {
+        this._playingAnimation = undefined;
+            console.log("stopped playAnimation");
     }
 
     public taskPlaySpecialAction(action: string, args: any[], callback?: () => void) {
         console.log("added task", action, args)
 
         const task = new TaskPlaySpecialAction(this, action, args);
-        this._taskManager.addTask(task);
-
+        
         if(callback) task.onComplete.push(callback);
+
+        this._taskManager.addTask(task);
 
         this.setAsChangedState();
     }
@@ -312,6 +324,12 @@ export class Player extends BaseObject {
         
             const tile = this.world.tileMap.getTile(args[0], args[1]);
             this.lookToTile(tile);
+        }
+
+        if(action == "test_1") {
+            const n: number = args[0];
+
+            this.test_1 = n;
         }
     }
 
@@ -334,14 +352,14 @@ export class Player extends BaseObject {
     }
 
     
-    public taskWalkNearToTile(tile: Tile, callback?: () => void) {
+    public taskWalkNearToTile(tile: Tile) {
         console.warn("change");
         //need own TaskWalkNearToTile
 
         const tiles = tile.getAdjacentTiles().filter(tile => tile.getIsWalkable());
         const closestTile = Tile.getClosestTile(this.position, tiles);
 
-        this.taskWalkToTile(closestTile, callback);
+        this.taskWalkToTile(closestTile);
     }
 
     /*
@@ -393,45 +411,28 @@ export class Player extends BaseObject {
     }
 
     public update(dt: number) {
-        this.updatePlayerMovement(dt);
-
         this._taskManager.update(dt);
+
+        //  console.log(dt)
     }
 
-    
+    public setPathFindDistanceWalked(distance: number) {
+        const pathFindMovement = this._pathFindMovement;
 
-    private updatePlayerMovement(dt: number) {
-        if(this._canWalk) {
+        pathFindMovement.distanceWalked = distance;
 
-            const pathFindMovement = this._pathFindMovement;
+        var position = pathFindMovement.getCurrentPosition(pathFindMovement.distanceWalked);
 
+        
+     
+        const index = pathFindMovement.getCurrentIndex();
+        const tile = pathFindMovement.getTileAt(index)
+        this._movingToTile = tile;
 
-            pathFindMovement.distanceWalked += dt * this.speed * 0.1;
-
-            var position = pathFindMovement.getCurrentPosition(pathFindMovement.distanceWalked);
-
-            
-         
-            const index = pathFindMovement.getCurrentIndex();
-            const tile = pathFindMovement.getTileAt(index)
-            this._movingToTile = tile;
-          
-            
-            
-            
-
-
-            if(position) {
-                this.setPosition(position.x, position.y);
-            }
-           
-
-            /*
-            var p = world.players[0]._pathFindMovement.getCurrentPosition(330)
-            world.players[0].setPosition(p.x, p.y)
-            */
+        if(position) {
+            this.setPosition(position.x, position.y);
         }
-
+       
 
         if(this._movingToTile) {
             const delta = new Phaser.Math.Vector2(
@@ -443,6 +444,16 @@ export class Player extends BaseObject {
                 this._direction = Tile.getDirectionFromOffset(delta.x, delta.y);
             } catch (error) {}
         }
+
+        /*
+        var p = world.players[0]._pathFindMovement.getCurrentPosition(330)
+        world.players[0].setPosition(p.x, p.y)
+        */
+    }
+
+
+    public static getDistanceFromPoints(points: Phaser.Math.Vector2[]) {
+
     }
 
     public pathFindToCoord(x: number, y: number, callback?: () => void) {

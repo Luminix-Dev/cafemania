@@ -50,7 +50,7 @@ export class Network extends BaseObject {
     }
 
     public getAddress() {
-        if(location.host.includes('localhost') || location.host.includes('192.168')) return `${location.protocol}//${location.host}/`;
+        if(location.host.includes('localhost') || location.host.includes(':')) return `${location.protocol}//${location.host}/`;
         return `${Network.SERVER_ADDRESS}`;
     }
 

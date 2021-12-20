@@ -1,13 +1,10 @@
-import { Debug } from "../debug/debug";
 import { Tile } from "../tile/tile";
 import { TileItemChair } from "../tileItem/items/tileItemChair";
-import { TileItemDoor } from "../tileItem/items/tileItemDoor";
-import { TileItemType } from "../tileItem/tileItemInfo";
-import { Direction } from "../utils/direction";
 import { Utils } from "../utils/utils";
 import { SyncType, World } from "../world/world";
 import { WorldEvent } from "../world/worldEvents";
-import { Player, PlayerState, PlayerType } from "./player";
+import { Player, PlayerState } from "./player";
+import { PlayerType } from "./playerType";
 
 export enum PlayerClientState {
     NONE,
@@ -49,7 +46,7 @@ export class PlayerClient extends Player {
         this._type = PlayerType.CLIENT;
         this._spriteTextureName = "PlayerSpriteTexture_Client";
 
-        this.speed = 1.7;
+        //this.speed = 1.7;
     }
 
     public update(dt: number) {
@@ -79,6 +76,10 @@ export class PlayerClient extends Player {
             }
             
         }
+    }
+
+    public setAsAlreadySitted() {
+        this._hasReachedDoor = true;
     }
 
     private updateClientBehavior(dt: number) {
@@ -117,11 +118,14 @@ export class PlayerClient extends Player {
 
                     this.log("going to chair");
 
-                    this.taskWalkToTile(this._goingToChair.tile, () => {
+                    this.taskWalkToTile(this._goingToChair.tile);
+                    this.taskExecuteAction(async() => {
+                        
                         this.log("at chair")
 
                         this.waitingForWaiter = true;
-                    });
+                        
+                    })
                 }
 
             }
@@ -189,17 +193,18 @@ export class PlayerClient extends Player {
 
         const tile = door.getTileBehind(2)!;
 
-        this.taskWalkToTile(tile, () => {
+        this.taskWalkToTile(tile);
+        this.taskExecuteAction(async () => {
             this.log("behind door");
 
             this._canFindChair = true;
+        });
+        this.taskWalkToTile(door.tile);
+        this.taskExecuteAction(async () => {
+            this.log("at door");
 
-            this.taskWalkToTile(door.tile, () => {
-                this.log("at door");
-
-                this._hasReachedDoor = true;
-                this._isGoingToDoor = false;
-            });
+            this._hasReachedDoor = true;
+            this._isGoingToDoor = false;
         });
     }
 
@@ -217,10 +222,11 @@ export class PlayerClient extends Player {
 
         if(!exitTile) exitTile = this.world.getLeftSideWalkSpawn();
 
-        this.taskWalkToTile(exitTile, () => {
+        this.taskWalkToTile(exitTile);
+        this.taskExecuteAction(async() => {
             this.world.removePlayer(this);
             this.world.events.emit(WorldEvent.PLAYER_CLIENT_DESTROYED, this);
-        });
+        })
 
     }
 
@@ -248,3 +254,4 @@ export class PlayerClient extends Player {
         }
     }
 }
+

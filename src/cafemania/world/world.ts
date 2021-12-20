@@ -2,9 +2,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { BaseObject } from '../baseObject/baseObject';
 import { Game } from "../game/game";
-import { IPlayerSerializedData, Player, PlayerType } from '../player/player';
+import { IPlayerSerializedData, Player } from '../player/player';
 import { PlayerClient } from '../player/playerClient';
+import { PlayerType } from '../player/playerType';
 import { PlayerWaiter } from '../player/playerWaiter';
+import { MoveTileItem } from '../shop/moveTileItem';
+import { Shop } from '../shop/shop';
 import { ITileSerializedData } from '../tile/tile';
 import { TileItemChair } from '../tileItem/items/tileItemChair';
 import { TileItemCounter } from '../tileItem/items/tileItemCounter';
@@ -42,6 +45,7 @@ export class World extends BaseObject {
 
     private _game: Game;
     private _tileMap: TileMap;
+    private _shop: Shop;
     private _players = new Phaser.Structs.Map<string, Player>([]);
     private _playerCheff: Player;
     private _sidewalkSize: number = 0;
@@ -56,6 +60,7 @@ export class World extends BaseObject {
         super();
         this._game = game;
         this._tileMap = new TileMap(this);
+        this._shop = new Shop(this);
 
         this.init();
     }
@@ -67,10 +72,26 @@ export class World extends BaseObject {
             if(this.canSpawnPlayer) this._spawnedPlayersAmount--;
         })
 
+        //PAREI AQUI?
+
+        MoveTileItem.setWorld(this);
 
         this.events.on(WorldEvent.TILE_ITEM_POINTER_DOWN, (tileItem: TileItem) => {
+           
+        })
+
+        this.events.on(WorldEvent.TILE_ITEM_POINTER_UP, (tileItem: TileItem) => {
+        })
+
+        this.events.on(WorldEvent.TILE_ITEM_POINTER_OVER, (tileItem: TileItem) => {
 
         })
+
+        
+        this.events.on(WorldEvent.TILE_ITEM_POINTER_OUT, (tileItem: TileItem) => {
+
+        })
+
 
         window['world'] = this;
     }
@@ -122,16 +143,23 @@ export class World extends BaseObject {
 
 
         
-        const player = this._playerCheff = this.spawnPlayer();
+        const player = this.setPlayerCheff(this.spawnPlayer());
+        
         player.setAtTileCoord(0, 7);
 
-        
-        /*
+        console.log(player.test_1)
+        player.taskPlaySpecialAction('test_1', [1]);
+        player.taskPlaySpecialAction('test_1', [2]);
+        console.log(player.test_1)
+        player.taskPlaySpecialAction('test_1', [3]);
+        console.log(player.test_1)
 
+
+        /*
         player.taskWalkToTile(this.tileMap.getTile(4, 4));
-        player.taskPlayAnimation('test', 2000);
+        player.taskPlayAnimation('Eat', 2000);
         player.taskWalkToTile(this.tileMap.getTile(7, 4));
-        player.taskPlayAnimation('test', 500);
+        player.taskPlayAnimation('Eat', 500);
         player.taskWalkToTile(this.tileMap.getTile(12, 4));
         */
 
@@ -148,7 +176,7 @@ export class World extends BaseObject {
 
         this.spawnPlayerWaiter(2, 7);
         this.spawnPlayerWaiter(2, 8);
-        this.spawnPlayerWaiter(2, 9);
+        //this.spawnPlayerWaiter(2, 9);
         
 
         //player.pathFindToCoord(5, 2);
@@ -238,6 +266,11 @@ export class World extends BaseObject {
     public spawnPlayer() {
         const player = new Player(this);
         return this.addPlayer(player);
+    }
+
+    public setPlayerCheff(player: Player) {
+        this._playerCheff = player
+        return player;
     }
 
     public removePlayer(player: Player) {

@@ -1,9 +1,4 @@
-import { MoveTileItem } from "../../../shop/moveTileItem";
-import { Camera } from "../../camera/camera";
-import { Debug } from "../../debug/debug";
-import { Input } from "../../input/input";
 import { GameScene } from "../../scenes/gameScene";
-import { Tile } from "../../tile/tile"
 import { TileItem } from "../tileItem"
 
 export class TileItemFloor extends TileItem {

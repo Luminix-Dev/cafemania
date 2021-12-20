@@ -14,6 +14,7 @@
   "dependencies": {
     "@geckos.io/phaser-on-nodejs": "^1.2.5",
     "express": "^4.17.1",
+    "madge": "^5.0.1",
     "phaser": "^3.55.2",
     "socket.io": "^4.4.0",
     "socket.io-client": "^4.4.0",

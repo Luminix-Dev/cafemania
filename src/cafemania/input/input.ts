@@ -1,8 +1,8 @@
-import { MoveTileItem } from "../../shop/moveTileItem";
-import { Camera } from "../camera/camera";
-import { GameScene } from "../scenes/gameScene";
+import { MoveTileItem } from "../shop/moveTileItem";
 
 export class Input {
+    public events = new Phaser.Events.EventEmitter();
+    
     public static mousePosition = new Phaser.Math.Vector2();
     public static mouseDown: boolean = false;
     public static isDragging: boolean = false;

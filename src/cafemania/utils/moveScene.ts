@@ -2,8 +2,8 @@
 Need to fix this mess someday..
 */
 
-import { MoveTileItem } from "../../shop/moveTileItem"
 import { Camera } from "../camera/camera"
+import { MoveTileItem } from "../shop/moveTileItem"
 
 export interface MPixelConfig
 {

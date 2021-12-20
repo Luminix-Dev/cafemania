@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { BaseObject } from "../baseObject/baseObject";
 import { Debug } from "../debug/debug";
 import { Tile } from "../tile/tile";
-import { Player } from "./player";
+import { Player, PlayerState } from "./player";
 
 export enum PlayerTaskType {
     OTHER,
@@ -28,6 +28,8 @@ export interface IPlayerTaskSerializedData {
 }
 
 export class Task extends BaseObject {
+    public timeToComplete: number = 0;
+    public progress: number = 0;
     public id: string = uuidv4();
     public completed: boolean = false;
     public onComplete: (() => void)[] = [];
@@ -68,9 +70,11 @@ export class TaskWalkToTile extends Task {
 
     public forceComplete() {
         this.player.clearMovements();
+        this.player.setState(PlayerState.IDLE);
         this.player.setAtTile(this.tile, true);
 
         super.forceComplete();
+
     }
 
     public start() {
@@ -78,15 +82,38 @@ export class TaskWalkToTile extends Task {
 
         const tile = this.tile;
         
-        this.player.walkToTile(tile.x, tile.y, () => {
-            this.complete();
-        })
+        
+        this.player.walkToTile(tile.x, tile.y);
+
+        this.updateTimeToComplete();
+        
+
+
+        console.log("START", this.player.pathFindMovement.getTotalDistance())
+    }
+
+    private updateTimeToComplete() {
+        this.timeToComplete = this.player.pathFindMovement.getTotalDistance() / this.player.speed * 10;
     }
 
     public update(dt: number) {
         super.update(dt);
 
-        
+        //this.updateTimeToComplete();
+
+        //console.log("walktotileupdate")
+        //console.log(this.progress, '/', this.timeToComplete)
+
+        const p = this.progress / this.timeToComplete;
+
+        const totalDistance = this.player.pathFindMovement.getTotalDistance();
+
+        //console.log(p, totalDistance, p * totalDistance)
+
+        this.player.setPathFindDistanceWalked(p * totalDistance);
+
+        /*
+
         this.distanceWalked = this.player.pathFindMovement.distanceWalked;
 
         if(this.targetWalkDistance != undefined) {
@@ -105,6 +132,8 @@ export class TaskWalkToTile extends Task {
 
             this.player.setAsChangedState();
         }
+
+        */
     }
 }
 
@@ -118,16 +147,22 @@ export class TaskPlayAnimation extends Task {
         super();
 
         this.player = player;
-        this.animation = animation
-        this.time = time
+        this.animation = animation;
+        this.time = time;
+        
+        this.timeToComplete = time;
     }
 
     public start() {
         super.start();
 
-        this.player.playAnimation(this.animation, this.time, () => {
-            this.complete();
-        })
+        this.player.playAnimation(this.animation);
+    }
+
+    public forceComplete() {
+        this.complete();
+        
+        this.player.stopPlayingAnimation();
     }
 }
 
@@ -149,9 +184,9 @@ export class TaskPlaySpecialAction extends Task {
     public async start() {
         super.start();
         
-        await this.player.startSpecialAction(this.action, this.args);
+        this.player.startSpecialAction(this.action, this.args);
 
-        this.complete();
+        //this.complete();
     }
 }
 
@@ -168,7 +203,7 @@ export class TaskExecuteAction extends Task {
         super.start();
         (async () => {
             await this.action();
-            this.complete();
+            //this.complete();
         })();
     }
 }
@@ -184,17 +219,60 @@ export class TaskManager extends BaseObject {
         super();
     }
 
+    private updateTaskTime(task: Task, dt: number) {
+        task.progress += dt;
+        if(task.progress == task.timeToComplete) {
+            task.forceComplete();
+
+            this.checkTasks();
+
+            console.log(this.tasks.length + " left")
+        }
+    }
+
     public update(dt: number) {
+        
+        
+        this.checkTasks();
+
+        if(this._doingTask) {
+            let time = dt;
+
+            this.updateTaskTime(this.tasks[0], 0);
+            
+            while(time > 0) {
+                const task = this.tasks[0];
+
+                if(!task) {
+                    time = 0;
+                } else {
+                    let add = Math.min(time, task.timeToComplete - task.progress);
+
+                    this.updateTaskTime(task, add)
+
+                    time -= add;
+                }
+
+            }
+
+            //this.log("doing task")
+        }
+
+        this.tasks[0]?.update(dt);
+    }
+
+    private checkTasks() {
         if(!this.isDoingTask) {
             this.findNextTask();
         }
-
-        if(this._doingTask) this.tasks[0].update(dt); 
     }
-    
+
+
     public addTask(task: Task) {
         this._tasks.push(task);
-        //this.log("task added")
+        
+        this.update(0);
+
         return task;
     }
 

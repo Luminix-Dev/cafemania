@@ -34,6 +34,7 @@ export class TileItemRender extends BaseObject {
     private _hasCreatedSprites: boolean = false;
     private _hasCreatedCollision: boolean = false;
     private _canCreateCollision = false;
+    private _isTransparent: boolean = false;
 
     constructor(tileItemInfo: TileItemInfo) {
         super();
@@ -217,7 +218,7 @@ export class TileItemRender extends BaseObject {
                 image.setScale(!changeRotation ? 1 : -1, 1)
                 image.setOrigin(!changeRotation ? 0 : 1, 1)
                 image.setDepth(depth)
-                
+                image.setAlpha(this._isTransparent ? 0.5 : 1);
 
                 if(image.texture.has(frameKey)) image.setFrame(frameKey)
             }
@@ -277,6 +278,13 @@ export class TileItemRender extends BaseObject {
 
     public setLayer(x: number, y: number) {
         this._currentSpriteLayer.set(x, y);
+        this.updateSprites();
+    }
+
+    public setTransparent(value: boolean) {
+        if(value == this._isTransparent) return;
+
+        this._isTransparent = value;
         this.updateSprites();
     }
 
@@ -343,8 +351,8 @@ export class TileItemRender extends BaseObject {
     }
 
     private setupCollisionEventsAndStyle(collision: Phaser.GameObjects.Polygon) {
-        const color = 0xff0000;
-        const alphaHover = 0.5;
+        const color = 0;
+        const alphaHover = 0;
         const alpha = 0;
 
         collision.setFillStyle(color, alpha)

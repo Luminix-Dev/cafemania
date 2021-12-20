@@ -26,8 +26,14 @@ export class Game extends BaseObject {
         this.log('init');
     }
 
+    private startIntervalUpdate() {
+        
+    }
+
     public start() { 
         this.log('start');
+
+        console.log("interval update")
 
         var self = this;
         var lastUpdate = Date.now();

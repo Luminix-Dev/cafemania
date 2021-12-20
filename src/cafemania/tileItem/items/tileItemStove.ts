@@ -91,14 +91,32 @@ export class TileItemStove extends TileItem {
             return;
         }
 
-        const cheff = this.world.getPlayerCheff();
 
-        cheff.taskWalkNearToTile(this.tile);
-        cheff.taskPlaySpecialAction('look_to_tile', [this.tile.x, this.tile.y]);
-        cheff.taskPlayAnimation('Eat', 500);
+        if(!this.isCooking) {
+            const cheff = this.world.getPlayerCheff();
+
+            this.setTransparent(true);
+
+            cheff.taskWalkNearToTile(this.tile);
+            cheff.taskPlaySpecialAction('look_to_tile', [this.tile.x, this.tile.y]);
+            cheff.taskPlayAnimation('Eat', 500);
+            cheff.taskExecuteAction(async () => {
+                this.startCookingSomething();
+
+                this.setTransparent(false);
+            })
+        }
+
+        
+       
+
+        /*
+        
         cheff.taskExecuteAction(async () => {
             this.startCookingSomething();
         })
+        */
+        
 
         
     }

@@ -4,8 +4,9 @@ import { TileItemCounter } from "../tileItem/items/tileItemCounter";
 import { TileItemTable } from "../tileItem/items/tileItemTable";
 import { Utils } from "../utils/utils";
 import { SyncType, World } from "../world/world";
-import { Player, PlayerType } from "./player";
+import { Player } from "./player";
 import { PlayerClient } from "./playerClient";
+import { PlayerType } from "./playerType";
 
 
 export class PlayerWaiter extends Player {
@@ -23,7 +24,7 @@ export class PlayerWaiter extends Player {
         this._type = PlayerType.WAITER;
         this._spriteTextureName = "PlayerSpriteTexture_Waiter";
 
-        this.speed = 1.7;
+        //this.speed = 1.7;
     }
     
     public update(dt: number) {
@@ -155,7 +156,7 @@ export class PlayerWaiter extends Player {
                 const dish = this._carryingDish!;
                 
         
-                table.eatTime = 20000;
+                table.eatTime = 8000;
                 table.setDish(dish);
                 table.isWaitingForDish = false;
             } catch (error) {

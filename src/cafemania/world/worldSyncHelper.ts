@@ -2,8 +2,9 @@ import { Debug } from "../debug/debug";
 import { Dish } from "../dish/dish";
 import { Gameface } from "../gameface/gameface";
 import { IPacketData_StoveBeginCookData, IPacketData_WorldData, PACKET_TYPE } from "../network/packet";
-import { IPlayerSerializedData, Player, PlayerType } from "../player/player";
+import { IPlayerSerializedData, Player } from "../player/player";
 import { PlayerClient, PlayerClientState } from "../player/playerClient";
+import { PlayerType } from "../player/playerType";
 import { PlayerWaiter } from "../player/playerWaiter";
 import { PlayerTaskType, TaskPlayAnimation, TaskPlaySpecialAction, TaskWalkToTile } from "../player/taskManager";
 import { TileItemStove } from "../tileItem/items/tileItemStove";
@@ -71,6 +72,16 @@ export class WorldSyncHelper {
 
             let player: Player | undefined;
 
+            if(playerData.type == PlayerType.CHEFF) {
+                if(!world.hasPlayer(playerData.id)) {
+                    player = new Player(world);
+                    player.id = playerData.id;
+                    world.addPlayer(player);
+                    player.setAtTileCoord(playerData.x, playerData.y);
+                    world.setPlayerCheff(player);
+                }
+            }
+
             if(playerData.type == PlayerType.CLIENT) {
                 if(!world.hasPlayer(playerData.id)) {
                     player = new PlayerClient(world);
@@ -105,6 +116,9 @@ export class WorldSyncHelper {
         console.log(`----`);
         */
 
+
+        //------------------------------------
+        /*
         const currentlyDoing = player.taskManager.tasks[0];
         const shouldBeDoing = playerData.tasks[0];
         
@@ -150,6 +164,9 @@ export class WorldSyncHelper {
             }
         }
         
+        */
+       
+        //------------------------------------
 
 
 
