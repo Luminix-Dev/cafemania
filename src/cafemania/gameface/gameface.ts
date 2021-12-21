@@ -6,6 +6,7 @@ import { Input } from "../input/input";
 import { Network } from "../network/network";
 import { GameScene } from "../scenes/gameScene";
 import { MainScene } from "../scenes/mainScene";
+import { MoveTileItem } from "../shop/moveTileItem";
 import { SyncType } from "../world/world";
 import { WorldSyncHelper } from "../world/worldSyncHelper";
 import { config } from "./config";
@@ -54,6 +55,8 @@ export class Gameface extends BaseObject {
 
     private onReady() {
         this.phaser.scene.add('MainScene', MainScene, true);
+
+        MoveTileItem.init();
     }
 
     public toggleFullscreen() {
@@ -134,5 +137,6 @@ export class Gameface extends BaseObject {
 
         GameScene.initScene(world);
         WorldSyncHelper.setWorld(world);
+        MoveTileItem.setWorld(world);
     }
 }

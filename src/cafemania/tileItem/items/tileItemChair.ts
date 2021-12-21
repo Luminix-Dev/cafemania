@@ -3,7 +3,7 @@ import { DishPlate } from "../../dish/dishPlate";
 import { Player } from "../../player/player";
 import { Tile } from "../../tile/tile"
 import { TileItem } from "../tileItem"
-import { TileItemType } from "../tileItemInfo";
+import { TileItemInfo, TileItemType } from "../tileItemInfo";
 import { TileItemTable } from "./tileItemTable";
 
 export class TileItemChair extends TileItem {
@@ -13,9 +13,9 @@ export class TileItemChair extends TileItem {
     private _playerSitting?: Player
     private _isReserved: boolean = false
 
-    public onCreateTileItemRender() {
-        super.onCreateTileItemRender();
-        //this.setCollisionEnabled(true);
+    constructor(tileItemInfo: TileItemInfo) {
+        super(tileItemInfo);
+        this.defaultCollisionValue = true;
     }
 
     public render(dt: number) {

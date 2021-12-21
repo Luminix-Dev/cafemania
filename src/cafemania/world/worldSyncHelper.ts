@@ -3,6 +3,7 @@ import { Dish } from "../dish/dish";
 import { Gameface } from "../gameface/gameface";
 import { IPacketData_StoveBeginCookData, IPacketData_WorldData, PACKET_TYPE } from "../network/packet";
 import { IPlayerSerializedData, Player } from "../player/player";
+import { PlayerCheff } from "../player/playerCheff";
 import { PlayerClient, PlayerClientState } from "../player/playerClient";
 import { PlayerType } from "../player/playerType";
 import { PlayerWaiter } from "../player/playerWaiter";
@@ -74,11 +75,11 @@ export class WorldSyncHelper {
 
             if(playerData.type == PlayerType.CHEFF) {
                 if(!world.hasPlayer(playerData.id)) {
-                    player = new Player(world);
+                    player = new PlayerCheff(world);
                     player.id = playerData.id;
                     world.addPlayer(player);
                     player.setAtTileCoord(playerData.x, playerData.y);
-                    world.setPlayerCheff(player);
+                    world.setPlayerCheff(player as PlayerCheff);
                 }
             }
 

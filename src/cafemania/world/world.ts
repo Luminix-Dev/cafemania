@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { BaseObject } from '../baseObject/baseObject';
 import { Game } from "../game/game";
 import { IPlayerSerializedData, Player } from '../player/player';
+import { PlayerCheff } from '../player/playerCheff';
 import { PlayerClient } from '../player/playerClient';
 import { PlayerType } from '../player/playerType';
 import { PlayerWaiter } from '../player/playerWaiter';
@@ -47,7 +48,7 @@ export class World extends BaseObject {
     private _tileMap: TileMap;
     private _shop: Shop;
     private _players = new Phaser.Structs.Map<string, Player>([]);
-    private _playerCheff: Player;
+    private _playerCheff: PlayerCheff;
     private _sidewalkSize: number = 0;
 
     public canSpawnPlayer: boolean = true;
@@ -73,8 +74,6 @@ export class World extends BaseObject {
         })
 
         //PAREI AQUI?
-
-        MoveTileItem.setWorld(this);
 
         this.events.on(WorldEvent.TILE_ITEM_POINTER_DOWN, (tileItem: TileItem) => {
            
@@ -117,6 +116,11 @@ export class World extends BaseObject {
         const stove1 = this.addTileItemToTile('stove1', 0, 3);
         const stove2 = this.addTileItemToTile('stove1', 0, 4) as TileItemStove;
         stove2.tmpCookDish = "dish2";
+
+        const stove3 = this.addTileItemToTile('stove1', 0, 5);
+        const stove4 = this.addTileItemToTile('stove1', 0, 6) as TileItemStove;
+        stove4.tmpCookDish = "dish2";
+
         //this.addTileItemToTile("stove1", 0, 2)
 
         for (let y = 4; y < 14; y++) {
@@ -143,18 +147,11 @@ export class World extends BaseObject {
 
 
         
-        const player = this.setPlayerCheff(this.spawnPlayer());
+        const cheff = this.setPlayerCheff(this.spawnPlayerCheff());
         
-        player.setAtTileCoord(0, 7);
+        cheff.setAtTileCoord(0, 7);
 
-        console.log(player.test_1)
-        player.taskPlaySpecialAction('test_1', [1]);
-        player.taskPlaySpecialAction('test_1', [2]);
-        console.log(player.test_1)
-        player.taskPlaySpecialAction('test_1', [3]);
-        console.log(player.test_1)
-
-
+    
         /*
         player.taskWalkToTile(this.tileMap.getTile(4, 4));
         player.taskPlayAnimation('Eat', 2000);
@@ -163,7 +160,7 @@ export class World extends BaseObject {
         player.taskWalkToTile(this.tileMap.getTile(12, 4));
         */
 
-        window['player']= player;
+        window['cheff'] = cheff;
         
         /*
         for (const task of player.taskManager.tasks) {
@@ -209,6 +206,22 @@ export class World extends BaseObject {
         tileItems.map(tileItem => {
             tileItem.setCollisionEnabled(enabled);
         })
+    }
+
+    public toggleAllItemsCollision(enabled: boolean) {
+        let tileItems = this.getAllTileItems();
+
+        for (const tileItem of tileItems) {
+            tileItem.setCollisionEnabled(enabled);
+        }
+    }
+
+    public restoreAllItemsCollision() {
+        let tileItems = this.getAllTileItems();
+
+        for (const tileItem of tileItems) {
+            tileItem.setCollisionEnabled(tileItem.defaultCollisionValue);
+        }
     }
 
     public toggleShopTileItemsCollision(enabled: boolean) {
@@ -268,7 +281,12 @@ export class World extends BaseObject {
         return this.addPlayer(player);
     }
 
-    public setPlayerCheff(player: Player) {
+    public spawnPlayerCheff() {
+        const player = new PlayerCheff(this);
+        return this.addPlayer(player) as PlayerCheff;
+    }
+
+    public setPlayerCheff(player: PlayerCheff) {
         this._playerCheff = player
         return player;
     }

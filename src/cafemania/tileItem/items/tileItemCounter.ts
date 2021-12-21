@@ -2,6 +2,7 @@ import { Dish } from "../../dish/dish"
 import { DishPlate } from "../../dish/dishPlate"
 import { Tile } from "../../tile/tile"
 import { TileItem } from "../tileItem"
+import { TileItemInfo } from "../tileItemInfo";
 
 
 export interface CounterData {
@@ -20,9 +21,9 @@ export class TileItemCounter extends TileItem {
 
     public amountWaitersComing: number = 0;
 
-    public onCreateTileItemRender() {
-        super.onCreateTileItemRender();
-        this.setCollisionEnabled(true);
+    constructor(tileItemInfo: TileItemInfo) {
+        super(tileItemInfo);
+        this.defaultCollisionValue = true;
     }
 
     public render(dt: number) {

@@ -43,7 +43,7 @@ export class PlayerWaiter extends Player {
 
             if(this._checkClientsTime >= 1000) {
                 this._checkClientsTime = 0;
-                this.log("looking for clients");
+                //this.log("looking for clients");
                 this.checkClients_Serve();
             }
         }

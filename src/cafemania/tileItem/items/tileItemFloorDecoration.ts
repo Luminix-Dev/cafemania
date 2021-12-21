@@ -1,9 +1,10 @@
 import { Tile } from "../../tile/tile"
 import { TileItem } from "../tileItem"
+import { TileItemInfo } from "../tileItemInfo";
 
 export class tileItemFloorDecoration extends TileItem {
-    public onCreateTileItemRender() {
-        super.onCreateTileItemRender();
-        this.setCollisionEnabled(true);
+    constructor(tileItemInfo: TileItemInfo) {
+        super(tileItemInfo);
+        this.defaultCollisionValue = true;
     }
 }

@@ -4,7 +4,6 @@ import { BaseObject } from "../baseObject/baseObject";
 import { Debug } from "../debug/debug";
 import { Input } from '../input/input';
 import { GameScene } from "../scenes/gameScene";
-import { MoveTileItem } from '../shop/moveTileItem';
 import { Tile } from "../tile/tile";
 import { DebugText } from '../utils/debugText';
 import { Direction } from '../utils/direction';
@@ -34,10 +33,12 @@ export class TileItem extends BaseObject {
     public layerIndex: number = 0;
     public rotateOnLeftClick = false;
     public showDebugText: boolean = false;
+    public defaultCollisionValue: boolean = false;
     
     private _isPointerOver: boolean = false;
 
     private _canStartMove = false;
+
 
     private _isSelected: boolean = false;
     private _isMoving: boolean = false;
@@ -61,13 +62,7 @@ export class TileItem extends BaseObject {
     }
 
     public update(dt: number) {
-        if(Input.isDragging) {
-
-            if(this._isTryingToSelect) {
-                this._isTryingToSelect = false;
-            }
-
-        }
+        
     }
     
     public render(dt: number) {
@@ -77,6 +72,8 @@ export class TileItem extends BaseObject {
 
         if(!this._hasCreatedSprites) {
             this._hasCreatedSprites = true;
+
+            this._collisionEnabled = this.defaultCollisionValue;
 
             this._tileItemRender = new TileItemRender(this.tileItemInfo);
             
@@ -119,7 +116,7 @@ export class TileItem extends BaseObject {
             
             //
             
-            this.onCreateTileItemRender();
+
         }
 
         
@@ -224,7 +221,6 @@ export class TileItem extends BaseObject {
         }
 
         this.setTransparent(this._isMoving);
-        this.world.toggleFloorCollision(this._isMoving);
     }
 
     public setIsSelected(value: boolean) {
@@ -319,53 +315,19 @@ export class TileItem extends BaseObject {
         }, time)
     }
 
-    public onCreateTileItemRender() {}
-
     public onPointerDown() {
         this.log("onPointerDown");
-
-        /*
-        if(!this._isSelected) {
-
-
-            this.log("[select]", `selected`);
-
-        }
-        */
-
-
-        /*
-        if(this._isSelected) {
-            this._isSelected = false;
-
-            this.setTransparent(false);
-
-            MoveTileItem.startMove(this);
-
-        } else {
-
-            if(!MoveTileItem.isMovingAnyTileItem) {
-                this._isTryingToSelect = true;
-            }
-            
-        }
-    */
-        
-        //this._isSelected = false;
+     
     }
 
     public onPointerUp() {
         this.log("onPointerUp");
         if(this.rotateOnLeftClick) this.rotate();
-
-        MoveTileItem.trySelectTileItem(this);
     }
 
     public onPointerOver() {
         this._isPointerOver = true;
         this.showDebugText = true;
-
-        MoveTileItem.setHoveringTileItem(this);
     }
 
     public onPointerOut() {

@@ -164,7 +164,7 @@ export class Grid {
 
         this._items.delete(id);
 
-        console.log(this._items)
+        //console.log(this._items)
 
         this.updateCells()
     }

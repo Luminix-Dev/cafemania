@@ -6,11 +6,13 @@ import { Tile } from "../../tile/tile"
 import { SyncType } from "../../world/world";
 import { WorldEvent } from "../../world/worldEvents";
 import { TileItem } from "../tileItem"
+import { TileItemInfo } from "../tileItemInfo";
 import { TileItemRender } from "../tileItemRender";
 import { TileItemCounter } from "./tileItemCounter";
 
 interface StoveData {
     cookingDish?: string
+    toCookDish?: string
     cookTime: number
 }
 
@@ -20,16 +22,21 @@ export class TileItemStove extends TileItem {
     public get isDishReady() { return this.getCookingProgress() >= 1; }
     public tmpCookDish = "dish1";
 
+    private _isWaitingForCheff: boolean = false;
+
     private _data: StoveData = {
         cookingDish: undefined,
+        toCookDish: undefined,
         cookTime: -1
     }
     private _dishPlate?: DishPlate;
     
-    public onCreateTileItemRender() {
-        super.onCreateTileItemRender();
-        this.setCollisionEnabled(true);
+    
+    constructor(tileItemInfo: TileItemInfo) {
+        super(tileItemInfo);
+        this.defaultCollisionValue = true;
     }
+    
 
     public update(dt: number) {
         super.update(dt);
@@ -47,7 +54,21 @@ export class TileItemStove extends TileItem {
         super.render(dt);
 
         this.debugText.setTextLine('stove_cooking', `${this._data.cookingDish} (${this.getCookingProgress().toFixed(2)})`);
+        this.debugText.setTextLine('stove_to_cook', `${this._data.toCookDish}`);
         this.renderDishPlate();
+
+        if(this._data.toCookDish != undefined) {
+
+            if(!this._isWaitingForCheff) {
+                this.setTransparent(true);
+                this._isWaitingForCheff = true;
+            }
+        } else {
+            if(this._isWaitingForCheff) {
+                this.setTransparent(false);
+                this._isWaitingForCheff = false;
+            }
+        }
     }
 
     public clearDish() {
@@ -91,9 +112,12 @@ export class TileItemStove extends TileItem {
             return;
         }
 
+        /*
 
         if(!this.isCooking) {
             const cheff = this.world.getPlayerCheff();
+
+            cheff.startCookDisih()
 
             this.setTransparent(true);
 
@@ -107,6 +131,7 @@ export class TileItemStove extends TileItem {
             })
         }
 
+        */
         
        
 
@@ -121,6 +146,12 @@ export class TileItemStove extends TileItem {
         
     }
 
+    public addDishToCook(dish: Dish) {
+        this._data.toCookDish = dish.id;
+
+        this.setAsChangedState();
+    }
+
     public startCook(dish: Dish) {
         this._data.cookingDish = dish.id;
         this._data.cookTime = 0;
@@ -128,9 +159,15 @@ export class TileItemStove extends TileItem {
         this.setAsChangedState();
     }
 
+    public clearToCookDish() {
+        this._data.toCookDish = undefined;
+    }
+
     public startCookingSomething() {
         Debug.log("stove startCookingSomething");
         this.log("stove startCookingSomething");
+
+        if(this.isCooking || this._data.toCookDish) return;
 
         const dishFactory = this.world.game.dishFactory;
 
@@ -143,7 +180,9 @@ export class TileItemStove extends TileItem {
             return;
         }
 
-        this.startCook(food);
+        this.addDishToCook(food);
+
+        //this.startCook(food);
 
     }
 
@@ -155,6 +194,11 @@ export class TileItemStove extends TileItem {
 
     public getCookingDish() {
         return this.world.game.dishFactory.getDish(this._data.cookingDish!);
+    }
+
+    public getToCookDish() {
+        if(!this._data.toCookDish) return;
+        return this.world.game.dishFactory.getDish(this._data.toCookDish);
     }
 
     private sendDishToCounter() {

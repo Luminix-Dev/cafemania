@@ -37,7 +37,7 @@ export class DebugScene extends Phaser.Scene {
 
     public update(time: number, delta: number) {
         this._updateTextTime += delta;
-        if(this._updateTextTime < 300 && this._updateTextTime != -1) return;
+        if(this._updateTextTime < 10 && this._updateTextTime != -1) return;
         this.updateText();
     }
 }
