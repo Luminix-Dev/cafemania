@@ -89,7 +89,7 @@ export class TaskWalkToTile extends Task {
         
 
 
-        console.log("START", this.player.pathFindMovement.getTotalDistance())
+        //console.log("START", this.player.pathFindMovement.getTotalDistance())
     }
 
     private updateTimeToComplete() {
@@ -226,7 +226,7 @@ export class TaskManager extends BaseObject {
 
             this.checkTasks();
 
-            console.log(this.tasks.length + " left")
+            //console.log(this.tasks.length + " left")
         }
     }
 

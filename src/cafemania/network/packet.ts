@@ -4,7 +4,8 @@ export enum PACKET_TYPE {
     WORLD_DATA,
     STOVE_BEGIN_COOK,
     CLIENT_REACH_DOOR,
-    CLIENT_REACH_CHAIR
+    CLIENT_REACH_CHAIR,
+    ENTER_WORLD
 }
 
 export interface IPacket {

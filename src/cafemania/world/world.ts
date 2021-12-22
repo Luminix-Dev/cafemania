@@ -95,9 +95,11 @@ export class World extends BaseObject {
         window['world'] = this;
     }
 
-    public initBaseWorld() {
+    public generateBaseWorld() {
         const size = new Phaser.Math.Vector2(14, 14);
         const tileMap = this.tileMap;
+
+        console.error("q")
 
         this.generateFloors('floor1', 0, 0, size.x, size.y);
         this.generateFloors('test_floor1', 0, size.x, 6, 6);
@@ -123,8 +125,8 @@ export class World extends BaseObject {
 
         //this.addTileItemToTile("stove1", 0, 2)
 
-        for (let y = 4; y < 14; y++) {
-            for (let x = 4; x < 14; x++)  {
+        for (let y = 4; y < 7; y++) {
+            for (let x = 4; x < 7; x++)  {
                 
                 if(y % 3 == 1) {
                     const chair = this.addTileItemToTile('chair1', x, y);
@@ -294,6 +296,15 @@ export class World extends BaseObject {
     public removePlayer(player: Player) {
         this._players.delete(player.id);
         player.destroy();
+    }
+
+    public destroy() {
+        this.destroyRender();
+    }
+
+    public destroyRender() {
+        this.tileMap.tiles.map(tile => tile.destroy());
+        this.players.map(player => player.destroy());
     }
 
     public spawnPlayerClient() {

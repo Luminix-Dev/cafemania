@@ -7,9 +7,14 @@ import { Network } from "../network/network";
 import { GameScene } from "../scenes/gameScene";
 import { MainScene } from "../scenes/mainScene";
 import { MoveTileItem } from "../shop/moveTileItem";
-import { SyncType } from "../world/world";
+import { SyncType, World } from "../world/world";
 import { WorldSyncHelper } from "../world/worldSyncHelper";
 import { config } from "./config";
+
+import * as NineSlicePlugin from 'phaser3-nineslice'
+import { DebugScene } from "../scenes/debugScene";
+import { MapGridScene } from "../scenes/mapGridScene";
+import { HudScene } from "../scenes/hudScene";
 
 enum PreloadState {
     NOT_LOADED,
@@ -43,20 +48,28 @@ export class Gameface extends BaseObject {
 
         this.events.on("preload_finish", () => {
             this.log('preload_finish');
-            this.onReady();
+            this.onFinishPreload();
         })
         
         this.preload();
     }
 
-    public update(dt: number) {
-        Camera.update(dt);
-    }
-
-    private onReady() {
-        this.phaser.scene.add('MainScene', MainScene, true);
+    private onFinishPreload() {
+        this.startMainScene();
 
         MoveTileItem.init();
+    }
+
+    public startMainScene() {
+        if(MainScene.Instance) {
+            MainScene.Instance.scene.remove();
+        }
+
+        this.phaser.scene.add('MainScene', MainScene, true);
+    }
+
+    public render(dt: number) {
+        Camera.update(dt);
     }
 
     public toggleFullscreen() {
@@ -72,7 +85,15 @@ export class Gameface extends BaseObject {
 
         if(this._preloadState == PreloadState.NOT_LOADED) {
             this._preloadState = PreloadState.LOADING_PHASER;
-            this._phaser = new Phaser.Game(config);
+
+            const cfg = config;
+            cfg.plugins = {
+                global: [
+                    NineSlicePlugin.Plugin.DefaultCfg
+                ]
+            }
+
+            this._phaser = new Phaser.Game(cfg);
             this._phaser.events.once('ready', () => {
                 this.setupResize();
                 this.preload();
@@ -120,23 +141,44 @@ export class Gameface extends BaseObject {
 
         setInterval(() => this.events.emit('resize'), 1000)
     }
-
-    public startSinglePlayer() {
+    
+    public createBaseWorld(isMultiplayer: boolean) {
         const world = this.game.createWorld();
-        world.initBaseWorld();
 
+        if(isMultiplayer) {
+            world.canSpawnPlayer = false;
+            world.sync = SyncType.SYNC;
+        } else {
+            world.generateBaseWorld();
+        }
+
+        this.createGameScene(world);
+
+        return world;
+    }
+
+    public createGameScene(world: World) {
         GameScene.initScene(world);
+        WorldSyncHelper.setWorld(world);
+        MoveTileItem.setWorld(world);
+
+        this.updateScenesOrder();
 
         Camera.setZoom(1)
     }
 
-    public startMultiplayer() {
-        const world = this.game.createWorld();
-        world.canSpawnPlayer = false;
-        world.sync = SyncType.SYNC;
+    public destroyGameScene() {
+        const world = GameScene.Instance.world;
+        world.destroyRender();
 
-        GameScene.initScene(world);
-        WorldSyncHelper.setWorld(world);
-        MoveTileItem.setWorld(world);
+        GameScene.Instance.scene.remove();
+    }
+
+  
+
+    public updateScenesOrder() {
+        DebugScene.Instance?.scene.bringToTop();
+        MapGridScene.Instance?.scene.bringToTop();
+        HudScene.Instance?.scene.bringToTop();
     }
 }

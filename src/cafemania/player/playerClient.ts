@@ -152,7 +152,7 @@ export class PlayerClient extends Player {
 
                 //this.walkToChairId(chair.id);
             } else {
-                this.log('no chairs')
+                //this.log('no chairs')
 
                 /*
                 if(this._findChairAttempts >= PlayerClient.MAX_FIND_CHAIR_ATTEMPS) {

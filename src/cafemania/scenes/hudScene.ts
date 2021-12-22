@@ -1,6 +1,7 @@
 import { Camera } from "../camera/camera";
 import { Gameface } from "../gameface/gameface";
 import { Grid } from "../grid/grid"
+import { Button } from "../ui/button";
 import { GameScene } from "./gameScene";
 
 export class HudScene extends Phaser.Scene {
@@ -14,14 +15,20 @@ export class HudScene extends Phaser.Scene {
     }
 
     public preload() {
-        this.load.setPath('/static/cafemania/assets');
-        this.load.image('button/zoom_in', 'button/zoom_in.png');
-        this.load.image('button/zoom_out', 'button/zoom_out.png');
-        this.load.image('button/fullscreen', 'button/fullscreen.png');
+        this.load.setPath('cafemania/assets');
     }
 
     public create() {
         this.createZoomButtons();
+
+        
+
+        const backBtn = new Button(this, 70, this.scale.height - 40, 100, 35, "button/button1", "Back");
+        backBtn.onClick = () => {
+            Gameface.Instance.game.removeWorlds();
+            Gameface.Instance.destroyGameScene();
+            Gameface.Instance.startMainScene();
+        }
     }
 
     private createZoomButtons() {

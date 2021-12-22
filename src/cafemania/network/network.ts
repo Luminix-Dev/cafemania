@@ -37,6 +37,11 @@ export class Network extends BaseObject {
     }
 
     public connect(callback: () => void) {
+        if(this.socket.connected) {
+            callback();
+            return; 
+        }
+
         this._onConnectCallback = callback;
         this._socket.connect();
     }

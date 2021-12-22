@@ -55,6 +55,12 @@ export class Game extends BaseObject {
         this.worlds.map(world => world.update(dt))
     }
 
+    public removeWorlds() {
+
+        this.worlds.map(world => world.destroy());
+        this._worlds.clear();
+    }
+
     public createWorld() {
         this.log('create world');
 

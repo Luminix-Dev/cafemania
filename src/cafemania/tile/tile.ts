@@ -59,6 +59,10 @@ export class Tile extends BaseObject {
         })
     }
 
+    public destroy() {
+        this._tileItems.map(tileItem => tileItem.destroy());
+    }
+
     public render(dt: number) {
         this.renderSprite();
 
