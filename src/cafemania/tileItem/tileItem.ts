@@ -255,6 +255,8 @@ export class TileItem extends BaseObject {
     public destroy() {
         Debug.log("destroy tileItem");
 
+        this.world.removeTileItem(this);
+
         this._hasCreatedSprites = false;
         this._tileItemRender?.destroy();
         this._tileItemRender = undefined;

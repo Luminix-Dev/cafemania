@@ -270,6 +270,11 @@ export class TileItemFactory extends BaseObject {
         return this._createdTileItems.has(id);
     }
 
+    public removeTileItem(id: string) {
+        return this._createdTileItems.delete(id);
+    }
+
+
     public createTileItem<T extends TileItem>(id: string, customTileItemId?: string) {
         if(!this.hasTileItemInfo(id)) throw `Invalid TileItemInfo '${id}'`
 

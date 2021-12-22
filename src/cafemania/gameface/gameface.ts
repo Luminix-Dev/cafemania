@@ -172,6 +172,7 @@ export class Gameface extends BaseObject {
         world.destroyRender();
 
         GameScene.Instance.scene.remove();
+        WorldSyncHelper.setWorld(undefined);
     }
 
   

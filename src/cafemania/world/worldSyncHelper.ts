@@ -15,25 +15,33 @@ import { WorldEvent } from "./worldEvents";
 export class WorldSyncHelper {
     public static get world() { return this._world; }
 
-    private static _world: World;
+    private static _world?: World;
 
-    public static setWorld(world: World) {
+    public static setWorld(world?: World) {
+
+
         this._world = world;
 
-        world.events.on(WorldEvent.TILE_ITEM_STOVE_START_COOK, (stove: TileItemStove, dish: Dish) => {
-            console.log("ev", stove, dish)
+        if(world) {
 
-            const packetData: IPacketData_StoveBeginCookData = {
-                stoveId: stove.id,
-                dish: dish.id
-            }
-
-            Gameface.Instance.network.send(PACKET_TYPE.STOVE_BEGIN_COOK, packetData);
-        })
+            world.events.on(WorldEvent.TILE_ITEM_STOVE_START_COOK, (stove: TileItemStove, dish: Dish) => {
+                console.log("ev", stove, dish)
+                
+                const packetData: IPacketData_StoveBeginCookData = {
+                    stoveId: stove.id,
+                    dish: dish.id
+                }
+                
+                Gameface.Instance.network.send(PACKET_TYPE.STOVE_BEGIN_COOK, packetData);
+            })
+        }
     }
 
     public static processWorldData(worldData: IWorldSerializedData) {
         const world = this.world;
+
+        if(!world) return;
+
         const tileItemFactory = world.game.tileItemFactory;
 
         if(worldData.sidewalkSize)
@@ -73,12 +81,17 @@ export class WorldSyncHelper {
 
             let player: Player | undefined;
 
+            const setupPlayer = (player: Player, playerData: IPlayerSerializedData) => {
+                player.id = playerData.id;
+                world.addPlayer(player);
+                player.setAtTileCoord(playerData.x, playerData.y);
+                player.setDirection(playerData.direction)
+            }
+
             if(playerData.type == PlayerType.CHEFF) {
                 if(!world.hasPlayer(playerData.id)) {
                     player = new PlayerCheff(world);
-                    player.id = playerData.id;
-                    world.addPlayer(player);
-                    player.setAtTileCoord(playerData.x, playerData.y);
+                    setupPlayer(player, playerData);
                     world.setPlayerCheff(player as PlayerCheff);
                 }
             }
@@ -86,18 +99,14 @@ export class WorldSyncHelper {
             if(playerData.type == PlayerType.CLIENT) {
                 if(!world.hasPlayer(playerData.id)) {
                     player = new PlayerClient(world);
-                    player.id = playerData.id;
-                    world.addPlayer(player);
-                    player.setAtTileCoord(playerData.x, playerData.y);
+                    setupPlayer(player, playerData);
                 }
             }
 
             if(playerData.type == PlayerType.WAITER) {
                 if(!world.hasPlayer(playerData.id)) {
                     player = new PlayerWaiter(world);
-                    player.id = playerData.id;
-                    world.addPlayer(player);
-                    player.setAtTileCoord(playerData.x, playerData.y);
+                    setupPlayer(player, playerData);
                 }
             }
 

@@ -31,6 +31,7 @@ export interface IPlayerSerializedData {
     type: PlayerType
     x: number
     y: number
+    direction: number
     tasks: IPlayerTaskSerializedData[]
 }
 
@@ -707,6 +708,7 @@ export class Player extends BaseObject {
             type: this.type,
             x: this.atTile.x,
             y: this.atTile.y,
+            direction: this.direction,
             tasks: tasks
             //data: this.data
         }

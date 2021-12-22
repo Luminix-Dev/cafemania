@@ -106,7 +106,7 @@ export class PlayerWaiter extends Player {
         this.taskExecuteAction(async() => {
             counter.amountWaitersComing--;
         })
-        this.taskWalkNearToTile(table.tile);
+        this.taskWalkNearToTile(client.atTile);
         this.taskPlaySpecialAction('waiter_serve_dish', []);
     }
 

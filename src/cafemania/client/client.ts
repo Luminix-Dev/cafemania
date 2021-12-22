@@ -1,3 +1,4 @@
+
 import socketio, { Socket } from 'socket.io';
 import { BaseObject } from '../baseObject/baseObject';
 import { Game } from "../game/game";
@@ -37,50 +38,14 @@ export class Client extends BaseObject {
     }
 
     public joinWorld(world: World) {
-        console.log("setup events on worlds")
-
-        const onPlayerStateChangedEvent = (player: Player) => {
-            console.log("\n\n\n\nCHANGED\n\n\n\n")
-
-            //console.log("changed");
-
-            const playerData = player.serialize();
-
-            const packetData: IPacketData_WorldData = {
-                worldData: {
-                    tiles: [],
-                    players: [playerData]
-                }
-            }
-            this.send(PACKET_TYPE.WORLD_DATA, packetData);
-
-            //console.log(playerData.tasks)
-        }
-
-        const onTileItemChangedEvent = (tileItem: TileItem) => {
-            //console.log("changed");
-
-            console.log("\n\n\n\nCHANGED\n\n\n\n")
-
-
-            const packetData: IPacketData_WorldData = {
-                worldData: {
-                    tiles: [tileItem.tile.serialize()],
-                    players: []
-                }
-            }
-            this.send(PACKET_TYPE.WORLD_DATA, packetData);
-        }
-
         if(this._world) {
-            this._world.events.removeListener(WorldEvent.PLAYER_STATE_CHANGED, onPlayerStateChangedEvent)
-            this._world.events.removeListener(WorldEvent.TILE_ITEM_CHANGED, onTileItemChangedEvent)
+            this.removeListeners();
         }
 
         this._world = world;
 
-        world.events.addListener(WorldEvent.PLAYER_STATE_CHANGED, onPlayerStateChangedEvent);
-        world.events.addListener(WorldEvent.TILE_ITEM_CHANGED, onTileItemChangedEvent);
+        this.bindWorldEvent(WorldEvent.PLAYER_STATE_CHANGED, this.onPlayerStateChangedEvent.bind(this));
+        this.bindWorldEvent(WorldEvent.TILE_ITEM_CHANGED, this.onTileItemChangedEvent.bind(this));
         
         
         //
@@ -89,6 +54,50 @@ export class Client extends BaseObject {
         }
         this.send(PACKET_TYPE.WORLD_DATA, packetData);
         //
+    }
+
+    public onPlayerStateChangedEvent(player: Player) {
+        const playerData = player.serialize();
+
+        const packetData: IPacketData_WorldData = {
+            worldData: {
+                tiles: [],
+                players: [playerData]
+            }
+        }
+        this.send(PACKET_TYPE.WORLD_DATA, packetData);
+    }
+
+    public onTileItemChangedEvent(tileItem: TileItem) {
+        const packetData: IPacketData_WorldData = {
+            worldData: {
+                tiles: [tileItem.tile.serialize()],
+                players: []
+            }
+        }
+        this.send(PACKET_TYPE.WORLD_DATA, packetData);
+    }
+
+    private _bindedEvents = new Map<WorldEvent, (...args) => void>();
+
+    public bindWorldEvent(ev: WorldEvent, fn: (...args) => void) {
+        this.log("bind world event " + ev);
+
+        this._bindedEvents.set(ev, fn);
+        world.events.addListener(ev, fn);
+    }
+
+    public unbindWorldEvent(ev: WorldEvent) {
+        this.log("unbind world event " + ev);
+
+        const fn = this._bindedEvents.get(ev);
+        this._world?.events.removeListener(ev, fn)
+        this._bindedEvents.delete(ev);
+    }
+
+    public removeListeners() {
+        this.unbindWorldEvent(WorldEvent.PLAYER_STATE_CHANGED)
+        this.unbindWorldEvent(WorldEvent.TILE_ITEM_CHANGED)
     }
 
     public send(packetId: number, data: any) {

@@ -99,7 +99,6 @@ export class World extends BaseObject {
         const size = new Phaser.Math.Vector2(14, 14);
         const tileMap = this.tileMap;
 
-        console.error("q")
 
         this.generateFloors('floor1', 0, 0, size.x, size.y);
         this.generateFloors('test_floor1', 0, size.x, 6, 6);
@@ -296,6 +295,14 @@ export class World extends BaseObject {
     public removePlayer(player: Player) {
         this._players.delete(player.id);
         player.destroy();
+    }
+
+    public removeTileItem(tileItem: TileItem) {
+        if(this.game.tileItemFactory.hasTileItemCreated(tileItem.id)) {
+            this.game.tileItemFactory.removeTileItem(tileItem.id);
+            tileItem.destroy();
+        }
+
     }
 
     public destroy() {
