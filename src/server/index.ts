@@ -7,7 +7,7 @@ const app: express.Application = express();
 const server: http.Server = http.createServer(app);
 const io: socketio.Server = new socketio.Server();
 
-const port = 3000;
+const port = 3001;
 
 app.use(express.static(path.join(__dirname, "..", "..", "public")));
 
@@ -16,7 +16,7 @@ io.attach(server, {
     cors: { origin: '*' }
 });
 
-server.listen(port, () => {
+server.listen(port, "127.0.0.1", () => {
     console.log(`Express web server started: http://localhost:${port}`)
 });
 

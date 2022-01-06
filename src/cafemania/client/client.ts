@@ -5,6 +5,7 @@ import { Game } from "../game/game";
 import { IPacket, IPacketData_StoveBeginCookData, IPacketData_WorldData, PACKET_TYPE } from '../network/packet';
 import { Player } from '../player/player';
 import { PlayerClient } from '../player/playerClient';
+import { ServerHost } from '../serverHost/serverHost';
 import { TileItemStove } from '../tileItem/items/tileItemStove';
 import { TileItem } from '../tileItem/tileItem';
 import { SyncType, World } from '../world/world';
@@ -35,7 +36,24 @@ export class Client extends BaseObject {
         socket.on('p', (packet: IPacket) => {
             this.onReceivePacket(packet);
         })
+        socket.on('disconnect', () => {
+            this.onDisconnect()
+        })
+        this.onConnect();
     }
+
+    public getCurrentAddress() {
+        return this._socket!.handshake.address
+    }
+
+    private onConnect() {
+        ServerHost.postGameLog(this.getCurrentAddress(), "connected")
+    }
+
+    private onDisconnect() {
+        ServerHost.postGameLog(this.getCurrentAddress(), "disconnected")
+    }
+    
 
     public joinWorld(world: World) {
         if(this._world) {
