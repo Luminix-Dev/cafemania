@@ -21,7 +21,7 @@ export class MainScene extends Phaser.Scene {
     public preload() {
         Debug.startedAt = Date.now();
 
-        this.load.setPath('cafemania/assets');
+        this.load.setPath(Gameface.ASSETS_URL);
 
         this.load.image('wallMask', 'wallMask.png');
         this.load.image('tile', 'tile.png');

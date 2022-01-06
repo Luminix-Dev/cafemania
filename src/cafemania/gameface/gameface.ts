@@ -25,6 +25,7 @@ enum PreloadState {
 
 export class Gameface extends BaseObject {
     public static Instance: Gameface;
+    public static ASSETS_URL: string = ""
 
     public events = new Phaser.Events.EventEmitter();
     public get game() { return this._game; }
@@ -45,6 +46,13 @@ export class Gameface extends BaseObject {
 
     public start() {
         this.log("start");
+
+        if(location.host.includes('localhost') || location.host.includes(':')) {
+            Gameface.ASSETS_URL = `${location.protocol}//${location.host}/assets/`;
+        } else {
+            Gameface.ASSETS_URL = `${Network.SERVER_ADDRESS}/assets/`;
+        }
+        console.log(Gameface.ASSETS_URL)
 
         this.events.on("preload_finish", () => {
             this.log('preload_finish');

@@ -15,7 +15,7 @@ export class HudScene extends Phaser.Scene {
     }
 
     public preload() {
-        this.load.setPath('cafemania/assets');
+        this.load.setPath(Gameface.ASSETS_URL);
     }
 
     public create() {

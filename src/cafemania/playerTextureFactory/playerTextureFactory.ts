@@ -32,7 +32,7 @@ export class PlayerTextureFactory {
         
         await Three.init();
     
-        const playerModel = await Three.loadGLTFModel('/cafemania/assets/models/player.glb', true)
+        const playerModel = await Three.loadGLTFModel('assets/models/player.glb', true)
         playerModel.object.position.set(0, 0.7, 0);
         this._playerModel = playerModel;
         //Three.setAnimationFrame(playerModel, 0, 3);
