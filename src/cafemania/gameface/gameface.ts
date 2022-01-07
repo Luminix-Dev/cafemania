@@ -46,28 +46,33 @@ export class Gameface extends BaseObject {
 
     public start() {
         this.log("start");
+        this.updateAssetsUrl()
+        this.events.on("preload_finish", () => {
+            this.onFinishPreload();
+        })
+        this.preload();
+    }
 
+    private updateAssetsUrl() {
         if(location.host.includes('localhost') || location.host.includes(':')) {
             Gameface.ASSETS_URL = `${location.protocol}//${location.host}/assets/`;
         } else {
             Gameface.ASSETS_URL = `${Network.SERVER_ADDRESS}/assets/`;
         }
         console.log(Gameface.ASSETS_URL)
-
-        this.events.on("preload_finish", () => {
-            this.log('preload_finish');
-            this.onFinishPreload();
-        })
-        
-        this.preload();
     }
 
     private onFinishPreload() {
+        this.log('preload_finish');
+        this.init();
+        
         this.startMainScene();
-
-        MoveTileItem.init();
     }
 
+    private init() {
+        MoveTileItem.init();
+    }
+    
     public startMainScene() {
         if(MainScene.Instance) {
             MainScene.Instance.scene.remove();
@@ -156,6 +161,8 @@ export class Gameface extends BaseObject {
         if(isMultiplayer) {
             world.canSpawnPlayer = false;
             world.sync = SyncType.SYNC;
+
+            WorldSyncHelper.setWorld(world);
         } else {
             world.generateBaseWorld();
         }
@@ -167,7 +174,6 @@ export class Gameface extends BaseObject {
 
     public createGameScene(world: World) {
         GameScene.initScene(world);
-        WorldSyncHelper.setWorld(world);
         MoveTileItem.setWorld(world);
 
         this.updateScenesOrder();
@@ -183,7 +189,16 @@ export class Gameface extends BaseObject {
         WorldSyncHelper.setWorld(undefined);
     }
 
-  
+    public setHudVisible(visible: boolean) {
+        if(visible) {
+
+            const phaser = this.phaser;
+
+            if(!DebugScene.Instance) phaser.scene.add('DebugScene', DebugScene, true);
+            if(!HudScene.Instance) phaser.scene.add('HudScene', HudScene, true);
+            if(!MapGridScene.Instance) phaser.scene.add('MapGridScene', MapGridScene, true);
+        }
+    }
 
     public updateScenesOrder() {
         DebugScene.Instance?.scene.bringToTop();

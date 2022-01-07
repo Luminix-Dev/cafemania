@@ -354,7 +354,7 @@ export class TileItem extends BaseObject {
     public unserializeData(data: any) {};
 
     public setAsChangedState() {
-        this.log("state changed");
+        //this.log("state changed");
 
         this.world.events.emit(WorldEvent.TILE_ITEM_CHANGED, this);
     }

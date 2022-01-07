@@ -1,6 +1,7 @@
 import { Camera } from "../camera/camera";
 import { Gameface } from "../gameface/gameface";
 import { Grid } from "../grid/grid"
+import { PACKET_TYPE } from "../network/packet";
 import { Button } from "../ui/button";
 import { GameScene } from "./gameScene";
 
@@ -25,9 +26,14 @@ export class HudScene extends Phaser.Scene {
 
         const backBtn = new Button(this, 70, this.scale.height - 40, 100, 35, "button/button1", "Back");
         backBtn.onClick = () => {
+
+            return;
+
             Gameface.Instance.game.removeWorlds();
             Gameface.Instance.destroyGameScene();
             Gameface.Instance.startMainScene();
+
+            Gameface.Instance.network.send(PACKET_TYPE.LEAVE_WORLD, null);
         }
     }
 

@@ -2,68 +2,91 @@
 import socketio, { Socket } from 'socket.io';
 import { BaseObject } from '../baseObject/baseObject';
 import { Game } from "../game/game";
-import { IPacket, IPacketData_StoveBeginCookData, IPacketData_WorldData, PACKET_TYPE } from '../network/packet';
+import { IPacket, IPacketData_JoinServer, IPacketData_ServerList, IPacketData_StoveBeginCookData, IPacketData_WorldData, PACKET_TYPE } from '../network/packet';
 import { Player } from '../player/player';
 import { PlayerClient } from '../player/playerClient';
+import { Server } from '../server/server';
 import { ServerHost } from '../serverHost/serverHost';
 import { TileItemStove } from '../tileItem/items/tileItemStove';
 import { TileItem } from '../tileItem/tileItem';
 import { SyncType, World } from '../world/world';
 import { WorldEvent } from '../world/worldEvents';
 
+/*
 const game = new Game();
 const world = game.createWorld();
 world.sync = SyncType.HOST;
 world.generateBaseWorld();
 
 game.start();
+*/
 
 export class Client extends BaseObject {
-    public get game() { return this._game; }
     public get socket() { return this._socket; }
+    public get username() { return this._username; }
+    public get mainServer() { return this._mainServer; }
 
-    private _game: Game;
     private _socket: socketio.Socket;
 
-    private _world?: World;
+    private _mainServer: Server;
+
+    private _atServer?: Server;
+    private _atWorld?: World;
+
+    private _username: string = "Guest " + Math.ceil(Math.random()*10000);
 
     constructor(socket: socketio.Socket) {
         super();
 
         this._socket = socket;
-        this._game = game;
+    }
 
-        socket.on('p', (packet: IPacket) => {
-            this.onReceivePacket(packet);
-        })
-        socket.on('disconnect', () => {
-            this.onDisconnect()
-        })
-        this.onConnect();
+    public setMainServer(server: Server) {
+        this._mainServer = server;
     }
 
     public getCurrentAddress() {
         return this._socket!.handshake.address
     }
 
-    private onConnect() {
-        ServerHost.postGameLog(this.getCurrentAddress(), "connected")
+    public onConnect() {
+        ServerHost.postGameLog(this.getCurrentAddress(), "connected");
+
+        this.sendServersList();
     }
 
-    private onDisconnect() {
+    public onDisconnect() {
         ServerHost.postGameLog(this.getCurrentAddress(), "disconnected")
     }
     
+    public sendServersList() {
+        const packetData: IPacketData_ServerList = {
+            servers: ServerHost.Instance.servers.map(server => server.getServerListInfo())
+        }
+        this.send(PACKET_TYPE.SERVER_LIST, packetData);
+    }
+
+    public leaveWorld() {
+        this.removeListeners();
+        this._atWorld = undefined;
+    }
+
+    public joinServer(server: Server) {
+        this._atServer = server;
+
+        server.onClientJoin(this);
+
+        const world = server.game.worlds[0];
+        this.joinWorld(world);
+    }
 
     public joinWorld(world: World) {
-        if(this._world) {
-            this.removeListeners();
-        }
-
-        this._world = world;
+        if(this._atWorld) this.leaveWorld()
+        this._atWorld = world;
 
         this.bindWorldEvent(WorldEvent.PLAYER_STATE_CHANGED, this.onPlayerStateChangedEvent.bind(this));
         this.bindWorldEvent(WorldEvent.TILE_ITEM_CHANGED, this.onTileItemChangedEvent.bind(this));
+        
         
         
         //
@@ -72,6 +95,7 @@ export class Client extends BaseObject {
         }
         this.send(PACKET_TYPE.WORLD_DATA, packetData);
         //
+
     }
 
     public onPlayerStateChangedEvent(player: Player) {
@@ -102,14 +126,14 @@ export class Client extends BaseObject {
         this.log("bind world event " + ev);
 
         this._bindedEvents.set(ev, fn);
-        world.events.addListener(ev, fn);
+        this._atWorld!.events.addListener(ev, fn);
     }
 
     public unbindWorldEvent(ev: WorldEvent) {
         this.log("unbind world event " + ev);
 
         const fn = this._bindedEvents.get(ev);
-        this._world?.events.removeListener(ev, fn)
+        this._atWorld!.events.removeListener(ev, fn)
         this._bindedEvents.delete(ev);
     }
 
@@ -131,7 +155,7 @@ export class Client extends BaseObject {
     public onReceivePacket(packet: IPacket) {
         //this.log(`reiceved packet '${packet.type}'`);
 
-        const world = this._world;
+        const world = this._atWorld;
 
         if(world) {
             if(packet.type == PACKET_TYPE.STOVE_BEGIN_COOK) {
@@ -142,8 +166,24 @@ export class Client extends BaseObject {
             }
         }
 
+        if(packet.type == PACKET_TYPE.JOIN_SERVER) {
+            const packetData: IPacketData_JoinServer = packet.data;
+
+            const server = ServerHost.Instance.getServerById(packetData.id);
+
+            console.log(packetData);
+
+            if(server) {
+                this.joinServer(server)
+            }
+        }
+
         if(packet.type == PACKET_TYPE.ENTER_WORLD) {
-            this.joinWorld(this.game.worlds[0]);
+            //this.joinWorld(this.game.worlds[0]);
+        }
+
+        if(packet.type == PACKET_TYPE.LEAVE_WORLD) {
+            //this.joinWorld(this.game.worlds[0]);
         }
     }
 }

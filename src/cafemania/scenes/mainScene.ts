@@ -8,6 +8,7 @@ import { GameScene } from "./gameScene";
 import { HudScene } from "./hudScene";
 import { LoadScene } from "./loadScene";
 import { MapGridScene } from "./mapGridScene";
+import { ServerListScene } from "./serverListScene";
 
 export class MainScene extends Phaser.Scene {
     public static Instance: MainScene;
@@ -126,9 +127,7 @@ export class MainScene extends Phaser.Scene {
             
             await this.processLoadScene();
 
-            phaser.scene.add('DebugScene', DebugScene, true);
-            phaser.scene.add('HudScene', HudScene, true);
-            phaser.scene.add('MapGridScene', MapGridScene, true);
+            
 
             Debug.log("connecting to " + network.getAddress())
         }
@@ -136,7 +135,7 @@ export class MainScene extends Phaser.Scene {
         network.connect(() => {
             Debug.log("connected");
 
-            this.testButtons();
+            ServerListScene.show();
         });
     }
     

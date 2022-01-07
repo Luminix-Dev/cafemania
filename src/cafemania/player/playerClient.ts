@@ -116,7 +116,7 @@ export class PlayerClient extends Player {
                 if(!this._isGoingToChair) {
                     this._isGoingToChair = true;
 
-                    this.log("going to chair");
+                    //this.log("going to chair");
 
                     this.taskWalkToTile(this._goingToChair.tile);
                     this.taskExecuteAction(async() => {
@@ -189,19 +189,19 @@ export class PlayerClient extends Player {
         const tiles = doors.map(door => door.tile);
         const door = Tile.getClosestTile(this.position, tiles).getDoor()!;
 
-        this.log("walkInFrontAnyDoor " + door.id)
+        //this.log("walkInFrontAnyDoor " + door.id)
 
         const tile = door.getTileBehind(2)!;
 
         this.taskWalkToTile(tile);
         this.taskExecuteAction(async () => {
-            this.log("behind door");
+            //this.log("behind door");
 
             this._canFindChair = true;
         });
         this.taskWalkToTile(door.tile);
         this.taskExecuteAction(async () => {
-            this.log("at door");
+            //this.log("at door");
 
             this._hasReachedDoor = true;
             this._isGoingToDoor = false;

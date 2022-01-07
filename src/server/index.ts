@@ -25,10 +25,11 @@ server.listen(port, () => {
     console.log(`Express web server started: http://localhost:${port}`)
 });
 
+
 console.log("Starting geckos...")
 
 import '@geckos.io/phaser-on-nodejs'
-global['phaserOnNodeFPS'] = 30
+global['phaserOnNodeFPS'] = 5
 
 
 import { ServerHost } from '../cafemania/serverHost/serverHost';

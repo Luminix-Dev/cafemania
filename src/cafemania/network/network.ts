@@ -1,8 +1,9 @@
 import { io, Socket } from "socket.io-client";
 import { BaseObject } from "../baseObject/baseObject";
 import { Debug } from "../debug/debug";
+import { ServerListScene } from "../scenes/serverListScene";
 import { WorldSyncHelper } from "../world/worldSyncHelper";
-import { IPacket, IPacketData_WorldData, PACKET_TYPE } from "./packet";
+import { IPacket, IPacketData_JoinServer, IPacketData_ServerList, IPacketData_WorldData, PACKET_TYPE } from "./packet";
 
 export class Network extends BaseObject {
     public static SERVER_ADDRESS: string = "https://cafemania.danilomaioli.repl.co";
@@ -68,14 +69,31 @@ export class Network extends BaseObject {
         this.log(`sent packet '${packet.type}'`);
     }
 
+    public sendJoinServer(id: string) {
+        const packetData: IPacketData_JoinServer = {
+            id: id
+        };
+        this.send(PACKET_TYPE.JOIN_SERVER, packetData);
+    }
+
     public onReceivePacket(packet: IPacket) {
         //this.log(`reiceved packet '${packet.type}'`);
 
         if(packet.type == PACKET_TYPE.WORLD_DATA) {
             const packetData: IPacketData_WorldData = packet.data;
-
-            if(!WorldSyncHelper.world) return;
             WorldSyncHelper.processWorldData(packetData.worldData);
         }
+
+        if(packet.type == PACKET_TYPE.SERVER_LIST) {
+            const packetData: IPacketData_ServerList = packet.data;
+            ServerListScene.Instance.updateServerList(packetData.servers);
+        }
+
+        /*
+        if(packet.type == PACKET_TYPE.JOINED_SERVER) {
+            const packetData: IPacketData_ServerList = packet.data;
+            ServerListScene.Instance.updateServerList(packetData.servers);
+        }
+        */
     }
 }

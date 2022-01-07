@@ -1,3 +1,4 @@
+import { ServerListInfo } from "../server/server";
 import { IWorldSerializedData } from "../world/world";
 
 export enum PACKET_TYPE {
@@ -5,7 +6,11 @@ export enum PACKET_TYPE {
     STOVE_BEGIN_COOK,
     CLIENT_REACH_DOOR,
     CLIENT_REACH_CHAIR,
-    ENTER_WORLD
+    ENTER_WORLD,
+    LEAVE_WORLD,
+    SERVER_LIST,
+    JOIN_SERVER,
+    JOINED_SERVER
 }
 
 export interface IPacket {
@@ -13,8 +18,16 @@ export interface IPacket {
     data: any
 }
 
+export interface IPacketData_JoinServer {
+    id: string
+}
+
 export interface IPacketData_WorldData {
     worldData: IWorldSerializedData
+}
+
+export interface IPacketData_ServerList {
+    servers: ServerListInfo[]
 }
 
 export interface IPacketData_StoveBeginCookData {

@@ -96,6 +96,13 @@ export class WorldSyncHelper {
                 }
             }
 
+            if(playerData.type == PlayerType.NONE) {
+                if(!world.hasPlayer(playerData.id)) {
+                    player = new Player(world);
+                    setupPlayer(player, playerData);
+                }
+            }
+
             if(playerData.type == PlayerType.CLIENT) {
                 if(!world.hasPlayer(playerData.id)) {
                     player = new PlayerClient(world);
