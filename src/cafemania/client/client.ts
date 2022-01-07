@@ -2,6 +2,7 @@
 import socketio, { Socket } from 'socket.io';
 import { BaseObject } from '../baseObject/baseObject';
 import { Game } from "../game/game";
+import { Gamelog } from '../gamelog/gamelog';
 import { IPacket, IPacketData_JoinServer, IPacketData_ServerList, IPacketData_StoveBeginCookData, IPacketData_WorldData, PACKET_TYPE } from '../network/packet';
 import { Player } from '../player/player';
 import { PlayerClient } from '../player/playerClient';
@@ -46,17 +47,20 @@ export class Client extends BaseObject {
     }
 
     public getCurrentAddress() {
-        return this._socket!.handshake.address
+        const f = this._socket?.handshake.headers["x-forwarded-for"]
+        if(typeof f == 'object') return f[0];
+        if(!f) return this._socket?.handshake.address || ""
+        return f;
     }
 
     public onConnect() {
-        ServerHost.postGameLog(this.getCurrentAddress(), "connected");
+        Gamelog.log(this.getCurrentAddress(), `${this.socket.id} connected`);
 
         this.sendServersList();
     }
 
     public onDisconnect() {
-        ServerHost.postGameLog(this.getCurrentAddress(), "disconnected")
+        Gamelog.log(this.getCurrentAddress(), `${this.socket.id} disconnected`);
     }
     
     public sendServersList() {
@@ -72,6 +76,8 @@ export class Client extends BaseObject {
     }
 
     public joinServer(server: Server) {
+        Gamelog.log(this.getCurrentAddress(), `${this.socket.id} joined server "${server.name}"`);
+
         this._atServer = server;
 
         server.onClientJoin(this);

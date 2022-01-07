@@ -5,8 +5,6 @@ import { Client } from '../client/client';
 import { IPacket } from '../network/packet';
 import { Server } from '../server/server';
 
-const request = require('request');
-
 export class ServerHost extends BaseObject {
     public static Instance: ServerHost;
 
@@ -47,7 +45,13 @@ export class ServerHost extends BaseObject {
 
         socket.on('disconnect', () => this.onClientDisconnect(client))
         socket.on('p', (packet: IPacket) => {
-            client.onReceivePacket(packet);
+
+            try {
+                client.onReceivePacket(packet);
+            } catch (error) {
+                console.error(error)
+            }
+
         });
 
         this.onClientConnect(client);
@@ -65,31 +69,5 @@ export class ServerHost extends BaseObject {
         client.onDisconnect()
 
         this.removeServer(client.mainServer);
-    }
-
-    public static postGameLog(address: string, message: string) {
-        console.log("postGameLog")
-
-        let url = "https://dmdassc.glitch.me/gamelog/log"
-
-        if(address.includes("127.0.0.1")) {
-            url = "http://127.0.0.1:3000/gamelog/log";
-        }
-
-        const data = {
-            service: 'cafemania',
-            address: address,
-            message: message
-        }
-        
-        request.post(
-            url,
-            { json: data },
-            function (error, response, body) {
-                if (!error && response.statusCode == 200) {
-                    console.log(body);
-                }
-            }
-        ); 
     }
 }

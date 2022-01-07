@@ -276,7 +276,7 @@ export class Player extends BaseObject {
     }
 
     public taskWalkToTile(tile: Tile) {
-        this.log(`taskWalkToTile ${tile.id}`);
+        //this.log(`taskWalkToTile ${tile.id}`);
         
         const task = new TaskWalkToTile(this, tile);
 
@@ -343,7 +343,7 @@ export class Player extends BaseObject {
     }
 
     public taskExecuteAction(action: () => Promise<void>, callback?: () => void) {
-        this.log(`taskExecuteAction`);
+        //this.log(`taskExecuteAction`);
         
         const task = new TaskExecuteAction(action);
 
@@ -502,7 +502,7 @@ export class Player extends BaseObject {
 
         this._canWalk = true;
 
-        this.log(`Path find from (${atTile.x}, ${atTile.y}) to (${x}, ${y}) [${etime}ms]`, callback ? "hascallback" : 'nocb');
+        //this.log(`Path find from (${atTile.x}, ${atTile.y}) to (${x}, ${y}) [${etime}ms]`, callback ? "hascallback" : 'nocb');
 
 
         this._pathFindMovement.onFinishCallback = () => {

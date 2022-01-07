@@ -121,7 +121,7 @@ export class PlayerClient extends Player {
                     this.taskWalkToTile(this._goingToChair.tile);
                     this.taskExecuteAction(async() => {
                         
-                        this.log("at chair")
+                        //this.log("at chair")
 
                         this.waitingForWaiter = true;
                         

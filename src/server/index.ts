@@ -21,7 +21,7 @@ io.attach(server, {
     cors: { origin: '*' }
 });
 
-server.listen(port, () => {
+server.listen(port, "0.0.0.0", () => {
     console.log(`Express web server started: http://localhost:${port}`)
 });
 
