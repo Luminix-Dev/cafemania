@@ -9,7 +9,12 @@ import { MapGridScene } from "./mapGridScene";
 export class GameScene extends Phaser.Scene {
     public static Instance: GameScene;
 
-    public world: World;
+    public get world() {
+        return this._world!;
+    }
+
+    public _world?: World;
+
     public layerFloor: Phaser.GameObjects.Layer;
     public layerObjects: Phaser.GameObjects.Layer;
     public layerTop: Phaser.GameObjects.Layer;
@@ -19,14 +24,22 @@ export class GameScene extends Phaser.Scene {
         GameScene.Instance = this;
     }
 
-    public init(data) {
-        this.world = data.world;
+    public setWorld(world: World | undefined) {
+        this._world = world;
+
+        if(world) {
+    
+            Debug.log(`world ${world.id}`);
+
+            MapGridScene.grid = world.tileMap.grid;
+        }
     }
+
+
 
     public create() {
         Debug.log("game scene");
-        Debug.log(`world ${this.world.id}`);
-
+        
         Camera.setScene(this);
         Input.init(this);
 
@@ -42,17 +55,35 @@ export class GameScene extends Phaser.Scene {
         this.cameras.main.setBackgroundColor(0x000D56);
 
         const moveScene = new MoveScene(this);
-
-        MapGridScene.grid = this.world.tileMap.grid;
     }
 
     public update(time: number, delta: number) {
         Gameface.Instance.render(delta);
-        this.world.render(delta);
+
+        if(!this._world) return;
+
+        this._world.render(delta);
     }
 
-    public static initScene(world: World) {
-        const phaser = Gameface.Instance.phaser;
-        const scene = phaser.scene.add('GameScene', GameScene, true, {world: world}) as GameScene;
+    public static startNewScene(world: World) {
+        //Gameface.Instance.removeScene(GameScene);
+
+        console.log("start net")
+
+        if(!Gameface.Instance.hasSceneStarted(GameScene)) {
+            console.log("create")
+            const s = Gameface.Instance.startScene(GameScene) as GameScene;
+        }
+
+        GameScene.Instance.setWorld(world);
+
+        //const phaser = Gameface.Instance.phaser;
+        //const scene = phaser.scene.add('GameScene', GameScene, true, {world: world}) as GameScene;
+    }
+
+    public destroy() {
+
+        alert("destr")
+
     }
 }

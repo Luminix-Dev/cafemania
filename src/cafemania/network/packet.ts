@@ -10,7 +10,9 @@ export enum PACKET_TYPE {
     LEAVE_WORLD,
     SERVER_LIST,
     JOIN_SERVER,
-    JOINED_SERVER
+    LEAVE_SERVER,
+    JOINED_SERVER,
+    REQUEST_SERVER_LIST
 }
 
 export interface IPacket {

@@ -5,27 +5,19 @@ import { Game } from "../game/game";
 import { Input } from "../input/input";
 import { Network } from "../network/network";
 import { GameScene } from "../scenes/gameScene";
-import { MainScene } from "../scenes/mainScene";
+import { PreloadScene } from "../scenes/preloadScene";
 import { MoveTileItem } from "../shop/moveTileItem";
 import { SyncType, World } from "../world/world";
 import { WorldSyncHelper } from "../world/worldSyncHelper";
-import { config } from "./config";
-
-import * as NineSlicePlugin from 'phaser3-nineslice'
 import { DebugScene } from "../scenes/debugScene";
 import { MapGridScene } from "../scenes/mapGridScene";
 import { HudScene } from "../scenes/hudScene";
+import { PhaserLoad } from "./phaserLoad";
+import { AssetManager } from "../assetManager/assetManager";
 
-enum PreloadState {
-    NOT_LOADED,
-    LOADING_PHASER,
-    LOADING_GAME,
-    COMPLETED
-}
 
 export class Gameface extends BaseObject {
     public static Instance: Gameface;
-    public static ASSETS_URL: string = ""
 
     public events = new Phaser.Events.EventEmitter();
     public get game() { return this._game; }
@@ -34,7 +26,6 @@ export class Gameface extends BaseObject {
 
     private _game: Game;
     private _phaser: Phaser.Game;
-    private _preloadState: PreloadState = PreloadState.NOT_LOADED;
     private _network: Network;
 
     constructor() {
@@ -46,40 +37,27 @@ export class Gameface extends BaseObject {
 
     public start() {
         this.log("start");
-        this.updateAssetsUrl()
-        this.events.on("preload_finish", () => {
-            this.onFinishPreload();
+
+        PhaserLoad.load((phaser) => {
+            this._phaser = phaser;
+            this.init();
         })
-        this.preload();
-    }
 
-    private updateAssetsUrl() {
-        if(location.host.includes('localhost') || location.host.includes(':')) {
-            Gameface.ASSETS_URL = `${location.protocol}//${location.host}/assets/`;
-        } else {
-            Gameface.ASSETS_URL = `${Network.SERVER_ADDRESS}/assets/`;
-        }
-        console.log(Gameface.ASSETS_URL)
-    }
-
-    private onFinishPreload() {
-        this.log('preload_finish');
-        this.init();
-        
-        this.startMainScene();
+        this.game.start();
     }
 
     private init() {
-        MoveTileItem.init();
-    }
-    
-    public startMainScene() {
-        if(MainScene.Instance) {
-            MainScene.Instance.scene.remove();
-        }
+        Debug.startedAt = Date.now();
 
-        this.phaser.scene.add('MainScene', MainScene, true);
+        this.setupResize();
+
+        AssetManager.init();
+        AssetManager.initAssets();
+        MoveTileItem.init();
+
+        this.startScene(PreloadScene);
     }
+
 
     public render(dt: number) {
         Camera.update(dt);
@@ -91,40 +69,6 @@ export class Gameface extends BaseObject {
             return;
         }
         this.phaser.scale.startFullscreen({})
-    }
-
-    private preload() {
-        this.log("preload", this._preloadState)
-
-        if(this._preloadState == PreloadState.NOT_LOADED) {
-            this._preloadState = PreloadState.LOADING_PHASER;
-
-            const cfg = config;
-            cfg.plugins = {
-                global: [
-                    NineSlicePlugin.Plugin.DefaultCfg
-                ]
-            }
-
-            this._phaser = new Phaser.Game(cfg);
-            this._phaser.events.once('ready', () => {
-                this.setupResize();
-                this.preload();
-            });
-            return;
-        }
-
-        if(this._preloadState == PreloadState.LOADING_PHASER) { 
-            this._preloadState = PreloadState.LOADING_GAME;
-            this.game.events.once('ready', () => {
-                this.preload();
-            });
-            this.game.start();
-            return;
-        } 
-        
-        this._preloadState = PreloadState.COMPLETED;
-        this.events.emit("preload_finish");
     }
 
     private setupResize() {
@@ -173,7 +117,7 @@ export class Gameface extends BaseObject {
     }
 
     public createGameScene(world: World) {
-        GameScene.initScene(world);
+        GameScene.startNewScene(world);
         MoveTileItem.setWorld(world);
 
         this.updateScenesOrder();
@@ -182,21 +126,32 @@ export class Gameface extends BaseObject {
     }
 
     public destroyGameScene() {
+        //WorldSyncHelper.setWorld(undefined);
+        
         const world = GameScene.Instance.world;
         world.destroyRender();
 
-        GameScene.Instance.scene.remove();
-        WorldSyncHelper.setWorld(undefined);
+        GameScene.Instance.setWorld(undefined);
+
+        //this.removeScene(GameScene);
+        
+    }
+
+    public createHud() {
+        this.startScene(DebugScene);
+        this.startScene(MapGridScene);
+        this.startScene(HudScene);
     }
 
     public setHudVisible(visible: boolean) {
         if(visible) {
-
-            const phaser = this.phaser;
-
-            if(!DebugScene.Instance) phaser.scene.add('DebugScene', DebugScene, true);
-            if(!HudScene.Instance) phaser.scene.add('HudScene', HudScene, true);
-            if(!MapGridScene.Instance) phaser.scene.add('MapGridScene', MapGridScene, true);
+            //this.startScene(DebugScene);
+            //this.startScene(MapGridScene);
+            //this.startScene(HudScene);
+        } else {
+            //this.removeScene(DebugScene);
+            //this.removeScene(MapGridScene);
+            //this.removeScene(HudScene);
         }
     }
 
@@ -204,5 +159,34 @@ export class Gameface extends BaseObject {
         DebugScene.Instance?.scene.bringToTop();
         MapGridScene.Instance?.scene.bringToTop();
         HudScene.Instance?.scene.bringToTop();
+    }
+
+    public startScene(scene: typeof Phaser.Scene) {
+        const phaser = this.phaser;
+        const key = scene.name;
+
+        if(this.hasSceneStarted(scene)) {
+            this.removeScene(scene);
+        }
+
+        const s = this.phaser.scene.add(key, scene, true);
+        return s;
+    }
+
+    public removeScene(scene: typeof Phaser.Scene) {
+        const phaser = this.phaser;
+        const key = scene.name;
+
+        console.log("removeScene", key, scene)
+
+        if(this.hasSceneStarted(scene)) {
+            const s = phaser.scene.keys[key];
+            s.scene.remove();
+        }
+    }
+
+    public hasSceneStarted(scene: typeof Phaser.Scene) {
+        const phaser = this.phaser;
+        return phaser.scene.keys[scene.name];
     }
 }

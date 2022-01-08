@@ -60,12 +60,9 @@ export class Server {
         player.setAsChangedState();
 
         setInterval(() => {
-
             if(player.state != PlayerState.WALKING) {
                 player.taskWalkNearToTile(player.world.tileMap.getTile(Math.round(Math.random()*5), Math.round(Math.random()*5)));
             }
-
-
         }, 500)
     }
 }

@@ -32,8 +32,8 @@ import '@geckos.io/phaser-on-nodejs'
 global['phaserOnNodeFPS'] = 5
 
 
-import { ServerHost } from '../cafemania/serverHost/serverHost';
 import { BaseObject } from '../cafemania/baseObject/baseObject';
+import { MasterServer } from '../cafemania/masterServer/masterServer';
 
 BaseObject.useColor = false;
-const serverHost = new ServerHost(io);
+const masterServer = new MasterServer(io);

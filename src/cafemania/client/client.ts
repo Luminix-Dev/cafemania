@@ -7,7 +7,7 @@ import { IPacket, IPacketData_JoinServer, IPacketData_ServerList, IPacketData_St
 import { Player } from '../player/player';
 import { PlayerClient } from '../player/playerClient';
 import { Server } from '../server/server';
-import { ServerHost } from '../serverHost/serverHost';
+import { MasterServer } from '../masterServer/masterServer';
 import { TileItemStove } from '../tileItem/items/tileItemStove';
 import { TileItem } from '../tileItem/tileItem';
 import { SyncType, World } from '../world/world';
@@ -65,7 +65,7 @@ export class Client extends BaseObject {
     
     public sendServersList() {
         const packetData: IPacketData_ServerList = {
-            servers: ServerHost.Instance.servers.map(server => server.getServerListInfo())
+            servers: MasterServer.Instance.servers.map(server => server.getServerListInfo())
         }
         this.send(PACKET_TYPE.SERVER_LIST, packetData);
     }
@@ -84,6 +84,16 @@ export class Client extends BaseObject {
 
         const world = server.game.worlds[0];
         this.joinWorld(world);
+    }
+
+    public leaveServer() {
+        if(!this._atServer) return;
+
+        //this._atServer.onClientLeave
+        this._atServer = undefined;
+
+
+        this.leaveWorld();
     }
 
     public joinWorld(world: World) {
@@ -114,6 +124,8 @@ export class Client extends BaseObject {
             }
         }
         this.send(PACKET_TYPE.WORLD_DATA, packetData);
+
+        console.log("sent WORLD_DATA : onPlayerStateChangedEvent")
     }
 
     public onTileItemChangedEvent(tileItem: TileItem) {
@@ -175,13 +187,21 @@ export class Client extends BaseObject {
         if(packet.type == PACKET_TYPE.JOIN_SERVER) {
             const packetData: IPacketData_JoinServer = packet.data;
 
-            const server = ServerHost.Instance.getServerById(packetData.id);
+            const server = MasterServer.Instance.getServerById(packetData.id);
 
             console.log(packetData);
 
             if(server) {
                 this.joinServer(server)
             }
+        }
+
+        if(packet.type == PACKET_TYPE.LEAVE_SERVER) {
+            this.leaveServer();
+        }
+
+        if(packet.type == PACKET_TYPE.REQUEST_SERVER_LIST) {
+            this.sendServersList();
         }
 
         if(packet.type == PACKET_TYPE.ENTER_WORLD) {

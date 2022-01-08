@@ -1,3 +1,4 @@
+import { AssetManager } from "../assetManager/assetManager";
 import { Debug } from "../debug/debug";
 import { Gameface } from "../gameface/gameface";
 import { DebugScene } from "./debugScene";
@@ -45,7 +46,7 @@ export class LoadScene extends Phaser.Scene {
         const self = this;
 
         this._loader = this.load; //new Phaser.Loader.LoaderPlugin(this);
-        this._loader.setPath(Gameface.ASSETS_URL);
+        this._loader.setPath(AssetManager.ASSETS_URL);
         this._loader.on('filecomplete', function(key, type, data) {
             self._title = `Loading '${key}'`;
             self._amountLoaderAssetsLoaded++;

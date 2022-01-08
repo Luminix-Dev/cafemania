@@ -76,6 +76,10 @@ export class Network extends BaseObject {
         this.send(PACKET_TYPE.JOIN_SERVER, packetData);
     }
 
+    public sendLeaveServer() {
+        this.send(PACKET_TYPE.LEAVE_SERVER, null);
+    }
+
     public onReceivePacket(packet: IPacket) {
         //this.log(`reiceved packet '${packet.type}'`);
 

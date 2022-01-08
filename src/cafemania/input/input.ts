@@ -69,6 +69,7 @@ export class Input {
         });
     }
 
+    
     public static getMouseWorldPosition() {
         const scene = this._scene;
 

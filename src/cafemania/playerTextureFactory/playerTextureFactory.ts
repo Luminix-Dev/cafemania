@@ -2,17 +2,18 @@ import * as THREE from 'three';
 import Three, { ThreeModel } from '../three/three';
 import { Debug } from '../debug/debug';
 import { PlayerAnimation } from '../player/playerAnimation';
-import { MainScene } from '../scenes/mainScene';
+import { PreloadScene } from '../scenes/preloadScene';
 import { IPlayerTextureOptions, PlayerTextureGenerator } from './playerTextureGenerator';
 import { Gameface } from '../gameface/gameface';
+import { AssetManager } from '../assetManager/assetManager';
 
 
 export class PlayerTextureFactory {
-   
     private static _playerModel: ThreeModel
     private static _hairModel?: ThreeModel
     private static _shoesLModel?: ThreeModel
     private static _shoesRModel?: ThreeModel
+    private static _hasInit: boolean = false;
     
     private static _canvas: Phaser.Textures.CanvasTexture
 
@@ -23,7 +24,7 @@ export class PlayerTextureFactory {
     public static async init(textureName: string) {
         console.log(`[PlayerTextureFactory] Init`);
 
-        const textureManager = MainScene.Instance.textures;
+        const textureManager = PreloadScene.Instance.textures;
 
         const canvas = textureManager.createCanvas(textureName, Three.size.x, Three.size.y);
         canvas.context.fillStyle = "green";
@@ -33,7 +34,7 @@ export class PlayerTextureFactory {
         
         await Three.init();
     
-        const playerModel = await Three.loadGLTFModel(Gameface.ASSETS_URL + 'models/player.glb', true)
+        const playerModel = await Three.loadGLTFModel(AssetManager.ASSETS_URL + 'models/player.glb', true)
         playerModel.object.position.set(0, 0.7, 0);
         this._playerModel = playerModel;
         //Three.setAnimationFrame(playerModel, 0, 3);
@@ -44,9 +45,16 @@ export class PlayerTextureFactory {
         //this._skinTexture = textureManager.createCanvas('PlayerTextureFactory_SkinTexture', 1);
     }
 
-    
-    
-    public static async generateTempSkin(name: string, textures: Phaser.Textures.Texture[], width: number, height: number) {
+    public static async generateTestPlayerSkin(key: string, skinColor: string, animations: string[]) {
+        this.skinColor = skinColor;
+
+        await this.updateBodySkins();
+        await this.generatePlayerTexture(key, {animations: animations});
+    }
+
+
+  
+    private static async generateTempSkin(name: string, textures: Phaser.Textures.Texture[], width: number, height: number) {
         const textureManager = this.getTextureManager();
         
         if(textureManager.exists(name)) textureManager.get(name).destroy();
@@ -107,7 +115,7 @@ export class PlayerTextureFactory {
     }
 
     private static createMixedTexture(name: string, textures: Phaser.Textures.Texture[], width: number, height: number) {
-        const textureManager = MainScene.Instance.textures
+        const textureManager = PreloadScene.Instance.textures
         const canvasTexture = textureManager.createCanvas(name, width, height)
 
         for (const t of textures) {
@@ -168,6 +176,6 @@ export class PlayerTextureFactory {
     }
 
     private static getTextureManager() {
-        return MainScene.Instance.textures;
+        return PreloadScene.Instance.textures;
     }
 }

@@ -1,10 +1,6 @@
-import { Camera } from "../camera/camera";
 import { Gameface } from "../gameface/gameface";
-import { Grid } from "../grid/grid"
-import { PACKET_TYPE } from "../network/packet";
 import { ServerListInfo } from "../server/server";
 import { Button } from "../ui/button";
-import { GameScene } from "./gameScene";
 
 export class ServerListScene extends Phaser.Scene {
     public static Instance: ServerListScene;
@@ -14,6 +10,10 @@ export class ServerListScene extends Phaser.Scene {
     constructor() {
         super({});
         ServerListScene.Instance = this;
+    }
+
+    public create() {
+        
     }
 
     public updateServerList(servers: ServerListInfo[]) {
@@ -30,9 +30,6 @@ export class ServerListScene extends Phaser.Scene {
             
             joinBtn.onClick = () => {
                 this.joinServer(serverInfo.id);
-
-                ServerListScene.destroy();
-                Gameface.Instance.setHudVisible(true)
             }
 
             i++;
@@ -41,23 +38,48 @@ export class ServerListScene extends Phaser.Scene {
 
     public joinServer(id: string) {
         Gameface.Instance.createBaseWorld(true);
+        
+        Gameface.Instance.removeScene(ServerListScene);
+        Gameface.Instance.setHudVisible(true)
+
         Gameface.Instance.network.sendJoinServer(id);
     }
 
-    public preload() {
-        this.load.setPath(Gameface.ASSETS_URL);
-    }
 
-    public create() {
+    
+    /*
+    private testButtons() {
+
+        const w = this.scale.width;
+        const h = this.scale.height;
+
+        const x = w * 0.5;
+        const y = h * 0.5;
+		
+        const multiplayerBtn = new Button(this, x, y + 100, 200, 40, "button/button1", "Multiplayer");
+        const singleplayerBtn = new Button(this, x, y + 160, 200, 40, "button/button1", "Singleplayer");
+
+
+        const gameface = Gameface.Instance;
+        const network = gameface.network;
         
-    }
+        const destroyButtons = () => {
+            multiplayerBtn.destroy();
+            singleplayerBtn.destroy();
+        }
 
-    public static show() {
-        const phaser = Gameface.Instance.phaser;
-        phaser.scene.add('ServerListScene', ServerListScene, true);
-    }
+        multiplayerBtn.onClick = () => {
+            destroyButtons();
 
-    public static destroy() {
-        this.Instance.scene.remove();
+            Gameface.Instance.createBaseWorld(true);
+            network.send(PACKET_TYPE.ENTER_WORLD, null);
+        }
+
+        singleplayerBtn.onClick = () => {
+            destroyButtons();
+
+            Gameface.Instance.createBaseWorld(false);
+        }
     }
+    */
 }
