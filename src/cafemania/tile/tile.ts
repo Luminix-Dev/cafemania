@@ -49,7 +49,7 @@ export class Tile extends BaseObject {
 
     public removeTileItem(tileItem: TileItem) {
         this._tileItems.splice(this._tileItems.indexOf(tileItem), 1);
-        tileItem.destroy();
+        //tileItem.destroy();
         tileItem.setTile(undefined);
     }
 

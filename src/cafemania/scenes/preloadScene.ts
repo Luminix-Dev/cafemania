@@ -21,14 +21,25 @@ export class PreloadScene extends Phaser.Scene {
 
         await this.processLoadScene();
 
-        Debug.log("connecting to " + network.getAddress())
         
-        network.connect(() => {
-            Debug.log("connected");
-
-            gameface.startScene(ServerListScene);
+        const isSinglePlayer = false;
+        
+        if(isSinglePlayer) {
+            gameface.createBaseWorld(false);
+            //gameface.setHudVisible(true)
             gameface.createHud();
-        });
+            gameface.updateScenesOrder();
+        } else {
+            Debug.log("connecting to " + network.getAddress())
+            
+            network.connect(() => {
+                Debug.log("connected");
+    
+                gameface.startScene(ServerListScene);
+                gameface.createHud();
+            });
+        }
+
         
     }
 

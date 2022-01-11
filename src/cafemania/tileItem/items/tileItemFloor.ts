@@ -1,10 +1,13 @@
+import { Gameface } from "../../gameface/gameface";
 import { GameScene } from "../../scenes/gameScene";
 import { TileItem } from "../tileItem"
+import { TileItemInfo } from "../tileItemInfo";
 
 export class TileItemFloor extends TileItem {
 
-    constructor(til) {
-        super(til);
+    constructor(tileItemInfo: TileItemInfo) {
+        super(tileItemInfo);
+        this.defaultCollisionValue = true;
     }
 
     public render(dt: number) {
@@ -35,6 +38,7 @@ export class TileItemFloor extends TileItem {
     public onPointerUp() {
         super.onPointerUp();
 
-        this.tile.tileMap.world.getPlayerCheff()?.taskWalkToTile(this.tile);
+        Gameface.Instance.network.sendMovePlayer(this.tile.x, this.tile.y);
+        //this.tile.tileMap.world.getPlayerCheff()?.taskWalkToTile(this.tile);
     }
 }

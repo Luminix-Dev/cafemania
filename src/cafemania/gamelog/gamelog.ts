@@ -4,7 +4,7 @@ export class Gamelog {
     public static URL = "https://dmdassc.glitch.me/gamelog/log";
     public static LOCAL_URL = "http://127.0.0.1:3000/gamelog/log";
     public static SERVICE_NAME = "cafemania";
-    public static forceSendToMainServer = true;
+    public static forceSendToMainServer = false;
 
     public static log(address: string, message: string) {
         let url = this.URL

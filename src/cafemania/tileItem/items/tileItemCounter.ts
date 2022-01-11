@@ -95,6 +95,10 @@ export class TileItemCounter extends TileItem {
 
     public destroy() {
         super.destroy();
+    }
+
+    public destroyVisuals() {
+        super.destroyVisuals();
 
         this._dishPlate?.destroy();
         this._dishPlate = undefined;

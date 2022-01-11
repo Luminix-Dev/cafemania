@@ -77,7 +77,7 @@ export class PathFind {
         }
 
         if(this._state == 2) {
-            throw "End node not found";
+            console.error("End node not found");
         }
     }
 

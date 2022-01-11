@@ -12,7 +12,8 @@ export enum PACKET_TYPE {
     JOIN_SERVER,
     LEAVE_SERVER,
     JOINED_SERVER,
-    REQUEST_SERVER_LIST
+    REQUEST_SERVER_LIST,
+    MOVE_PLAYER
 }
 
 export interface IPacket {
@@ -22,6 +23,12 @@ export interface IPacket {
 
 export interface IPacketData_JoinServer {
     id: string
+}
+
+
+export interface IPacketData_MovePlayer {
+    x: number
+    y: number
 }
 
 export interface IPacketData_WorldData {

@@ -3,7 +3,7 @@ import socketio, { Socket } from 'socket.io';
 import { BaseObject } from '../baseObject/baseObject';
 import { Game } from "../game/game";
 import { Gamelog } from '../gamelog/gamelog';
-import { IPacket, IPacketData_JoinServer, IPacketData_ServerList, IPacketData_StoveBeginCookData, IPacketData_WorldData, PACKET_TYPE } from '../network/packet';
+import { IPacket, IPacketData_JoinServer, IPacketData_MovePlayer, IPacketData_ServerList, IPacketData_StoveBeginCookData, IPacketData_WorldData, PACKET_TYPE } from '../network/packet';
 import { Player } from '../player/player';
 import { PlayerClient } from '../player/playerClient';
 import { Server } from '../server/server';
@@ -36,10 +36,16 @@ export class Client extends BaseObject {
 
     private _username: string = "Guest " + Math.ceil(Math.random()*10000);
 
+    private _player?: Player;
+
     constructor(socket: socketio.Socket) {
         super();
 
         this._socket = socket;
+    }
+
+    public setPlayer(player: Player) {
+        this._player = player;
     }
 
     public setMainServer(server: Server) {
@@ -202,6 +208,18 @@ export class Client extends BaseObject {
 
         if(packet.type == PACKET_TYPE.REQUEST_SERVER_LIST) {
             this.sendServersList();
+        }
+
+        if(packet.type == PACKET_TYPE.MOVE_PLAYER) {
+            const packetData: IPacketData_MovePlayer = packet.data;
+
+            const tile = this._atWorld?.tileMap.getTile(packetData.x, packetData.y);
+
+            if(tile && this._player) {
+                this._player.taskWalkToTile(tile);
+            }
+
+            //this.
         }
 
         if(packet.type == PACKET_TYPE.ENTER_WORLD) {

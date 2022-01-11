@@ -9,7 +9,7 @@ import { PlayerType } from '../player/playerType';
 import { PlayerWaiter } from '../player/playerWaiter';
 import { MoveTileItem } from '../shop/moveTileItem';
 import { Shop } from '../shop/shop';
-import { ITileSerializedData } from '../tile/tile';
+import { ITileSerializedData, Tile } from '../tile/tile';
 import { TileItemChair } from '../tileItem/items/tileItemChair';
 import { TileItemCounter } from '../tileItem/items/tileItemCounter';
 import { TileItemDoor } from '../tileItem/items/tileItemDoor';
@@ -95,19 +95,28 @@ export class World extends BaseObject {
         window['world'] = this;
     }
 
-    public generateBaseWorld() {
+    private generateTest1() {
         const size = new Phaser.Math.Vector2(14, 14);
         const tileMap = this.tileMap;
 
-
         this.generateFloors('floor1', 0, 0, size.x, size.y);
-        this.generateFloors('test_floor1', 0, size.x, 6, 6);
-        this.generateWalls(10);
         this.generateSideWalks(20);
 
-        
+        const counter1 = this.addTileItemToTile('counter1', 0, 0);
+    }
 
+    public generateBaseWorld() {
+        //this.generateTest1();
 
+        const size = new Phaser.Math.Vector2(14, 14);
+        const tileMap = this.tileMap;
+
+        this.generateFloors('floor1', 0, 0, size.x, size.y);
+        this.generateSideWalks(20);
+        this.generateFloors('test_floor1', 0, size.x, 6, 6);
+        this.generateWalls(10);
+
+ 
         const counter1 = this.addTileItemToTile('counter1', 0, 0);
         const counter2 = this.addTileItemToTile('counter1', 1, 0);
         const tileItem2 = this.addTileItemToTile('floorDecoration2', 3, 1);
@@ -137,6 +146,8 @@ export class World extends BaseObject {
                 }
             }
         }
+        window['window1'] = window1;
+
 
         /*
         window1.startRandomlyRotate(500);
@@ -144,7 +155,7 @@ export class World extends BaseObject {
         chair1.startRandomlyRotate(500);
         */
        
-        window['window1'] = window1;
+        
 
 
         
@@ -186,7 +197,7 @@ export class World extends BaseObject {
         this.addDoor(0, 2)
         this.addDoor(2, 0)
         
-        this.toggleFloorCollision(true)
+        //this.toggleFloorCollision(true)
       
         //this.spawnPlayerClient();
     }
@@ -302,12 +313,17 @@ export class World extends BaseObject {
             this.game.tileItemFactory.removeTileItem(tileItem.id);
             tileItem.destroy();
         }
-
     }
 
     public destroy() {
         this.destroyRender();
+        this.removeAllTileItems();
     }
+
+    public removeAllTileItems() {
+        this.getAllTileItems().map(tileItem => this.removeTileItem(tileItem))
+    }
+    
 
     public destroyRender() {
         this.tileMap.tiles.map(tile => tile.destroy());
@@ -437,22 +453,67 @@ export class World extends BaseObject {
         }
     }
 
+
+
+    //works
+    public tryMoveTileItem(tileItem: TileItem, toTile: Tile) {
+        const canBePlaced = this.tileMap.canTileItemBePlacedAtTile(tileItem, toTile);
+
+        if(canBePlaced) this.forceMoveTileItem(tileItem, toTile);
+
+        return canBePlaced;
+    }
+
+
+    //works
+    public forceMoveTileItem(tileItem: TileItem, toTile: Tile) {
+
+        if(tileItem.isAtAnyTile) {
+            tileItem.tile.removeTileItem(tileItem);
+            tileItem.destroyVisuals();
+        }
+
+        toTile.addTileItem(tileItem);
+
+        this.tileMap.grid.removeItem(tileItem.id);
+        this.putGridItem(tileItem, toTile);
+    }
+
+    //works, same as try
     public addTileItemToTile(tileItemId: string, tileX: number, tileY: number) {
         const tile = this.tileMap.getTile(tileX, tileY);
         const tileItem = this.game.tileItemFactory.createTileItem(tileItemId);
-        const result = this.tileMap.tryPlaceItemAtTile(tileItem, tile);
+
+        const canBePlaced = this.tileMap.canTileItemBePlacedAtTile(tileItem, tile);
+
+        if(canBePlaced) this.forceAddTileItemToTile(tileItem, tile);
+        
         return tileItem;
     }
 
-    public moveTileItemToTile(tileItem: TileItem, tileX: number, tileY: number) {
-        const tile = this.tileMap.getTile(tileX, tileY);
-        return this.tileMap.tryPlaceItemAtTile(tileItem, tile);
+    public forceAddTileItemToTile(tileItem: TileItem, tile: Tile) {
+       
+        tile.addTileItem(tileItem);
+
+        this.putGridItem(tileItem, tile);
+        
+        return tileItem;
+    }
+
+    public putGridItem(tileItem: TileItem, tile: Tile) {
+        const tileItemInfo = tileItem.tileItemInfo;
+
+        const gridItem = this.tileMap.grid.addItem(tileItem.id, tile.x, tile.y, tileItemInfo.size)
+        gridItem.name = tileItemInfo.name;
+
+        const type = tileItemInfo.type
+        if(type == TileItemType.FLOOR) gridItem.color = 0
+        if(type == TileItemType.WALL) gridItem.color = 0xcccccc
     }
 
     public getLeftSideWalkSpawn() { return this.tileMap.getTile(-2, this._sidewalkSize - 1) }
 
     public getRightSideWalkSpawn() { return this.tileMap.getTile(this._sidewalkSize - 1, -2) }
-
 
     public getAllTileItemsOfType(type: TileItemType) {
         const tileItems: TileItem[] = []

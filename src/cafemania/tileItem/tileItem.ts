@@ -154,7 +154,7 @@ export class TileItem extends BaseObject {
         this.tileItemRender.getSprites().map(sprite =>
         {
             if(sprite.image) layer.add(sprite.image)
-            if(sprite.collision) layer.add(sprite.collision)
+            if(sprite.collisionSprite) layer.add(sprite.collisionSprite)
         })
     }
 
@@ -254,9 +254,10 @@ export class TileItem extends BaseObject {
 
     public destroy() {
         Debug.log("destroy tileItem");
+        this.destroyVisuals();
+    }
 
-        this.world.removeTileItem(this);
-
+    public destroyVisuals() {
         this._hasCreatedSprites = false;
         this._tileItemRender?.destroy();
         this._tileItemRender = undefined;

@@ -82,4 +82,15 @@ export class TileItemTable extends TileItem {
 
         this._data = data;
     };
+
+    public destroy() {
+        super.destroy();
+    }
+
+    public destroyVisuals() {
+        super.destroyVisuals();
+
+        this._dishPlate?.destroy();
+        this._dishPlate = undefined;
+    }
 }

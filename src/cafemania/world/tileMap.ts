@@ -43,47 +43,6 @@ export class TileMap extends BaseObject {
         return this._tiles.get(`${x}:${y}`)
     }
 
-    public putTileItemVisualsAtTile(tileItem: TileItem, tile: Tile) {
-        if(tileItem.isAtAnyTile) this.removeTileItemFromItsTile(tileItem)
-
-        tile.addTileItem(tileItem);
-    }
-
-    public forcePlaceTileItem(tileItem: TileItem, tile: Tile) {
-        this.putTileItemVisualsAtTile(tileItem, tile);
-
-        const tileItemInfo = tileItem.tileItemInfo;
-
-        const gridItem = this.grid.addItem(tileItem.id, tile.x, tile.y, tileItemInfo.size)
-        gridItem.name = tileItemInfo.name;
-
-        
-        const type = tileItemInfo.type
-        if(type == TileItemType.FLOOR) gridItem.color = 0
-        if(type == TileItemType.WALL) gridItem.color = 0xcccccc
-        
-        
-    }
-
-    public removeTileItemFromItsTile(tileItem: TileItem) {
-        tileItem.tile.removeTileItem(tileItem);
-
-        this.grid.removeItem(tileItem.id);
-    }
-
-    public tryPlaceItemAtTile(tileItem: TileItem, tile: Tile) {
-        const canBePlaced = this.canTileItemBePlacedAtTile(tileItem, tile)
-
-        if(!canBePlaced) {
-            console.log("cannot");
-            return false;
-        }
-
-        this.forcePlaceTileItem(tileItem, tile);
-
-        return true;
-    }
-
     public canTileItemBePlacedAtTile(tileItem: TileItem, tile: Tile, direction?: Direction)
     {
         //console.log(`canTileItemBePlacedAtTile :`, tileItem.getInfo().name)

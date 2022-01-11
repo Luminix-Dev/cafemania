@@ -14,7 +14,8 @@ interface Sprite {
     y: number
     extraLayer: number
     image?: Phaser.GameObjects.Image
-    collision?: Phaser.GameObjects.Polygon
+    collisionSprite?: Phaser.GameObjects.Graphics
+    collisionShape?: Phaser.Geom.Polygon
 }
 
 export class TileItemRender extends BaseObject {
@@ -103,7 +104,7 @@ export class TileItemRender extends BaseObject {
         this._canCreateCollision = false;
 
         this.getSprites().map(sprite => {
-            sprite.collision?.destroy();
+            sprite.collisionSprite?.destroy();
         });
     }
 
@@ -223,7 +224,7 @@ export class TileItemRender extends BaseObject {
                 if(image.texture.has(frameKey)) image.setFrame(frameKey)
             }
 
-            const collision = sprite.collision
+            const collision = sprite.collisionSprite
             if(collision)
             {
 
@@ -332,50 +333,66 @@ export class TileItemRender extends BaseObject {
             )
         }
 
-        const collisionBox = sprite.collision = scene.add.polygon(0, 0, points, 0, 0)
-        collisionBox.setOrigin(0, 0)
+        const collisionSprite = sprite.collisionSprite = scene.add.graphics();
+        const collisionShape = sprite.collisionShape = new Phaser.Geom.Polygon(points);
 
-        collisionBox.setInteractive(
+
+        //const collisionBox = sprite.collision = scene.add.polygon(0, 0, points, 0, 0)
+        //collisionBox.setOrigin(0, 0)
+
+        collisionSprite.setInteractive(
             new Phaser.Geom.Polygon(points),
             Phaser.Geom.Polygon.Contains
         )
 
         
         if(this.tileItemInfo.type == TileItemType.FLOOR) {
-            GameScene.Instance.layerFloor.add(sprite.collision);
+            GameScene.Instance.layerFloor.add(sprite.collisionSprite);
         } else {
-            GameScene.Instance.layerObjects.add(sprite.collision);
+            GameScene.Instance.layerObjects.add(sprite.collisionSprite);
         }
         
-        this.setupCollisionEventsAndStyle(collisionBox)
+        this.setupCollisionEventsAndStyle(collisionSprite)
     }
 
-    private setupCollisionEventsAndStyle(collision: Phaser.GameObjects.Polygon) {
-        const color = 0;
-        const alphaHover = 0;
-        const alpha = 0;
+    private setupCollisionEventsAndStyle(collisionSprite: Phaser.GameObjects.Graphics) {
+        const color = 0xffffff;
+        const alphaHover = 1;
+        const alpha = 0.5;
 
-        collision.setFillStyle(color, alpha)
+        //collisionSprite.setFillStyle(color, alpha)
+
+        const draw = function(color: number) {
+            collisionSprite.clear();
+            collisionSprite.fillStyle(color, 0.3);
+            collisionSprite.fillCircle(Tile.SIZE.x/2, Tile.SIZE.y/2, 7.5);
+        }
 
         const self = this;
 
-        collision.on('pointerup', function (pointer) {
+        collisionSprite.on('pointerup', function (pointer) {
             self.events.emit?.("pointerup")
         });
 
-        collision.on('pointerdown', function (pointer) {
+        collisionSprite.on('pointerdown', function (pointer) {
             self.events.emit?.("pointerdown")
         });
 
-        collision.on('pointerover', function (pointer) {
-            collision.setFillStyle(color, alphaHover)
+        collisionSprite.on('pointerover', function (pointer) {
+            //collisionSprite.setFillStyle(color, alphaHover)
             self.events.emit?.("pointerover")
+
+            draw(0xff0000);
         });
 
-        collision.on('pointerout', function (pointer) {
-            collision.setFillStyle(color, alpha)
+        collisionSprite.on('pointerout', function (pointer) {
+            //collision.setFillStyle(color, alpha)
             self.events.emit?.("pointerout")
+
+            draw(0);
         });
+
+        draw(0);
     }
 
     public static valuesFromDirection(direction: Direction) {

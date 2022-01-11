@@ -61,12 +61,17 @@ export class WorldSyncHelper {
             for (const tileItemData of tileData.tileItems) {
                 
                 if(!tileItemFactory.hasTileItemCreated(tileItemData.id)) {
+
+                    console.log("create new")
+
                     tileItemFactory.createTileItem(tileItemData.tileItemInfo, tileItemData.id);
+
+                    
                 }
 
                 const tileItem = tileItemFactory.getTileItem(tileItemData.id);
 
-                if(!tileItem.isAtAnyTile) world.moveTileItemToTile(tileItem, tile.x, tile.y);
+                if(!tileItem.isAtAnyTile) world.forceAddTileItemToTile(tileItem, tile);
 
                 if(tileItem.direction != tileItemData.direction) tileItem.setDirection(tileItemData.direction);
 

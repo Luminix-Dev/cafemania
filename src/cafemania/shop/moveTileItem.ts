@@ -138,14 +138,18 @@ export class MoveTileItem {
 
         const world = movingTileItem.world;
 
-        const result = world.moveTileItemToTile(movingTileItem, hoveringTileItem.tile.x, hoveringTileItem.tile.y);
+        //const canBePlaced = world.tileMap.canTileItemBePlacedAtTile(movingTileItem, hoveringTileItem.tile);
 
+        const canBePlaced = world.tryMoveTileItem(movingTileItem, hoveringTileItem.tile)
         
-        if(result) {
+        if(canBePlaced) {
             this._placeAtTile = hoveringTileItem.tile;
+
+            //world.moveTileItem(movingTileItem, hoveringTileItem.tile);
+
         }
         
-        return result;
+        return canBePlaced;
     }
 
     public static stopMoving() {

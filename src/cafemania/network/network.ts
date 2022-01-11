@@ -3,7 +3,7 @@ import { BaseObject } from "../baseObject/baseObject";
 import { Debug } from "../debug/debug";
 import { ServerListScene } from "../scenes/serverListScene";
 import { WorldSyncHelper } from "../world/worldSyncHelper";
-import { IPacket, IPacketData_JoinServer, IPacketData_ServerList, IPacketData_WorldData, PACKET_TYPE } from "./packet";
+import { IPacket, IPacketData_JoinServer, IPacketData_MovePlayer, IPacketData_ServerList, IPacketData_WorldData, PACKET_TYPE } from "./packet";
 
 export class Network extends BaseObject {
     public static SERVER_ADDRESS: string = "https://cafemania.danilomaioli.repl.co";
@@ -74,6 +74,14 @@ export class Network extends BaseObject {
             id: id
         };
         this.send(PACKET_TYPE.JOIN_SERVER, packetData);
+    }
+
+    public sendMovePlayer(x: number, y: number) {
+        const packetData: IPacketData_MovePlayer = {
+            x: x,
+            y: y
+        };
+        this.send(PACKET_TYPE.MOVE_PLAYER, packetData);
     }
 
     public sendLeaveServer() {

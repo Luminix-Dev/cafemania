@@ -37,3 +37,11 @@ import { MasterServer } from '../cafemania/masterServer/masterServer';
 
 BaseObject.useColor = false;
 const masterServer = new MasterServer(io);
+
+/*
+TODO:
+
+Add MainScene
+Completely change how PlayerTexture Factory & Generator works
+(maybe) Add point detection in floors and walls to increase performance
+*/
