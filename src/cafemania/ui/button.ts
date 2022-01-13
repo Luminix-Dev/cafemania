@@ -1,3 +1,5 @@
+import { Input } from "../input/input";
+
 export class Button {
     public onClick?: () => void;
     public get container() { return this._container!; }
@@ -34,6 +36,7 @@ export class Button {
 
         background.on('pointerup',function(pointer){
             self.onClick?.();
+            Input.simulatePointerUp(pointer);
         })
         
         container.setPosition(x, y);

@@ -21,26 +21,7 @@ export class PreloadScene extends Phaser.Scene {
 
         await this.processLoadScene();
 
-        
-        const isSinglePlayer = false;
-        
-        if(isSinglePlayer) {
-            gameface.createBaseWorld(false);
-            //gameface.setHudVisible(true)
-            gameface.createHud();
-            gameface.updateScenesOrder();
-        } else {
-            Debug.log("connecting to " + network.getAddress())
-            
-            network.connect(() => {
-                Debug.log("connected");
-    
-                gameface.startScene(ServerListScene);
-                gameface.createHud();
-            });
-        }
-
-        
+        gameface.onEnterMainMenu(); 
     }
 
     private getLoadTileItemInfo() {

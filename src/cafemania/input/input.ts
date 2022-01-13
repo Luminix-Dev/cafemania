@@ -11,68 +11,80 @@ export class Input {
     private static _dragStartPos = new Phaser.Math.Vector2();
 
     private static _sceneWorldPosition = new Phaser.Math.Vector2();
-    private static _scene: Phaser.Scene;
 
+    private static _movingScene?: Phaser.Scene;
     
-    public static init(scene: Phaser.Scene) {
-        this._scene = scene;
+    public static simulatePointerUp(pointer) {
+        this.onPointerUp(pointer);
+    }
 
-        const self = this;
+    private static onPointerUp(ev) {
+        if(!this.mouseDown) return;
+        this.mouseDown = false;
 
-        scene.input.on('pointerdown', (ev) => {
-            self.mouseDown = true;
-            self._dragStartPos.x = ev.position.x;
-            self._dragStartPos.y = ev.position.y;
+        if(this.isDragging) {
+            this.isDragging = false;
+            this.events.emit('enddrag', ev);
+        }
+        
+        this.events.emit('pointerup', ev);
 
-            console.log(self._dragStartPos)
+        this._movingScene = undefined;
+    }
 
-            self.events.emit('pointerdown', ev);
-        });
+    private static onPointerDown(ev) {
+        if(this.mouseDown) return;
 
-        scene.input.on('pointerup', (ev) => {
-            self.mouseDown = false;
-            
-            if(self.isDragging) {
-                self.isDragging = false;
-                self.events.emit('enddrag', ev);
-            }
-            
-            
-            self.events.emit('pointerup', ev);
+        this._movingScene = undefined;
 
-            //MoveTileItem.stopMoving();
-        });
+        this.mouseDown = true;
+        this._dragStartPos.x = ev.position.x;
+        this._dragStartPos.y = ev.position.y;
 
-        scene.input.on('pointermove', pointer => {
-            self.mousePosition.x = pointer.x;
-            self.mousePosition.y = pointer.y;
+        console.log(this._dragStartPos)
 
-            self._sceneWorldPosition.x = scene.input.activePointer.worldX;
-            self._sceneWorldPosition.y = scene.input.activePointer.worldY;
+        this.events.emit('pointerdown', ev);
+    }
 
-            if(self.mouseDown) {
+    private static onPointerMove(scene: Phaser.Scene, ev) {
+        this.mousePosition.x = ev.x;
+        this.mousePosition.y = ev.y;
 
-                if(!self.isDragging) {
+        if(!this._movingScene) this._movingScene = scene;
 
-                    const distance = Phaser.Math.Distance.BetweenPoints(self._dragStartPos, pointer.position);
+        if(this._movingScene != scene) return;
+        
+        this._sceneWorldPosition.x = scene.input.activePointer.worldX;
+        this._sceneWorldPosition.y = scene.input.activePointer.worldY;
 
-                    if(distance > self.minDragDistance) {
-                        self.isDragging = true;
-                        self._dragStartPos.x = pointer.position.x;
-                        self._dragStartPos.y = pointer.position.y;
-                        self.events.emit('begindrag', pointer);
-                    }
+        if(this.mouseDown) {
+            if(!this.isDragging) {
+                const distance = Phaser.Math.Distance.BetweenPoints(this._dragStartPos, ev.position);
+
+                if(distance > this.minDragDistance) {
+                    this.isDragging = true;
+                    this._dragStartPos.x = ev.position.x;
+                    this._dragStartPos.y = ev.position.y;
+                    console.log("begin drag")
+                    this.events.emit('begindrag', ev);
+
                 }
-
             }
-            self.events.emit('pointermove', pointer);
+        }
+        this.events.emit('pointermove', ev);
+    }
+
+    public static addScene(scene: Phaser.Scene) {
+        console.log("input add scene", scene);
+
+        scene.input.on('pointerup', this.onPointerUp.bind(this));
+        scene.input.on('pointerdown', this.onPointerDown.bind(this));
+        scene.input.on('pointermove', pointer => {
+            this.onPointerMove(scene, pointer);
         });
     }
 
-    
     public static getMouseWorldPosition() {
-        const scene = this._scene;
-
         return new Phaser.Math.Vector2(
             this._sceneWorldPosition.x,
             this._sceneWorldPosition.y

@@ -1,3 +1,4 @@
+import { Dish } from "../dish/dish";
 import { TileItemStove } from "../tileItem/items/tileItemStove";
 import { SyncType, World } from "../world/world";
 import { Player } from "./player";
@@ -8,6 +9,8 @@ export class PlayerCheff extends Player {
     private _checkStovesTime: number = 0;
 
     private _goingToAnyStove: boolean = false;
+
+    private _stovesToCook: TileItemStove[] = [];
 
     constructor(world: World) {
         super(world);
@@ -39,14 +42,28 @@ export class PlayerCheff extends Player {
         super.render(dt);
     }
 
+    public addStoveToCookQuery(stove: TileItemStove) {
+        if(this._stovesToCook.includes(stove)) return;
+        this._stovesToCook.push(stove);
+    }
+
+    public removeStoveFromCookQuery(stove: TileItemStove) {
+        if(!this._stovesToCook.includes(stove)) return;
+        this._stovesToCook.splice(this._stovesToCook.indexOf(stove), 1);
+    }
+
     private checkStoves() {
+
+        
+
         /*
         add: closest stove
         */
         
+        
         if(this._goingToAnyStove) return;
 
-        const stoves = this.world.getStoves();
+        const stoves = this._stovesToCook;
 
         for (const stove of stoves) {
             if(this._goingToAnyStove) return;
@@ -64,13 +81,13 @@ export class PlayerCheff extends Player {
                 this.taskPlaySpecialAction('look_to_tile', [tile.x, tile.y]);
                 this.taskPlayAnimation("Eat", 1000);
                 this.taskPlaySpecialAction('cheff_start_cook', [toCookDish.id, stove.id]);
-    
 
                 this.setAsChangedState();
 
                 
             }
         }
+        
 
     }
 
@@ -86,7 +103,11 @@ export class PlayerCheff extends Player {
             const stove = this.world.game.tileItemFactory.getTileItem(args[1]) as TileItemStove;
 
             stove.clearToCookDish();
-            stove.startCook(dish);
+            stove.setCookingDish(dish);
+
+            //stove.addDishToCook(dish);
+
+            this.removeStoveFromCookQuery(stove);
             
             this._goingToAnyStove = false;
         }   

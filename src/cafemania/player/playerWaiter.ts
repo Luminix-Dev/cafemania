@@ -172,4 +172,11 @@ export class PlayerWaiter extends Player {
 
         }
     }
+
+    public destroy(): void {
+        super.destroy();
+
+        this._dishPlate?.destroy()
+        this._dishPlate = undefined
+    }
 }

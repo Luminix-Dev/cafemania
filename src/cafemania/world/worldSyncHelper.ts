@@ -1,16 +1,11 @@
-import { Debug } from "../debug/debug";
-import { Dish } from "../dish/dish";
-import { Gameface } from "../gameface/gameface";
-import { IPacketData_StoveBeginCookData, IPacketData_WorldData, PACKET_TYPE } from "../network/packet";
+
 import { IPlayerSerializedData, Player } from "../player/player";
 import { PlayerCheff } from "../player/playerCheff";
 import { PlayerClient, PlayerClientState } from "../player/playerClient";
 import { PlayerType } from "../player/playerType";
 import { PlayerWaiter } from "../player/playerWaiter";
 import { PlayerTaskType, TaskPlayAnimation, TaskPlaySpecialAction, TaskWalkToTile } from "../player/taskManager";
-import { TileItemStove } from "../tileItem/items/tileItemStove";
 import { IWorldSerializedData, World } from "./world";
-import { WorldEvent } from "./worldEvents";
 
 export class WorldSyncHelper {
     public static get world() { return this._world; }
@@ -24,6 +19,8 @@ export class WorldSyncHelper {
 
         if(world) {
 
+            /*
+
             world.events.on(WorldEvent.TILE_ITEM_STOVE_START_COOK, (stove: TileItemStove, dish: Dish) => {
                 console.log("ev", stove, dish)
                 
@@ -34,6 +31,8 @@ export class WorldSyncHelper {
                 
                 Gameface.Instance.network.send(PACKET_TYPE.STOVE_BEGIN_COOK, packetData);
             })
+
+            */
         }
     }
 

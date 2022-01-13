@@ -68,8 +68,6 @@ export class TileItem extends BaseObject {
     public render(dt: number) {
         const scene = GameScene.Instance;
 
-        
-
         if(!this._hasCreatedSprites) {
             this._hasCreatedSprites = true;
 
@@ -231,6 +229,9 @@ export class TileItem extends BaseObject {
 
     public setCollisionEnabled(enabled: boolean) {
         if(this._collisionEnabled == enabled) return;
+        
+        if(this._isPointerOver) this.onPointerOut();
+
         this._collisionEnabled = enabled;
         this.updateSprites();
     }

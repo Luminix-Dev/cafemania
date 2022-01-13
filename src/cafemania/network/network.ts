@@ -1,9 +1,11 @@
 import { io, Socket } from "socket.io-client";
 import { BaseObject } from "../baseObject/baseObject";
 import { Debug } from "../debug/debug";
+import { Dish } from "../dish/dish";
 import { ServerListScene } from "../scenes/serverListScene";
+import { TileItemStove } from "../tileItem/items/tileItemStove";
 import { WorldSyncHelper } from "../world/worldSyncHelper";
-import { IPacket, IPacketData_JoinServer, IPacketData_MovePlayer, IPacketData_ServerList, IPacketData_WorldData, PACKET_TYPE } from "./packet";
+import { IPacket, IPacketData_JoinServer, IPacketData_MovePlayer, IPacketData_ServerList, IPacketData_StartCook, IPacketData_WorldData, PACKET_TYPE } from "./packet";
 
 export class Network extends BaseObject {
     public static SERVER_ADDRESS: string = "https://cafemania.danilomaioli.repl.co";
@@ -82,6 +84,15 @@ export class Network extends BaseObject {
             y: y
         };
         this.send(PACKET_TYPE.MOVE_PLAYER, packetData);
+    }
+
+    public sendStartCook(stove: TileItemStove, dish: Dish) {
+        const packetData: IPacketData_StartCook = {
+            stoveId: stove.id,
+            dish: dish.id
+        }
+        
+        this.send(PACKET_TYPE.START_COOK, packetData);
     }
 
     public sendLeaveServer() {

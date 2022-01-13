@@ -14,6 +14,9 @@ import { MapGridScene } from "../scenes/mapGridScene";
 import { HudScene } from "../scenes/hudScene";
 import { PhaserLoad } from "./phaserLoad";
 import { AssetManager } from "../assetManager/assetManager";
+import { MainScene } from "../scenes/mainScene";
+import { Button } from "../ui/button";
+import { ServerListScene } from "../scenes/serverListScene";
 
 
 export class Gameface extends BaseObject {
@@ -55,7 +58,16 @@ export class Gameface extends BaseObject {
         AssetManager.initAssets();
         MoveTileItem.init();
 
+        this.startScene(MainScene);
+        this.startScene(GameScene);
         this.startScene(PreloadScene);
+
+        Input.addScene(MainScene.Instance);
+        Input.addScene(GameScene.Instance);
+        
+
+        //Camera.setScene(MainScene.Instance)
+        Camera.setupMoveEvents();
     }
 
 
@@ -97,6 +109,31 @@ export class Gameface extends BaseObject {
         this.events.emit('resize');
 
         setInterval(() => this.events.emit('resize'), 1000)
+    }
+
+    public onEnterMainMenu() {
+        const isSinglePlayer = false;
+
+    
+        const gameface = this;
+        const network = this.network;
+
+        if(isSinglePlayer) {
+            gameface.createBaseWorld(false);
+            //gameface.setHudVisible(true)
+            gameface.createHud();
+            gameface.updateScenesOrder();
+        } else {
+            Debug.log("connecting to " + network.getAddress())
+            
+            network.connect(() => {
+                Debug.log("connected");
+    
+                gameface.startScene(ServerListScene);
+                gameface.createHud();
+            });
+        }
+        
     }
     
     public createBaseWorld(isMultiplayer: boolean) {
@@ -141,6 +178,8 @@ export class Gameface extends BaseObject {
         this.startScene(DebugScene);
         this.startScene(MapGridScene);
         this.startScene(HudScene);
+
+        Input.addScene(HudScene.Instance);
     }
 
     public setHudVisible(visible: boolean) {

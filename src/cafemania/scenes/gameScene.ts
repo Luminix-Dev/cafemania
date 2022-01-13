@@ -41,7 +41,7 @@ export class GameScene extends Phaser.Scene {
         Debug.log("game scene");
         
         Camera.setScene(this);
-        Input.init(this);
+        //Input.initScene(this, true);
 
         this.layerFloor = this.add.layer();
         this.layerFloor.setDepth(0);
@@ -52,16 +52,11 @@ export class GameScene extends Phaser.Scene {
         this.layerTop = this.add.layer();
         this.layerTop.setDepth(1000);
 
-        this.cameras.main.setBackgroundColor(0x000D56);
-
-        const moveScene = new MoveScene(this);
+        //this.cameras.main.setBackgroundColor(0x000D56);
     }
 
     public update(time: number, delta: number) {
-        Gameface.Instance.render(delta);
-
         if(!this._world) return;
-
         this._world.render(delta);
     }
 

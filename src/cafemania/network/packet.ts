@@ -3,7 +3,7 @@ import { IWorldSerializedData } from "../world/world";
 
 export enum PACKET_TYPE {
     WORLD_DATA,
-    STOVE_BEGIN_COOK,
+    START_COOK,
     CLIENT_REACH_DOOR,
     CLIENT_REACH_CHAIR,
     ENTER_WORLD,
@@ -39,7 +39,7 @@ export interface IPacketData_ServerList {
     servers: ServerListInfo[]
 }
 
-export interface IPacketData_StoveBeginCookData {
+export interface IPacketData_StartCook {
     stoveId: string
     dish: string
 }

@@ -2,6 +2,8 @@ import { Camera } from "../../camera/camera";
 import { Debug } from "../../debug/debug";
 import { Dish } from "../../dish/dish";
 import { DishPlate, DishPlateState } from "../../dish/dishPlate";
+import { Gameface } from "../../gameface/gameface";
+import { Menu } from "../../shop/menu/menu";
 import { Tile } from "../../tile/tile"
 import { SyncType } from "../../world/world";
 import { WorldEvent } from "../../world/worldEvents";
@@ -93,8 +95,9 @@ export class TileItemStove extends TileItem {
                 this._dishPlate = new DishPlate(this.getCookingDish());
                 this._dishPlate.setPosition(position.x, position.y) ;
                 this._dishPlate.setDepth(position.y + h);
-                this._dishPlate.setState(DishPlateState.COOKING);
+            
             }
+            this._dishPlate.setState(DishPlateState.COOKING);
             this._dishPlate.setPercentage(this.getCookingProgress());
         } else {
             if(this._dishPlate) {
@@ -104,13 +107,33 @@ export class TileItemStove extends TileItem {
         }
     }
 
+    public startCook(dish: Dish) {
+        
+        if(this.world.sync == SyncType.SYNC) {
+            Gameface.Instance.network.sendStartCook(this, dish);
+            return;
+        }
+
+        console.log("actually start cook")
+
+        this.world.getPlayerCheff().addStoveToCookQuery(this);
+        this.addDishToCook(dish);
+
+        //if(this.isCooking || this._data.toCookDish) return;
+    }
+
     public onPointerUp() {
         super.onPointerUp();
 
-        if(this.world.sync == SyncType.SYNC) {
+       
+        Menu.show(this);
+
+        /*
+        if(this.world.sync != SyncType.HOST) {
             this.startCookingSomething();
             return;
         }
+        */
 
         /*
 
@@ -146,44 +169,38 @@ export class TileItemStove extends TileItem {
         
     }
 
+    public setCookingDish(dish: Dish) {
+        this._data.cookingDish = dish.id;
+        this._data.cookTime = 0;
+    }
+
     public addDishToCook(dish: Dish) {
         this._data.toCookDish = dish.id;
 
         this.setAsChangedState();
     }
 
+
+    /*
     public startCook(dish: Dish) {
-        this._data.cookingDish = dish.id;
-        this._data.cookTime = 0;
-
-        this.setAsChangedState();
-    }
-
-    public clearToCookDish() {
-        this._data.toCookDish = undefined;
-    }
-
-    public startCookingSomething() {
-        Debug.log("stove startCookingSomething");
-        this.log("stove startCookingSomething");
-
-        if(this.isCooking || this._data.toCookDish) return;
-
-        const dishFactory = this.world.game.dishFactory;
-
-        const serveDish1 = false;
-        const food = dishFactory.getDish(this.tmpCookDish);
-
-        this.world.events.emit(WorldEvent.TILE_ITEM_STOVE_START_COOK, this, food);
+        ret
+        this.world.events.emit(WorldEvent.TILE_ITEM_STOVE_START_COOK, this, dish);
         
         if(this.world.sync == SyncType.SYNC) {
             return;
         }
 
-        this.addDishToCook(food);
+        this.addDishToCook(dish);
+        this.setAsChangedState();
 
-        //this.startCook(food);
+        //this._data.cookingDish = dish.id;
+        //this._data.cookTime = 0;
 
+    }
+    */
+
+    public clearToCookDish() {
+        this._data.toCookDish = undefined;
     }
 
     public getCookingProgress() {
