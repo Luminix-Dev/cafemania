@@ -126,7 +126,7 @@ export class Gameface extends BaseObject {
     }
 
     public destroyGameScene() {
-        //WorldSyncHelper.setWorld(undefined);
+        WorldSyncHelper.setWorld(undefined);
         
         const world = GameScene.Instance.world;
         world.destroyRender();

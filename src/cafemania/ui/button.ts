@@ -1,16 +1,22 @@
 export class Button {
     public onClick?: () => void;
-
+    public get container() { return this._container!; }
+    
+    private _container?: Phaser.GameObjects.Container;
     private _backgrond?: Phaser.GameObjects.RenderTexture;
     private _text?: Phaser.GameObjects.Text;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, width: number, height: number, texture: string, text: string) {
+    constructor(scene: Phaser.Scene, x: number, y: number, width: number, height: number, texture: string, offset: number, text: string) {
         
-        const background = this._backgrond = scene.add.nineslice(x, y, width, height, texture, 16).setOrigin(0.5);
-        background.setInteractive();
+        const container = this._container = scene.add.container();
 
-        const textgo = this._text = scene.add.text(x, y, text, {color: "white"});
+        const background = this._backgrond = scene.add.nineslice(0, 0, width, height, texture, offset).setOrigin(0.5);
+        background.setInteractive();
+        container.add(background);
+
+        const textgo = this._text = scene.add.text(0, 0, text, {color: "white"});
         textgo.setOrigin(0.5);
+        container.add(textgo);
 
         const s = 1.05;
 
@@ -30,14 +36,16 @@ export class Button {
             self.onClick?.();
         })
         
-
+        container.setPosition(x, y);
     }
 
     public destroy() {
         this._backgrond?.destroy();
         this._text?.destroy();
+        this._container?.destroy();
 
         this._backgrond = undefined;
         this._text = undefined;
+        this._container = undefined;
     }
 }

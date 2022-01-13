@@ -21,9 +21,33 @@ export class TileItemCounter extends TileItem {
 
     public amountWaitersComing: number = 0;
 
+
+    private _updateTime: number = 0;
+    private _newAmount: number | undefined;
+
     constructor(tileItemInfo: TileItemInfo) {
         super(tileItemInfo);
         this.defaultCollisionValue = true;
+    }
+
+    public update(dt: number) {
+        super.update(dt);
+
+        this._updateTime += dt;
+
+
+        if(this._updateTime >= 500 && this._newAmount != undefined) {
+            console.log(this._updateTime)
+            console.log(this._data.amount, 'to', this._newAmount)
+
+            this._updateTime = 0;
+            this._data.amount = this._newAmount;
+            this._newAmount = undefined;
+        }
+    }
+
+    public resetUpdateTimer() {
+        this._updateTime = 0;
     }
 
     public render(dt: number) {
@@ -90,7 +114,12 @@ export class TileItemCounter extends TileItem {
     }
 
     public unserializeData(data: CounterData) {
+
+        const oldAmount = this._data.amount;
+        this._newAmount = data.amount;
+        
         this._data = data;
+        this._data.amount = oldAmount;
     }
 
     public destroy() {

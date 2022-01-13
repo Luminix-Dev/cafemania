@@ -140,6 +140,7 @@ export class PlayerWaiter extends Player {
             this._carryingDish = this.world.game.dishFactory.getDish(args[0]);
 
             this._goingToCounter = this.world.game.tileItemFactory.getTileItem(args[1]) as TileItemCounter;
+            this._goingToCounter.resetUpdateTimer();
             this._goingToCounter.addDishAmount(-1);
             this._goingToCounter.setAsChangedState();
 
@@ -156,7 +157,8 @@ export class PlayerWaiter extends Player {
                 const dish = this._carryingDish!;
                 
         
-                table.eatTime = 8000;
+                table.currentEatTime = 8000;
+                table.maxEatTime = 8000;
                 table.setDish(dish);
                 table.isWaitingForDish = false;
             } catch (error) {

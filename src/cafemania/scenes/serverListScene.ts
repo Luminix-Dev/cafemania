@@ -26,7 +26,7 @@ export class ServerListScene extends Phaser.Scene {
         let i = 0;
 
         for (const serverInfo of this._servers) {
-            const joinBtn = new Button(this, this.scale.width/2, i * 40 + 20, 400, 35, "button/button1", `${serverInfo.name} (- players)`);
+            const joinBtn = new Button(this, this.scale.width/2, i * 40 + 20, 400, 35, "button/button1", 16, `${serverInfo.name} (- players)`);
             
             joinBtn.onClick = () => {
                 this.joinServer(serverInfo.id);

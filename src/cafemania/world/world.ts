@@ -46,7 +46,6 @@ export class World extends BaseObject {
 
     private _game: Game;
     private _tileMap: TileMap;
-    private _shop: Shop;
     private _players = new Phaser.Structs.Map<string, Player>([]);
     private _playerCheff: PlayerCheff;
     private _sidewalkSize: number = 0;
@@ -61,7 +60,6 @@ export class World extends BaseObject {
         super();
         this._game = game;
         this._tileMap = new TileMap(this);
-        this._shop = new Shop(this);
 
         this.init();
     }

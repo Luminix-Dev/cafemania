@@ -7,7 +7,7 @@ export class TileItemFloor extends TileItem {
 
     constructor(tileItemInfo: TileItemInfo) {
         super(tileItemInfo);
-        this.defaultCollisionValue = true;
+        this.defaultCollisionValue = false;
     }
 
     public render(dt: number) {

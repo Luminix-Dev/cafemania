@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { BaseObject } from '../baseObject/baseObject';
 import { Debug } from '../debug/debug';
 import { DishFactory } from '../dish/dishFactory';
+import { Shop } from '../shop/shop';
 import { TileItemFactory } from '../tileItem/tileItemFactory';
 import { World } from '../world/world';
 
@@ -10,15 +11,18 @@ export class Game extends BaseObject {
     public get worlds() { return this._worlds.values(); }
     public get tileItemFactory() { return this._tileItemFactory; }
     public get dishFactory() { return this._dishFactory; }
+    public get shop() { return this._shop; }
     
     private _worlds = new Phaser.Structs.Map<string, World>([]);
     private _tileItemFactory: TileItemFactory;
     private _dishFactory: DishFactory;
+    private _shop: Shop;
 
     constructor() {
         super();
         this._tileItemFactory = new TileItemFactory();
         this._dishFactory = new DishFactory();
+        this._shop = new Shop(this);
         this.init();
     }
 

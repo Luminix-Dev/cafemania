@@ -52,19 +52,15 @@ export class PlayerClient extends Player {
     public update(dt: number) {
         super.update(dt);
         
-        if(this.world.sync != SyncType.SYNC) {
-            this.updateClientBehavior(dt);
-        }
-
         const chair = this.getChairPlayerIsSitting();
         if(chair) {
             const table = chair.getTableInFront();
             if(table) {
                 if(!table.isEmpty) {
                     this.setState(PlayerState.EATING);
-                    table.eatTime -= dt;
+                    table.currentEatTime -= dt;
 
-                    if(table.eatTime <= 0) {
+                    if(table.currentEatTime <= 0) {
 
                         
                         if(this.world.sync != SyncType.SYNC) {
@@ -74,7 +70,11 @@ export class PlayerClient extends Player {
                     }
                 }
             }
-            
+
+        }
+
+        if(this.world.sync != SyncType.SYNC) {
+            this.updateClientBehavior(dt);
         }
     }
 

@@ -22,6 +22,7 @@ export class AssetManager {
         this.addImage('tile', 'tile.png');
         this.addImage('tile2', 'tile2.png');
         this.addImage('button/button1', 'button/button1.png');
+        this.addImage('button/button_small_green', 'button/button_small_green.png');
         this.addImage('button/zoom_in', 'button/zoom_in.png');
         this.addImage('button/zoom_out', 'button/zoom_out.png');
         this.addImage('button/fullscreen', 'button/fullscreen.png');

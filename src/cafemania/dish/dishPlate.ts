@@ -83,7 +83,7 @@ export class DishPlate {
     }
 
     public setState(state: DishPlateState) {
-        if(state = this._state) return;
+        if(state == this._state) return;
 
         this._state = state;
         this.updateSprites();
@@ -98,10 +98,12 @@ export class DishPlate {
 
     private updateSprites() {
         
-        Debug.log("dish updateSprites");
+        Debug.log("dish updateSprites " + this._state);
 
         this._sprite.setFrame(this.getFrameKey());
 
+        console.log(this.getFrameKey())
+        
         const barSize = new Phaser.Structs.Size(50, 8);
 
         const graphics = this._graphics;
