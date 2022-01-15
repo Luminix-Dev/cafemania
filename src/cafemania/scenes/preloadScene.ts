@@ -2,6 +2,7 @@ import { AssetManager } from "../assetManager/assetManager";
 import { Debug } from "../debug/debug";
 import { Gameface } from "../gameface/gameface";
 import { PACKET_TYPE } from "../network/packet";
+import { BonePart } from "../playerTextureFactory/bonePart";
 import { Button } from "../ui/button";
 import { LoadScene } from "./loadScene";
 import { ServerListScene } from "./serverListScene";
@@ -82,23 +83,37 @@ export class PreloadScene extends Phaser.Scene {
 
     private async loadPlayerTextureFactory(loadScene: LoadScene) {
         const PlayerTextureFactory = (await import("../playerTextureFactory/playerTextureFactory")).PlayerTextureFactory
+        const PlayerSpritesheetGenerator = (await import("../playerTextureFactory/playerSpritesheetGenerator")).PlayerSpritesheetGenerator
 
         loadScene.addLoadTask('Loading player model', (async () => {
-            await PlayerTextureFactory.init('player_render_canvas');
-            //await PlayerTextureFactory.updateBodySkins();
+            await PlayerTextureFactory.init();
+            await PlayerTextureFactory.placeCameraAtDefaultPosition();
+
+            await PlayerTextureFactory.attachModelToBone('models/hair/1.glb', BonePart.HAIR);
+            await PlayerTextureFactory.attachModelToBone('models/shoes/1.glb', BonePart.FEET_L);
+            await PlayerTextureFactory.attachModelToBone('models/shoes/1.glb', BonePart.FEET_R);
+            await PlayerTextureFactory.updateBodySkins();
         }))
         
         const tag = 'PlayerSpriteTexture_';
         loadScene.addLoadTask('Loading player textures', (async () => {
-            await PlayerTextureFactory.generateTestPlayerSkin(tag + 'NoTexture', "#ffffff", ['Idle', 'Walk', 'Sit', 'Eat']);
+            await PlayerTextureFactory.setSkinColor("#ffffff");
+            await PlayerTextureFactory.updateBodySkins();
+            await PlayerSpritesheetGenerator.generate(tag + 'NoTexture', {animations: ['Idle', 'Walk', 'Sit', 'Eat']});
         }))
 
         loadScene.addLoadTask('Loading player textures', (async () => {
-            await PlayerTextureFactory.generateTestPlayerSkin(tag + 'Client', "#f5e17d", ['Idle', 'Walk', 'Sit', 'Eat']);
+            await PlayerTextureFactory.setSkinColor("#d7c85d");
+            await PlayerTextureFactory.updateBodySkins();
+
+            await PlayerSpritesheetGenerator.generate(tag + 'Client', {animations: ['Idle', 'Walk', 'Sit', 'Eat']});
         }))
 
         loadScene.addLoadTask('Loading player textures', (async () => {
-            await PlayerTextureFactory.generateTestPlayerSkin(tag + 'Waiter', "#FF6A44", ['Idle', 'Walk', 'Sit', 'Eat']);
+            await PlayerTextureFactory.setSkinColor("#5b76b5");
+            await PlayerTextureFactory.updateBodySkins();
+            await PlayerSpritesheetGenerator.generate(tag + 'Waiter', {animations: ['Idle', 'Walk', 'Sit', 'Eat']});
+            //await PlayerTextureFactory.generateTestPlayerSkin(tag + 'Waiter', "#FF6A44", ['Idle', 'Walk', 'Sit', 'Eat']);
         }))
     }
 }

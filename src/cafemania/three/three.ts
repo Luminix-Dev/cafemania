@@ -10,35 +10,58 @@ export interface ThreeModel {
 }
 
 export default class Three {
-    public static size = new Phaser.Math.Vector2(175*1.2, 200*1.2)
+    public static size = new Phaser.Math.Vector2(175*1.2, 200*1.2);
+    public static distance: number = 6; //5.5
+
     public static camera: THREE.OrthographicCamera
     public static scene: THREE.Scene
     public static renderer: THREE.WebGLRenderer
     private static _initialized: boolean = false;
 
     public static init() {
+        window["Three"] = Three;
 
         if(this._initialized) return;
         this._initialized = true;
 
         Debug.log("three init");
 
-        const size = this.size
-        const frustumSize = 5.5;
-        const aspect = size.x / size.y //window.innerWidth / window.innerHeight;
-        const camera = this.camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 1000 );
+        const width = this.size.x;
+        const height = this.size.y;
+        const camera = this.camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, -300, 300 );    
 
-        camera.position.set( -200, 200, 200 );
+        camera.position.set( -1, 1, 1 );
+        camera.lookAt( 0, 0, 0 );
+        camera.zoom = 40;
+        camera.updateProjectionMatrix();
+
+        /*
+        const size = this.size
+        const frustumSize = this.distance;
+        const aspect = size.x / size.y //window.innerWidth / window.innerHeight;
+        const camera = this.camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 10000 );
+        */
+
+        
 
         const scene = this.scene = new THREE.Scene();
 
+        /*
+        var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+        var material = new THREE.MeshPhongMaterial({color: 0xbaf5e8, flatShading: true});
+        var cube = new THREE.Mesh( geometry, material );
+        cube.receiveShadow = true;
+        scene.add(cube);
+        */
+
+
         //scene.background = new THREE.Color( 0xff0000 )
 
-        camera.lookAt( scene.position );
+        
 
         const renderer = this.renderer = new THREE.WebGLRenderer( { alpha: true, antialias: true, preserveDrawingBuffer: true } );
         renderer.setPixelRatio( 1 );
-        renderer.setSize( size.x, size.y );
+        renderer.setSize( width, height );
 
         const light = new THREE.AmbientLight( 0xffffff, 1 );
         scene.add( light );
@@ -46,8 +69,15 @@ export default class Three {
         //document.body.appendChild( this.renderer.domElement );
     }
 
-    public static setAngle(model: ThreeModel, deg: number) {
-        model.object.rotation.y = Phaser.Math.DegToRad(deg);
+    public static appendRenderer() {
+        this.renderer.domElement.style['background'] = '#ff00ff';
+        document.body.appendChild( this.renderer.domElement );
+    }
+
+    public static setRotation(model: ThreeModel, x: number, y: number, z: number) {
+        model.object.rotation.x = x;
+        model.object.rotation.y = y;
+        model.object.rotation.z = z;
     }
 
     public static animate() {
@@ -63,7 +93,8 @@ export default class Three {
             const gltf = await ThreeModelManager.get(path);
             const object = hasLoaded ? gltf.scene.clone() : gltf.scene
             scene.add(object);
-        
+            
+            
 
             const result: ThreeModel = {
                 object: object

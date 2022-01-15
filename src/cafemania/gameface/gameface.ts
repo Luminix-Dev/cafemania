@@ -17,6 +17,7 @@ import { AssetManager } from "../assetManager/assetManager";
 import { MainScene } from "../scenes/mainScene";
 import { Button } from "../ui/button";
 import { ServerListScene } from "../scenes/serverListScene";
+import { Test1Scene } from "../scenes/test1Scene";
 
 
 export class Gameface extends BaseObject {
@@ -112,6 +113,12 @@ export class Gameface extends BaseObject {
     }
 
     public onEnterMainMenu() {
+
+        //this.startScene(Test1Scene);
+
+
+        //return;
+
         const isSinglePlayer = false;
 
     
