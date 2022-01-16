@@ -16,7 +16,10 @@ export class Button {
         background.setInteractive();
         container.add(background);
 
-        const textgo = this._text = scene.add.text(0, 0, text, {color: "white"});
+
+        const textgo = this._text = scene.add.text(0, 0, text, {fontFamily: 'AlfaSlabOne-Regular', color: "#FFFFFF"});
+        //text3.setFontSize(12);
+        //text3.setStroke("#55330D", 10)
         textgo.setOrigin(0.5);
         container.add(textgo);
 

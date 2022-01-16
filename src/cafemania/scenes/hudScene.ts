@@ -7,6 +7,7 @@ import { ServerListInfo } from "../server/server";
 import { MenuItem } from "../shop/menu/menuItem";
 import { Button } from "../ui/button";
 import { GridLayout } from "../ui/gridLayout";
+import { DebugScene } from "./debugScene";
 import { GameScene } from "./gameScene";
 import { ServerListScene } from "./serverListScene";
 
@@ -24,8 +25,18 @@ export class HudScene extends Phaser.Scene {
         this.createZoomButtons();
 
 
-        //const menuItem1 = new MenuItem(this);
-        //menuItem1.container.setPosition(300, 300);
+        const text = this.add.text(20, 20, "211429", {fontFamily: 'AlfaSlabOne-Regular', color: "#FCE909"});
+        text.setFontSize(20);
+        text.setStroke("#55330D", 10)
+
+
+        const text2 = this.add.text(20, 60, "472 / 7600", {fontFamily: 'AlfaSlabOne-Regular', color: "#FFFFFF"});
+        text2.setFontSize(14);
+        text2.setStroke("#55330D", 10)
+
+        const text3 = this.add.text(20, 100, "+18 XP", {fontFamily: 'AlfaSlabOne-Regular', color: "#D3900E"});
+        text3.setFontSize(12);
+        text3.setStroke("#55330D", 10)
         
         
 
@@ -65,12 +76,14 @@ export class HudScene extends Phaser.Scene {
         const zoomIn = this.add.sprite(0, 0, 'button/zoom_in')
         const zoomOut = this.add.sprite(0, 0, 'button/zoom_out')
         const fullscreen = this.add.sprite(0, 0, 'button/fullscreen')
-        const test = this.add.sprite(0, 0, 'button/fullscreen')
+        const test = this.add.sprite(0, 0, 'button/button1')
+        const debug = this.add.sprite(0, 0, 'button/button1')
 
         zoomIn.setInteractive()
         zoomOut.setInteractive()
         fullscreen.setInteractive()
         test.setInteractive()
+        debug.setInteractive()
 
         const gameScene = GameScene.Instance
 
@@ -83,17 +96,23 @@ export class HudScene extends Phaser.Scene {
             state = !state;
             Gameface.Instance.game.worlds[0].toggleFloorCollision(state);
         })
+        debug.on('pointerdown', () => {
+            
+            DebugScene.Instance.showDebugText = !DebugScene.Instance.showDebugText;
+            
+        })
 
         const updateButtonsPosition = () => {
             const x = this.game.scale.gameSize.width - 35
 
-            const y = 200
+            const y = 100
             const o = 55
 
             zoomIn.setPosition(x, y + o)
             zoomOut.setPosition(x, y + o*2)
             fullscreen.setPosition(x, y + o*3)
             test.setPosition(x, y + o*5)
+            debug.setPosition(x, y + o*6)
         }
 
         //this.events.on("resize", () => updateButtonsPosition())

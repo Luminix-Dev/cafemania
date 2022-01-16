@@ -18,6 +18,7 @@ import { MainScene } from "../scenes/mainScene";
 import { Button } from "../ui/button";
 import { ServerListScene } from "../scenes/serverListScene";
 import { Test1Scene } from "../scenes/test1Scene";
+import { WorldTextManager } from "../worldText/worldTextManager";
 
 
 export class Gameface extends BaseObject {
@@ -68,12 +69,14 @@ export class Gameface extends BaseObject {
         
 
         //Camera.setScene(MainScene.Instance)
+        WorldTextManager.init(GameScene.Instance);
         Camera.setupMoveEvents();
     }
 
 
     public render(dt: number) {
         Camera.update(dt);
+        WorldTextManager.update(dt);
     }
 
     public toggleFullscreen() {
@@ -183,7 +186,7 @@ export class Gameface extends BaseObject {
 
     public createHud() {
         this.startScene(DebugScene);
-        this.startScene(MapGridScene);
+        //this.startScene(MapGridScene);
         this.startScene(HudScene);
 
         Input.addScene(HudScene.Instance);

@@ -193,7 +193,8 @@ export class WorldSyncHelper {
 
         for (const taskData of playerData.tasks) {
             
-            
+            console.warn("found task", taskData.action!)
+
 
 
             if(!player.taskManager.hasTask(taskData.taskId)) {
@@ -219,6 +220,7 @@ export class WorldSyncHelper {
                 }
 
                 if(taskData.taskType == PlayerTaskType.SPECIAL_ACTION) {
+                   
                     const task = new TaskPlaySpecialAction(player, taskData.action!, taskData.args!);
                     task.id = taskData.taskId;
                     player.taskManager.addTask(task);

@@ -15,7 +15,12 @@ interface IShopPlayerStoredData {
 
 
 export class Shop {
+    
+    public get money() { return this._money }
+    
     private _game: Game;
+    private _money: number = 10500;
+
     //private _storedPlayers: IShopPlayerStoredData[] = [];
 
     constructor(game: Game) {

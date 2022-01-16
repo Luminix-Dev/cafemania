@@ -310,7 +310,8 @@ export class Player extends BaseObject {
         console.log("added task", action, args)
 
         const task = new TaskPlaySpecialAction(this, action, args);
-        
+        task.timeToComplete = 1;
+
         if(callback) task.onComplete.push(callback);
 
         this._taskManager.addTask(task);
@@ -712,6 +713,8 @@ export class Player extends BaseObject {
             tasks: tasks
             //data: this.data
         }
+
+
         return data;
     }
     

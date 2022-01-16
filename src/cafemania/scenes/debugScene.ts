@@ -2,11 +2,13 @@ import { Debug } from "../debug/debug";
 
 export class DebugScene extends Phaser.Scene {
     public static Instance: DebugScene;
-
-    private _text: Phaser.GameObjects.Text;
     
+    public showDebugText: boolean = true;
+    
+    private _text: Phaser.GameObjects.Text;
     private _updateTextTime: number = -1;
     private _i = 0;
+
 
     constructor() {
         super({});
@@ -36,6 +38,11 @@ export class DebugScene extends Phaser.Scene {
     }
 
     public update(time: number, delta: number) {
+        if(!this.showDebugText) {
+            this._text.setText('');
+            return;
+        }
+
         this._updateTextTime += delta;
         if(this._updateTextTime < 10 && this._updateTextTime != -1) return;
         this.updateText();

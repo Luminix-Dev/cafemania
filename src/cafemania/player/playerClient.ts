@@ -3,6 +3,7 @@ import { TileItemChair } from "../tileItem/items/tileItemChair";
 import { Utils } from "../utils/utils";
 import { SyncType, World } from "../world/world";
 import { WorldEvent } from "../world/worldEvents";
+import { WorldTextManager } from "../worldText/worldTextManager";
 import { Player, PlayerState } from "./player";
 import { PlayerType } from "./playerType";
 
@@ -240,16 +241,23 @@ export class PlayerClient extends Player {
 
         if(action == "client_exit_cafe") {
             
+            console.error("exit cafe")
+
             const chair = this.getChairPlayerIsSitting();
 
+            
             if(chair) {
                 this.liftUpfromChair();
 
                 const table = chair.getTableInFront()!;
                 table.clearDish();
+
+                WorldTextManager.drawWorldText("tip", table.position.x, table.position.y - 50, 1500, 0.3);
             }
 
             this.exitCafe();
+
+            
 
         }
     }
