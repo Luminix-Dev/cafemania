@@ -13,7 +13,7 @@ export class MenuItem {
 
         
         const graphics = scene.add.graphics();
-        graphics.fillStyle(0xffffff);
+        graphics.fillStyle(0xffffff, 0.3);
         graphics.fillRect(0, 0, 280, 180);
         graphics.setInteractive(new Phaser.Geom.Rectangle(0, 0, 280, 180), Phaser.Geom.Rectangle.Contains);
         this._container.add(graphics);

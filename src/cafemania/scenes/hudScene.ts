@@ -6,6 +6,7 @@ import { PACKET_TYPE } from "../network/packet";
 import { ServerListInfo } from "../server/server";
 import { MenuItem } from "../shop/menu/menuItem";
 import { Button } from "../ui/button";
+import { GridLayout } from "../ui/gridLayout";
 import { GameScene } from "./gameScene";
 import { ServerListScene } from "./serverListScene";
 
@@ -26,7 +27,7 @@ export class HudScene extends Phaser.Scene {
         //const menuItem1 = new MenuItem(this);
         //menuItem1.container.setPosition(300, 300);
         
-
+        
 
         const backBtn = new Button(this, 70, this.scale.height - 40, 100, 35, "button/button1", 16, "Back");
         backBtn.onClick = () => {
