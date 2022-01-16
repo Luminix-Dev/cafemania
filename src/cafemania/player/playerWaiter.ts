@@ -4,6 +4,7 @@ import { TileItemCounter } from "../tileItem/items/tileItemCounter";
 import { TileItemTable } from "../tileItem/items/tileItemTable";
 import { Utils } from "../utils/utils";
 import { SyncType, World } from "../world/world";
+import { WorldTextManager } from "../worldText/worldTextManager";
 import { Player } from "./player";
 import { PlayerClient } from "./playerClient";
 import { PlayerType } from "./playerType";
@@ -161,6 +162,8 @@ export class PlayerWaiter extends Player {
                 table.maxEatTime = 8000;
                 table.setDish(dish);
                 table.isWaitingForDish = false;
+
+                WorldTextManager.drawWorldText("served", table.position.x, table.position.y - 50, 1500, 0.3);
             } catch (error) {
                 console.warn(error);
             }
