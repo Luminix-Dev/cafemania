@@ -7,6 +7,7 @@ import { ServerListInfo } from "../server/server";
 import { MenuItem } from "../shop/menu/menuItem";
 import { Button } from "../ui/button";
 import { GridLayout } from "../ui/gridLayout";
+import { MessageBox } from "../ui/messageBox";
 import { DebugScene } from "./debugScene";
 import { GameScene } from "./gameScene";
 import { ServerListScene } from "./serverListScene";
@@ -37,6 +38,7 @@ export class HudScene extends Phaser.Scene {
         const text3 = this.add.text(20, 100, "+18 XP", {fontFamily: 'AlfaSlabOne-Regular', color: "#D3900E"});
         text3.setFontSize(12);
         text3.setStroke("#55330D", 10)
+        
         
         
 

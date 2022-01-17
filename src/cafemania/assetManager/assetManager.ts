@@ -26,6 +26,9 @@ export class AssetManager {
         this.addImage('button/zoom_in', 'button/zoom_in.png');
         this.addImage('button/zoom_out', 'button/zoom_out.png');
         this.addImage('button/fullscreen', 'button/fullscreen.png');
+
+        this.addImage('messagebox/1', 'messagebox/1.png');
+        this.addImage('messagebox/1_bottom', 'messagebox/1_bottom.png');
         
         this.addImage('player/eye', 'player/eye.png');
 

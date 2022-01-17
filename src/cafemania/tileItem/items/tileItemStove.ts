@@ -3,10 +3,13 @@ import { Debug } from "../../debug/debug";
 import { Dish } from "../../dish/dish";
 import { DishPlate, DishPlateState } from "../../dish/dishPlate";
 import { Gameface } from "../../gameface/gameface";
+import { GameScene } from "../../scenes/gameScene";
 import { Menu } from "../../shop/menu/menu";
 import { Tile } from "../../tile/tile"
+import { MessageBox } from "../../ui/messageBox";
 import { SyncType } from "../../world/world";
 import { WorldEvent } from "../../world/worldEvents";
+import { WorldTextManager } from "../../worldText/worldTextManager";
 import { TileItem } from "../tileItem"
 import { TileItemInfo } from "../tileItemInfo";
 import { TileItemRender } from "../tileItemRender";
@@ -228,6 +231,8 @@ export class TileItemStove extends TileItem {
 
         counter.setAsChangedState();
 
+        //WorldTextManager.drawWorldText("ready", this.position.x, this.position.y - 50, 1500, 0.3);
+
         return true;
     }
 
@@ -269,4 +274,20 @@ export class TileItemStove extends TileItem {
     public unserializeData(data: StoveData) {
         this._data = data;
     };
+
+    private _testMessageBox?: MessageBox;
+
+    public onPointerOut() {
+        super.onPointerOut();
+
+        this._testMessageBox?.destroy();
+        this._testMessageBox = undefined;
+    }
+
+    public onPointerOver() {
+        super.onPointerOver();
+
+        const messageBox = this._testMessageBox = new MessageBox(GameScene.Instance, this.position.x, this.position.y - 45, 300, 70, '1', (22-7));
+
+    }
 }
