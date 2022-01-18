@@ -1,3 +1,4 @@
+import { Debug } from "../debug/debug";
 import { MoveTileItem } from "../shop/moveTileItem";
 
 export class Input {
@@ -22,12 +23,14 @@ export class Input {
         if(!this.mouseDown) return;
         this.mouseDown = false;
 
+        Debug.log('pointerup');
+        this.events.emit('pointerup', ev);
+
         if(this.isDragging) {
             this.isDragging = false;
+            Debug.log('enddrag');
             this.events.emit('enddrag', ev);
         }
-        
-        this.events.emit('pointerup', ev);
 
         this._movingScene = undefined;
     }
@@ -43,6 +46,7 @@ export class Input {
 
         console.log(this._dragStartPos)
 
+        Debug.log('pointerdown');
         this.events.emit('pointerdown', ev);
     }
 
@@ -65,7 +69,8 @@ export class Input {
                     this.isDragging = true;
                     this._dragStartPos.x = ev.position.x;
                     this._dragStartPos.y = ev.position.y;
-                    console.log("begin drag")
+                    
+                    Debug.log('begindrag');
                     this.events.emit('begindrag', ev);
 
                 }

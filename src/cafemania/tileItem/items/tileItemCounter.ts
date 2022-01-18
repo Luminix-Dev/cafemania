@@ -1,6 +1,8 @@
 import { Dish } from "../../dish/dish"
 import { DishPlate } from "../../dish/dishPlate"
+import { GameScene } from "../../scenes/gameScene";
 import { Tile } from "../../tile/tile"
+import { MessageBox } from "../../ui/messageBox";
 import { TileItem } from "../tileItem"
 import { TileItemInfo } from "../tileItemInfo";
 
@@ -131,5 +133,18 @@ export class TileItemCounter extends TileItem {
 
         this._dishPlate?.destroy();
         this._dishPlate = undefined;
+    }
+
+    public onPointerOut() {
+        super.onPointerOut();
+
+        GameScene.Instance.remomveMessageBoxAboveTileItem(); 
+    }
+
+    public onPointerOver() {
+        super.onPointerOver();
+
+        const messageBox = new MessageBox(GameScene.Instance, this.position.x, this.position.y - 45, 200, 70, '1', (22-7));
+        GameScene.Instance.setMessageBoxAboveTileItem(messageBox); 
     }
 }

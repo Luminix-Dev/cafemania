@@ -22,7 +22,7 @@ export class MoveTileItem {
     public static init() {
         Input.events.on("pointerup", () => {
             
-            Debug.log('pointerup');
+            
 
             if(this.isMovingAnyTileItem) {
                 this.stopMoving();
@@ -31,7 +31,6 @@ export class MoveTileItem {
         })
 
         Input.events.on("pointerdown", () => {
-            Debug.log('pointerdown');
         })
 
         Input.events.on("pointermove", (ev) => {
@@ -39,7 +38,6 @@ export class MoveTileItem {
 
         Input.events.on("begindrag", () => {
             
-            Debug.log('begindrag');
 
 
             if(this._selectedTileItem != undefined) {
@@ -81,6 +79,9 @@ export class MoveTileItem {
         })
 
         world.events.on(WorldEvent.TILE_ITEM_POINTER_UP, (tileItem: TileItem) => {
+            Debug.log("tile_item_pointer_up")
+
+            console.warn("isdragging", Input.isDragging)
 
             if(tileItem.tileItemInfo.type == TileItemType.FLOOR || tileItem.tileItemInfo.type == TileItemType.WALL || tileItem.tileItemInfo.type == TileItemType.STOVE) return;
 
@@ -135,6 +136,7 @@ export class MoveTileItem {
 
         if(hoveringTileItem.tileItemInfo.type != TileItemType.FLOOR) return false;
 
+        if(hoveringTileItem.tile == movingTileItem.tile) return false;
 
         const world = movingTileItem.world;
 

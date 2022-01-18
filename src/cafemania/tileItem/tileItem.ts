@@ -4,9 +4,11 @@ import { BaseObject } from "../baseObject/baseObject";
 import { Debug } from "../debug/debug";
 import { Input } from '../input/input';
 import { GameScene } from "../scenes/gameScene";
+import { Menu } from '../shop/menu/menu';
 import { Tile } from "../tile/tile";
 import { DebugText } from '../utils/debugText';
 import { Direction } from '../utils/direction';
+import { EventRegister } from '../utils/eventRegister';
 import { WorldEvent } from '../world/worldEvents';
 import { TileItemInfo, TileItemPlaceType, TileItemRotationType, TileItemType } from "./tileItemInfo";
 import { TileItemRender } from "./tileItemRender";
@@ -39,6 +41,8 @@ export class TileItem extends BaseObject {
 
     private _canStartMove = false;
 
+    private _eventRegister: EventRegister;
+
 
     private _isSelected: boolean = false;
     private _isMoving: boolean = false;
@@ -59,6 +63,7 @@ export class TileItem extends BaseObject {
     constructor(tileItemInfo: TileItemInfo) {
         super();
         this._tileItemInfo = tileItemInfo;
+        this._eventRegister = new EventRegister(this);
     }
 
     public update(dt: number) {
@@ -93,28 +98,44 @@ export class TileItem extends BaseObject {
             this.updateSpritesLayer();
 
             //
-            this.tileItemRender.events.on("pointerdown", () => {
-                this.onPointerDown();
-                this.world.events.emit(WorldEvent.TILE_ITEM_POINTER_DOWN, this);
+
+            const onPointerDown = () => {
+                if(Menu.isOpen) return;
                 
-            });
-            this.tileItemRender.events.on("pointerup", () => {
-                this.onPointerUp();
-                this.world.events.emit(WorldEvent.TILE_ITEM_POINTER_UP, this);
-            })
-            this.tileItemRender.events.on("pointerover", () => {
+                if(this._isPointerOver) {
+                    this.onPointerDown();
+                    this.world.events.emit(WorldEvent.TILE_ITEM_POINTER_DOWN, this); 
+                }
+            }
+
+            const onPointerUp = () => {
+                if(Menu.isOpen) return;
+
+                if(this._isPointerOver) {
+                    this.onPointerUp();
+                    this.world.events.emit(WorldEvent.TILE_ITEM_POINTER_UP, this);
+                }
+            }
+
+            const onPointerOver = () => {
+                if(Menu.isOpen) return;
+
                 this.onPointerOver();
                 this.world.events.emit(WorldEvent.TILE_ITEM_POINTER_OVER, this);
+            }
 
-            });
-            this.tileItemRender.events.on("pointerout", () => {
+            const onPointerOut = () => {
+                console.log("\n\nou\n\n")
+
                 this.onPointerOut();
                 this.world.events.emit(WorldEvent.TILE_ITEM_POINTER_OUT, this);
-            });
-            
-            //
-            
+            }
 
+            this._eventRegister.addListener(Input.events, "pointerdown", onPointerDown);
+            this._eventRegister.addListener(Input.events, "pointerup", onPointerUp);
+            this._eventRegister.addListener(this.tileItemRender.events, "pointerover", onPointerOver);
+            this._eventRegister.addListener(this.tileItemRender.events, "pointerout", onPointerOut);
+            
         }
 
         
@@ -137,6 +158,10 @@ export class TileItem extends BaseObject {
 
         this.debugText.setTextLine("sel", this._isSelected ? "selected" : "not selected")
 
+
+    }
+    
+    private removeEventListeners() {
 
     }
 
@@ -259,10 +284,12 @@ export class TileItem extends BaseObject {
     }
 
     public destroyVisuals() {
+        Debug.log("destroy tileItem visuals");
         this._hasCreatedSprites = false;
         this._tileItemRender?.destroy();
         this._tileItemRender = undefined;
         this._debugText.setEnabled(false);
+        this._eventRegister.removeAllListeners();
     }
 
     public setPosition(x: number, y: number) {

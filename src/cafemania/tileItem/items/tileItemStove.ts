@@ -128,7 +128,7 @@ export class TileItemStove extends TileItem {
     public onPointerUp() {
         super.onPointerUp();
 
-       
+        this.onPointerOut();
         Menu.show(this);
 
         /*
@@ -275,19 +275,17 @@ export class TileItemStove extends TileItem {
         this._data = data;
     };
 
-    private _testMessageBox?: MessageBox;
 
     public onPointerOut() {
         super.onPointerOut();
 
-        this._testMessageBox?.destroy();
-        this._testMessageBox = undefined;
+        GameScene.Instance.remomveMessageBoxAboveTileItem(); 
     }
 
     public onPointerOver() {
         super.onPointerOver();
 
-        const messageBox = this._testMessageBox = new MessageBox(GameScene.Instance, this.position.x, this.position.y - 45, 300, 70, '1', (22-7));
-
+        const messageBox = new MessageBox(GameScene.Instance, this.position.x, this.position.y - 45, 300, 70, '1', (22-7));
+        GameScene.Instance.setMessageBoxAboveTileItem(messageBox); 
     }
 }

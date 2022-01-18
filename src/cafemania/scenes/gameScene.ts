@@ -2,6 +2,8 @@ import { Camera } from "../camera/camera";
 import { Debug } from "../debug/debug";
 import { Gameface } from "../gameface/gameface";
 import { Input } from "../input/input";
+import { TileItem } from "../tileItem/tileItem";
+import { MessageBox } from "../ui/messageBox";
 import { MoveScene } from "../utils/moveScene";
 import { World } from "../world/world";
 import { MapGridScene } from "./mapGridScene";
@@ -18,6 +20,17 @@ export class GameScene extends Phaser.Scene {
     public layerFloor: Phaser.GameObjects.Layer;
     public layerObjects: Phaser.GameObjects.Layer;
     public layerTop: Phaser.GameObjects.Layer;
+
+    public messageBoxAboveTileItem?: MessageBox;
+
+    public setMessageBoxAboveTileItem(messageBox: MessageBox) {
+        this.messageBoxAboveTileItem = messageBox;
+    }
+
+    public remomveMessageBoxAboveTileItem() {
+        this.messageBoxAboveTileItem?.destroy();
+        this.messageBoxAboveTileItem = undefined;
+    }
 
     constructor() {
         super({});
