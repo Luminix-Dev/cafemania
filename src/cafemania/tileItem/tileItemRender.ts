@@ -3,6 +3,7 @@ import { Debug } from "../debug/debug";
 import { Gameface } from "../gameface/gameface";
 import { Grid } from "../grid/grid";
 import { GameScene } from "../scenes/gameScene";
+import { NewTileCollisionFactory } from "../tile/newTileCollisionFactory";
 import { Tile } from "../tile/tile";
 import { TileCollisionFactory } from "../tile/tileCollisionFactory";
 import { TileTextureGenerator } from "../tileTextureGenerator/tileTextureGenerator";
@@ -14,7 +15,7 @@ interface Sprite {
     y: number
     extraLayer: number
     image?: Phaser.GameObjects.Image
-    collisionSprite?: Phaser.GameObjects.Graphics
+    collisionSprite?: Phaser.GameObjects.Graphics;
     collisionShape?: Phaser.Geom.Polygon
 }
 
@@ -198,6 +199,8 @@ export class TileItemRender extends BaseObject {
             position.x += this._position.x
             position.y += this._position.y
             
+
+            
             //position.y -= sprite.extraLayer * 30;
        
             const tileItemInfo = this._tileItemInfo;
@@ -228,8 +231,10 @@ export class TileItemRender extends BaseObject {
             if(collision)
             {
 
+                /*
 
                 //collision.setPosition(position.x - Math.ceil(Tile.SIZE.x/2), position.y - Math.ceil(Tile.SIZE.y/2) - Tile.SIZE.y)
+                
                 const add = new Phaser.Math.Vector2(
                     -Math.ceil(Tile.SIZE.x/2) - Tile.SIZE.x,
                     -Math.ceil(Tile.SIZE.y/2)
@@ -241,6 +246,18 @@ export class TileItemRender extends BaseObject {
                 )
 
                 if(changeRotation) collisionPos.x += Tile.SIZE.x
+
+                collision.setPosition(
+                    collisionPos.x,
+                    collisionPos.y
+                )
+
+                */
+
+                const collisionPos = new Phaser.Math.Vector2(
+                    position.x,
+                    position.y
+                )
 
                 collision.setPosition(
                     collisionPos.x,
@@ -311,6 +328,8 @@ export class TileItemRender extends BaseObject {
 
         let points: Phaser.Math.Vector2[] = []
 
+        let topPoints: Phaser.Math.Vector2[] = [];
+
         if(tileItemInfo.collision.isWall)
         {
             offsetY[0] -= tileItemInfo.collision.height
@@ -318,27 +337,46 @@ export class TileItemRender extends BaseObject {
 
             const atFront = tileItemInfo.collision.wallAtFront === true
 
-            points = TileCollisionFactory.getWallCollisionPoints(atFront,
+            points = NewTileCollisionFactory.getWallCollisionPoints(atFront,
                 offsetX,
                 offsetY,
                 tileItemInfo.collision.wallSize || 0
             )
+
+            
         }
         else
         {
-            points = TileCollisionFactory.getBlockCollisionPoints(
+            points = NewTileCollisionFactory.getBlockCollisionPoints(
                 offsetX,
                 offsetY,
                 tileItemInfo.collision.height
             )
         }
 
+    
+        const drawCircle = (x: number, y: number) => {
+            const c = GameScene.Instance.add.circle(x, y, 10, 0xff0000);
+            c.setDepth(100000)
+        }
+
+        for (const point of topPoints) {
+            drawCircle(point.x, point.y);
+        }
+
+       
+
+
+
         const collisionSprite = sprite.collisionSprite = scene.add.graphics();
         const collisionShape = sprite.collisionShape = new Phaser.Geom.Polygon(points);
 
+        //collisionSprite.setOrigin(0.5, 0.5)
+        collisionSprite.fillStyle(0xff0000, 0.2);
+        collisionSprite.fillPoints(points);
+
 
         //const collisionBox = sprite.collision = scene.add.polygon(0, 0, points, 0, 0)
-        //collisionBox.setOrigin(0, 0)
 
         collisionSprite.setInteractive(
             new Phaser.Geom.Polygon(points),
@@ -382,17 +420,17 @@ export class TileItemRender extends BaseObject {
             //collisionSprite.setFillStyle(color, alphaHover)
             self.events.emit?.("pointerover")
 
-            draw(0xff0000);
+            //draw(0xff0000);
         });
 
         collisionSprite.on('pointerout', function (pointer) {
             //collision.setFillStyle(color, alpha)
             self.events.emit?.("pointerout")
 
-            draw(0);
+            //draw(0);
         });
 
-        draw(0);
+        //draw(0);
     }
 
     public static valuesFromDirection(direction: Direction) {

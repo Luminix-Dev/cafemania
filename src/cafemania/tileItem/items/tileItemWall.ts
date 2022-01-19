@@ -11,6 +11,7 @@ export class TileItemWall extends TileItem {
     constructor(tileItemInfo: TileItemInfo) {
         super(tileItemInfo);
         this.rotateOnLeftClick = false;
+        this.defaultCollisionValue = false;
     }
 
     public getDoorInFront(): TileItemDoor | undefined {

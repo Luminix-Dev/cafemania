@@ -643,7 +643,7 @@ export class Player extends BaseObject {
 
         if(this._sprite) this._sprite.destroy();
 
-        const sprite = this._sprite = scene.add.sprite(0, 30, textureName);
+        const sprite = this._sprite = scene.add.sprite(0, 42, textureName);
         sprite.setScale(1.05);
         sprite.setOrigin(0.5, 1);
         sprite.setFrame(`Idle_0_0`);

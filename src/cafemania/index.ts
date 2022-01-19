@@ -6,6 +6,7 @@ import { DebugScene } from "./scenes/debugScene";
 import { GameScene } from "./scenes/gameScene";
 import { MoveTileItem } from "./shop/moveTileItem";
 import { Shop } from "./shop/shop";
+import { TileHoverDetection } from "./shop/tileHoverDetection";
 import { Tile } from "./tile/tile";
 
 console.log("cafemania index");
@@ -22,3 +23,4 @@ window['Input'] = Input;
 window['Tile'] = Tile;
 window['Shop'] = Shop;
 window['MoveTileItem'] = MoveTileItem;
+window['TileHoverDetection'] = TileHoverDetection;

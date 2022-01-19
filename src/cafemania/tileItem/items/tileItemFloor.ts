@@ -37,8 +37,6 @@ export class TileItemFloor extends TileItem {
 
     public onPointerUp() {
         super.onPointerUp();
-
-        Gameface.Instance.network.sendMovePlayer(this.tile.x, this.tile.y);
         //this.tile.tileMap.world.getPlayerCheff()?.taskWalkToTile(this.tile);
     }
 }

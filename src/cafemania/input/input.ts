@@ -1,4 +1,5 @@
 import { Debug } from "../debug/debug";
+import { GameScene } from "../scenes/gameScene";
 import { MoveTileItem } from "../shop/moveTileItem";
 
 export class Input {
@@ -15,9 +16,12 @@ export class Input {
 
     private static _movingScene?: Phaser.Scene;
     
+    //private static _updatedGameScene: boolean = false;
+
     public static simulatePointerUp(pointer) {
         this.onPointerUp(pointer);
     }
+    
 
     private static onPointerUp(ev) {
         if(!this.mouseDown) return;
@@ -50,16 +54,22 @@ export class Input {
         this.events.emit('pointerdown', ev);
     }
 
+    private static updateMouseWorldPosition(scene) {
+        if(scene == GameScene.Instance) {
+            this._sceneWorldPosition.x = scene.input.activePointer.worldX;
+            this._sceneWorldPosition.y = scene.input.activePointer.worldY;
+        }
+    }
+
     private static onPointerMove(scene: Phaser.Scene, ev) {
         this.mousePosition.x = ev.x;
         this.mousePosition.y = ev.y;
-
+        
         if(!this._movingScene) this._movingScene = scene;
 
         if(this._movingScene != scene) return;
         
-        this._sceneWorldPosition.x = scene.input.activePointer.worldX;
-        this._sceneWorldPosition.y = scene.input.activePointer.worldY;
+        
 
         if(this.mouseDown) {
             if(!this.isDragging) {
@@ -82,9 +92,23 @@ export class Input {
     public static addScene(scene: Phaser.Scene) {
         console.log("input add scene", scene);
 
-        scene.input.on('pointerup', this.onPointerUp.bind(this));
-        scene.input.on('pointerdown', this.onPointerDown.bind(this));
+        scene.input.on('pointerup', pointer => {
+            this.updateMouseWorldPosition(scene);
+            this.onPointerUp(pointer);
+        });
+        scene.input.on('pointerdown', pointer => {
+            //GameScene.Instance.input.
+            
+            //Debug.log(`pointerdownev ${scene.constructor.name} ${pointer.worldX} ${pointer.worldY}`)
+            //Debug.log(`pointerdownev ${scene.constructor.name} ${pointer.worldX} ${pointer.worldY}`)
+
+            console.log(scene)
+
+            this.updateMouseWorldPosition(scene);
+            this.onPointerDown(pointer);
+        });
         scene.input.on('pointermove', pointer => {
+            this.updateMouseWorldPosition(scene);
             this.onPointerMove(scene, pointer);
         });
     }

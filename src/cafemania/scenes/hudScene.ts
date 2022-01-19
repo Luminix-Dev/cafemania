@@ -6,7 +6,6 @@ import { PACKET_TYPE } from "../network/packet";
 import { ServerListInfo } from "../server/server";
 import { MenuItem } from "../shop/menu/menuItem";
 import { Button } from "../ui/button";
-import { GridLayout } from "../ui/gridLayout";
 import { MessageBox } from "../ui/messageBox";
 import { DebugScene } from "./debugScene";
 import { GameScene } from "./gameScene";

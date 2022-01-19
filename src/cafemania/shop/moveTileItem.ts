@@ -5,6 +5,7 @@ import { TileItem } from "../tileItem/tileItem";
 import { TileItemType } from "../tileItem/tileItemInfo";
 import { World } from "../world/world";
 import { WorldEvent } from "../world/worldEvents";
+import { TileHoverDetection } from "./tileHoverDetection";
 
 export class MoveTileItem {
     public static get isMovingAnyTileItem() { return this._movingTileItem != undefined; }
@@ -19,21 +20,39 @@ export class MoveTileItem {
 
     private static _world: World;
 
+    private static _hoveringWallOrFloor?: TileItem;
+
     public static init() {
         Input.events.on("pointerup", () => {
-            
-            
-
             if(this.isMovingAnyTileItem) {
                 this.stopMoving();
             }
-
         })
 
         Input.events.on("pointerdown", () => {
         })
 
         Input.events.on("pointermove", (ev) => {
+            
+            if(this.isMovingAnyTileItem) {
+
+                const wallOrFloor = TileHoverDetection.testTileItem(Input.getMouseWorldPosition())
+
+
+                if(wallOrFloor) {
+
+                    if(this._hoveringWallOrFloor != wallOrFloor) {
+                        this._hoveringWallOrFloor = wallOrFloor;
+
+                        this.tryPlaceMovingTileItemAtTileItem(this._hoveringWallOrFloor);
+                        console.log("try place here")
+                    }
+                }
+                
+
+                
+                console.log("moveing")
+            }
         })
 
         Input.events.on("begindrag", () => {
@@ -103,17 +122,22 @@ export class MoveTileItem {
             }
         })
 
+
+        
         world.events.on(WorldEvent.TILE_ITEM_POINTER_OVER, (tileItem: TileItem) => {
             this._hoveringTileItem = tileItem;
 
+            /*
             if(this.isMovingAnyTileItem) {
                 this.tryPlaceMovingTileItemAtTileItem();
             }
+            */
         })
 
         world.events.on(WorldEvent.TILE_ITEM_POINTER_OUT, (tileItem: TileItem) => {
             this._hoveringTileItem = undefined;
         })
+        
     }
 
     public static startMove(tileItem: TileItem) {
@@ -122,33 +146,26 @@ export class MoveTileItem {
         this._movingTileItem = tileItem;
 
         tileItem.setIsMoving(true);
-
-        this._world.toggleAllItemsCollision(false);
-        this._world.toggleFloorCollision(true);
     }
 
 
-    private static tryPlaceMovingTileItemAtTileItem() {
+    private static tryPlaceMovingTileItemAtTileItem(atTileItem: TileItem) {
         const movingTileItem = this._movingTileItem;
-        const hoveringTileItem = this._hoveringTileItem;
 
-        if(!movingTileItem || !hoveringTileItem) return false;
+        if(!movingTileItem || !atTileItem) return false;
 
-        if(hoveringTileItem.tileItemInfo.type != TileItemType.FLOOR) return false;
+        if(atTileItem.tileItemInfo.type != TileItemType.FLOOR) return false;
 
-        if(hoveringTileItem.tile == movingTileItem.tile) return false;
+        if(atTileItem.tile == movingTileItem.tile) return false;
 
         const world = movingTileItem.world;
 
-        //const canBePlaced = world.tileMap.canTileItemBePlacedAtTile(movingTileItem, hoveringTileItem.tile);
+        //const canBePlaced = world.tileMap.canTileItemBePlacedAtTile(movingTileItem, atTileItem.tile);
 
-        const canBePlaced = world.tryMoveTileItem(movingTileItem, hoveringTileItem.tile)
+        const canBePlaced = world.tryMoveTileItem(movingTileItem, atTileItem.tile)
         
         if(canBePlaced) {
-            this._placeAtTile = hoveringTileItem.tile;
-
-            //world.moveTileItem(movingTileItem, hoveringTileItem.tile);
-
+            this._placeAtTile = atTileItem.tile;
         }
         
         return canBePlaced;

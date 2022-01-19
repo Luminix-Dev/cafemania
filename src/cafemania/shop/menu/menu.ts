@@ -1,7 +1,7 @@
 import { Dish } from "../../dish/dish";
+import { GameScene } from "../../scenes/gameScene";
 import { HudScene } from "../../scenes/hudScene";
 import { TileItemStove } from "../../tileItem/items/tileItemStove";
-import { GridLayout } from "../../ui/gridLayout";
 import { GridList } from "../../ui/gridList";
 import { WorldTextManager } from "../../worldText/worldTextManager";
 import { MenuItem } from "./menuItem";
@@ -16,7 +16,7 @@ export class Menu {
         if(this._isOpen) return;
         this._isOpen = true;
 
-        const scene = HudScene.Instance;
+        const scene = GameScene.Instance;
         const world = stove.world;
         const dishFactory = world.game.dishFactory;
         
@@ -57,6 +57,7 @@ export class Menu {
         gridList.show();
 
         gridList.container?.setPosition(60, 60);
+        GameScene.Instance.hudContainer.add(gridList.container!);
     }
 
     public static hide() {

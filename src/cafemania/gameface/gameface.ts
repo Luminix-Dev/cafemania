@@ -19,6 +19,8 @@ import { Button } from "../ui/button";
 import { ServerListScene } from "../scenes/serverListScene";
 import { Test1Scene } from "../scenes/test1Scene";
 import { WorldTextManager } from "../worldText/worldTextManager";
+import { TileHoverDetection } from "../shop/tileHoverDetection";
+import { Hud } from "../hud/hud";
 
 
 export class Gameface extends BaseObject {
@@ -58,19 +60,17 @@ export class Gameface extends BaseObject {
 
         AssetManager.init();
         AssetManager.initAssets();
-        MoveTileItem.init();
-
+        
         this.startScene(MainScene);
         this.startScene(GameScene);
         this.startScene(PreloadScene);
 
-        Input.addScene(MainScene.Instance);
         Input.addScene(GameScene.Instance);
-        
-
-        //Camera.setScene(MainScene.Instance)
-        WorldTextManager.init(GameScene.Instance);
+        Camera.setScene(GameScene.Instance);
         Camera.setupMoveEvents();
+        MoveTileItem.init();
+        WorldTextManager.init(GameScene.Instance);
+        TileHoverDetection.init();
     }
 
 
@@ -117,6 +117,13 @@ export class Gameface extends BaseObject {
 
     public onEnterMainMenu() {
 
+        this.startScene(DebugScene);
+    
+
+        Hud.createHudButtons();
+
+        //GameScene.Instance.test1();
+
         //this.startScene(Test1Scene);
 
 
@@ -158,19 +165,13 @@ export class Gameface extends BaseObject {
             world.generateBaseWorld();
         }
 
-        this.createGameScene(world);
+        GameScene.startNewScene(world);
+        MoveTileItem.setWorld(world);
+        Camera.setZoom(1)
 
         return world;
     }
 
-    public createGameScene(world: World) {
-        GameScene.startNewScene(world);
-        MoveTileItem.setWorld(world);
-
-        this.updateScenesOrder();
-
-        Camera.setZoom(1)
-    }
 
     public destroyGameScene() {
         WorldSyncHelper.setWorld(undefined);
@@ -185,11 +186,13 @@ export class Gameface extends BaseObject {
     }
 
     public createHud() {
+        return;
+
         this.startScene(DebugScene);
         //this.startScene(MapGridScene);
         this.startScene(HudScene);
 
-        Input.addScene(HudScene.Instance);
+        //Input.addScene(HudScene.Instance);
     }
 
     public setHudVisible(visible: boolean) {

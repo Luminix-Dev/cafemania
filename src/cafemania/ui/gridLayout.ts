@@ -4,94 +4,160 @@ export class GridLayout {
     private _scene: Phaser.Scene;
     private _size: Phaser.Math.Vector2;
     private _itemSize: Phaser.Math.Vector2;
-    private _padding: number;
+    private _padding: Phaser.Math.Vector2;
 
-    private _container?: Phaser.GameObjects.Container;
+    private _container: Phaser.GameObjects.Container;
 
+    private _customAmountOfItemsPerPage = new Phaser.Math.Vector2(1, 1);
+    private _useCustomAmountOfItemsPerPage: boolean = false;
 
-    constructor(scene: Phaser.Scene, width: number, height: number, itemWidth: number, itemHeight: number, padding: number = 0) {
+    private _visualsGraphics: Phaser.GameObjects.Graphics[] = [];
+
+    constructor(scene: Phaser.Scene, width: number, height: number, itemWidth: number, itemHeight: number, paddingX: number, paddingY: number) {
         this._scene = scene;
         this._size = new Phaser.Math.Vector2(width, height);
         this._itemSize = new Phaser.Math.Vector2(itemWidth, itemHeight);
-        this._padding = padding;
+        this._padding = new Phaser.Math.Vector2(paddingX, paddingY);
 
-        const container = this._container = scene.add.container();
-
-        const graphics = scene.add.graphics();
-        graphics.fillStyle(0xff0000);
-        graphics.fillRect(0, 0, width, height);
-
-        container.add(graphics);
+        this._container = scene.add.container();
 
         this.createVisuals();
+
+        this.getItemsPerPage();
+    }
+
+    public setItemsPerPage(itemsX: number, itemsY: number) {
+        this._customAmountOfItemsPerPage.set(itemsX, itemsY);
+        this._useCustomAmountOfItemsPerPage = true;
+
+        this.destroyVisuals();
+        this.createVisuals();
+    }
+
+    public getItemsPerPage() {
+        if(this._useCustomAmountOfItemsPerPage) return this._customAmountOfItemsPerPage;
+
+        const size = this._size;
+        const itemSize = this._itemSize;
+        const padding = this._padding;
+
+        const itemsPerPage = new Phaser.Math.Vector2(0, 0);
+
+        for (let y = 0; y < size.y; y += itemSize.y) {
+            //console.log("test y", y, 'to', y + itemSize.y)
+
+            if((y + itemSize.y) <= size.y) itemsPerPage.y++;
+            y += padding.y;
+        }
+
+        for (let x = 0; x < size.x; x += itemSize.x) {
+            //console.log("test x", x, 'to', x + itemSize.x)
+
+            if((x + itemSize.x) <= size.x) itemsPerPage.x++;
+            x += padding.x;
+        }
+
+        return itemsPerPage;
     }
 
     private createVisuals() {
         const scene = this._scene;
-        const container = this._container!;
+        const container = this.container;
+        const size = this._size;
+
+        const background = scene.add.graphics();
+        background.fillStyle(0xE5F7FF);
+        background.fillRect(0, 0, size.x, size.y);
+        container.add(background);
+
+        //
         const itemsPerPage = this.getItemsPerPage();
+
+        const area = this.getAreaItemsInPageOcuppes(itemsPerPage.x, itemsPerPage.y);
+        const backgroundArea = scene.add.graphics();
+        backgroundArea.fillStyle(0xA0ADB2);
+        backgroundArea.fillRect((size.x - area.x) / 2, (size.y - area.y) / 2, area.x, area.y);
+        container.add(backgroundArea);
+
+        //
         
         for (let y = 0; y < itemsPerPage.y; y++) {
             for (let x = 0; x < itemsPerPage.x; x++) {
                 const item = scene.add.graphics();
                 container.add(item);
 
-                item.fillStyle(0xffff00 + Math.random() * 1000);
+                const color = (x+y)%2 == 0 ? 0x6D6D6D : 0x000000;
+
+                item.fillStyle(color, 0.5);
                 item.fillRect(0, 0, this._itemSize.x, this._itemSize.y);
                 
                 const position = this.getItemPosition(x, y);
                 item.setPosition(position.x, position.y);
 
+                this._visualsGraphics.push(item)
             }
         }
+
+        this._visualsGraphics.push(background)
+        this._visualsGraphics.push(backgroundArea)
     }
-    
+
+    private destroyVisuals() {
+        for (const graphics of this._visualsGraphics) {
+            graphics.destroy();
+        }
+
+        this._visualsGraphics = [];
+    }
+
     public getItemPosition(x: number, y: number) {
         const position = new Phaser.Math.Vector2();
-        const extraOffset = this.getExtraOffset();
-        const itemsPerPage = this.getItemsPerPage();
         const padding = this._padding;
 
-        position.x = x * this._itemSize.x + extraOffset.x/2;
-        position.y = y * this._itemSize.y + extraOffset.y/2;
+        const itemsPerPage = this.getItemsPerPage();
+        const size = this._size;
+        const itemSize = this._itemSize;
+        const area = this.getAreaItemsInPageOcuppes(itemsPerPage.x, itemsPerPage.y);
 
-        position.x += (x)*padding;
-        position.y += (y)*padding;
-        
-        position.x -= (itemsPerPage.x-1)*padding/2;
-        position.y -= (itemsPerPage.x-1)*padding/2;
-        
+        position.x = x * itemSize.x //+ extraOffset.x/2;
+        position.y = y * itemSize.y //+ extraOffset.y/2;
+
+        position.x += x * padding.x;
+        position.y += y * padding.y;
+     
+        position.x += (size.x - area.x) / 2;
+        position.y += (size.y - area.y) / 2;
         
         return position;
     }
 
     public getItemCenterPosition(x: number, y: number) {
         const position = this.getItemPosition(x, y);
-       
-        position.x += this._itemSize.x/2;
-        position.y += this._itemSize.y/2;
+        const itemSize = this._itemSize;
+
+        position.x += itemSize.x / 2;
+        position.y += itemSize.y / 2;
 
         return position;
     }
-    
-    public getItemsPerPage() {
-        return new Phaser.Math.Vector2(
-            Math.floor(this._size.x/this._itemSize.x),
-            Math.floor(this._size.y/this._itemSize.y)
-        )
-    }
 
-    public getExtraOffset() {
-        const itemsPerPage = this.getItemsPerPage();
-        const offset = new Phaser.Math.Vector2();
+    private getAreaItemsInPageOcuppes(itemsX: number, itemsY: number) {
+        const itemsPerPage = new Phaser.Math.Vector2(itemsX, itemsY);
+        const itemSize = this._itemSize;
+        const padding = this._padding;
 
-        offset.x = this._size.x - (itemsPerPage.x * this._itemSize.x);
-        offset.y = this._size.y - (itemsPerPage.y * this._itemSize.y);
+        const area = new Phaser.Math.Vector2(0, 0);
 
-        return offset;
+        area.x += itemsPerPage.x * itemSize.x;
+        area.y += itemsPerPage.y * itemSize.y;
+        
+        area.x += (itemsPerPage.x-1) * padding.x;
+        area.y += (itemsPerPage.y-1) * padding.y;
+
+        return area;
     }
 
     public destroy() {
-        //need to destroy things
+        
     }
 }

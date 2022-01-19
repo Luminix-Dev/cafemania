@@ -131,10 +131,21 @@ export class TileItem extends BaseObject {
                 this.world.events.emit(WorldEvent.TILE_ITEM_POINTER_OUT, this);
             }
 
+            const onPointerDown_Outside = () => {
+                Debug.log("onPointerDown_Outside")
+            }
+
+            const onPointerUp_Outside = () => {
+                Debug.log("onPointerUp_Outside")
+            }
+
             this._eventRegister.addListener(Input.events, "pointerdown", onPointerDown);
             this._eventRegister.addListener(Input.events, "pointerup", onPointerUp);
             this._eventRegister.addListener(this.tileItemRender.events, "pointerover", onPointerOver);
             this._eventRegister.addListener(this.tileItemRender.events, "pointerout", onPointerOut);
+
+            this._eventRegister.addListener(this.tileItemRender.events, "pointerdownoutside", onPointerDown_Outside);
+            this._eventRegister.addListener(this.tileItemRender.events, "pointerupoutside", onPointerUp_Outside);
             
         }
 

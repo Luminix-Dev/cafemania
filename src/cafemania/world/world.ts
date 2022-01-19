@@ -50,7 +50,7 @@ export class World extends BaseObject {
     private _playerCheff: PlayerCheff;
     private _sidewalkSize: number = 0;
 
-    public canSpawnPlayer: boolean = true;
+    public canSpawnPlayer: boolean = false;
     public maxSpawnPlayers: number = 12;
     public spawnPlayerInterval: number = 500;
     private _lastSpawnedPlayer: number = 0;
@@ -94,17 +94,17 @@ export class World extends BaseObject {
     }
 
     private generateTest1() {
-        const size = new Phaser.Math.Vector2(14, 14);
-        const tileMap = this.tileMap;
+        const size = new Phaser.Math.Vector2(1, 1);
 
         this.generateFloors('floor1', 0, 0, size.x, size.y);
-        this.generateSideWalks(20);
+        //this.generateSideWalks(20);
 
-        const counter1 = this.addTileItemToTile('counter1', 0, 0);
+        const counter1 = this.forceAddTileItemToTile(this.addTileItemToTile('wall1', 0, 0), this.tileMap.getTile(0, 0));
     }
 
     public generateBaseWorld() {
         //this.generateTest1();
+        
 
         const size = new Phaser.Math.Vector2(14, 14);
         const tileMap = this.tileMap;

@@ -33,10 +33,20 @@ export class Camera {
 
         //MainScene.Instance.worldContainer.setPosition(position.x, position.y)
 
+        const gameScene = GameScene.Instance;
         
-        this._scene.cameras.main.setScroll(
+        gameScene.cameras.main.setScroll(
             position.x - gameSize.width / 2,
             position.y - gameSize.height / 2
+        );
+
+      
+        const zoom = gameScene.cameras.main.zoom;
+        const s = 1/zoom;
+        gameScene.hudContainer.setScale(s);
+        gameScene.hudContainer.setPosition(
+            gameScene.cameras.main.scrollX - (((1/zoom)-1)*(gameSize.width/2)),
+            gameScene.cameras.main.scrollY - (((1/zoom)-1)*(gameSize.height/2))
         );
         
     }

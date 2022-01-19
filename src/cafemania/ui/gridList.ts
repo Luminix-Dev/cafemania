@@ -25,11 +25,11 @@ export class GridList {
         this._itemSize = new Phaser.Math.Vector2(itemWidth, itemHeight);
         this._padding = padding;
 
-        const gridLayout = this._gridLayout = new GridLayout(scene, width, height, itemWidth, itemHeight, padding);
+        const gridLayout = this._gridLayout = new GridLayout(scene, width, height, itemWidth, itemHeight, padding, padding);
         
         const container = this._container = scene.add.container();
         
-        container.add(gridLayout.container!);
+        container.add(gridLayout.container);
         
         window['gridList'] = this;
     }
