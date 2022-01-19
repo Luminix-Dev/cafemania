@@ -1,3 +1,4 @@
+import { DishPlate } from "../../dish/dishPlate";
 import { Button } from "../../ui/button";
 
 export class MenuItem {
@@ -23,6 +24,7 @@ export class MenuItem {
             console.log("click")
         };
         this._container.add(button.container);
+
     }
 
     public destroy() {

@@ -25,9 +25,10 @@ interface StoveData {
 export class TileItemStove extends TileItem {
     public get isCooking() { return this._data.cookingDish != undefined }
     public get isDishReady() { return this.getCookingProgress() >= 1; }
-    public tmpCookDish = "dish1";
 
     private _isWaitingForCheff: boolean = false;
+    private _isPreparingToCook: boolean = false;
+    private _isReady: boolean = false;
 
     private _data: StoveData = {
         cookingDish: undefined,
@@ -36,20 +37,26 @@ export class TileItemStove extends TileItem {
     }
     private _dishPlate?: DishPlate;
     
-    
     constructor(tileItemInfo: TileItemInfo) {
         super(tileItemInfo);
         this.defaultCollisionValue = true;
     }
     
+    public prepareToCook() {
+        this._isPreparingToCook = true;
+
+        console.log(this._data.toCookDish)
+    }
 
     public update(dt: number) {
         super.update(dt);
 
-        if(this.isCooking) {
+
+        if(this.isCooking && !this._isPreparingToCook) {
             this._data.cookTime += dt;
 
-            if(this.isDishReady) {
+            if(this.isDishReady && !this._isReady) {
+                this._isReady = true;
                 this.onDishReady();
             }
         }
@@ -82,20 +89,29 @@ export class TileItemStove extends TileItem {
     }
 
     public onDishReady() {
+
+        WorldTextManager.drawWorldText("ready", this.position.x, this.position.y - 50, 1500, 0.3);
+
+        return;
+     
         this.sendDishToCounter();
         this.clearDish();
         this.setAsChangedState();
     }
 
     private renderDishPlate() {
-        if(this.isCooking) {
+        const dishId = this._isPreparingToCook ? this._data.toCookDish : this._data.cookingDish;
+
+        if(dishId) {
+            const dish = this.world.game.dishFactory.getDish(dishId);
+
             if(!this._dishPlate) {
                 const h = 20;
                 const position = new Phaser.Math.Vector2(
                     this.position.x,
                     this.position.y - h
                 )
-                this._dishPlate = new DishPlate(this.getCookingDish());
+                this._dishPlate = new DishPlate(dish);
                 this._dishPlate.setPosition(position.x, position.y) ;
                 this._dishPlate.setDepth(position.y + h);
             
@@ -125,11 +141,32 @@ export class TileItemStove extends TileItem {
         //if(this.isCooking || this._data.toCookDish) return;
     }
 
+    public takeDish() {
+        this.sendDishToCounter();
+        this.clearDish();
+        this.setAsChangedState();
+    }
+
     public onPointerUp() {
         super.onPointerUp();
 
-        this.onPointerOut();
-        Menu.show(this);
+        
+        if(this.isDishReady) {
+            if(this.world.sync == SyncType.SYNC) {
+                Gameface.Instance.network.sendStoveTakeDish(this);
+            } else {
+                this.takeDish();
+            }
+        } else {
+            if(this.isCooking) {
+
+            } else {
+                this.onPointerOut();
+                Menu.show(this);
+            }
+        }
+
+        
 
         /*
         if(this.world.sync != SyncType.HOST) {
@@ -204,6 +241,7 @@ export class TileItemStove extends TileItem {
 
     public clearToCookDish() {
         this._data.toCookDish = undefined;
+        this._isPreparingToCook = false;
     }
 
     public getCookingProgress() {

@@ -3,7 +3,7 @@ import socketio, { Socket } from 'socket.io';
 import { BaseObject } from '../baseObject/baseObject';
 import { Game } from "../game/game";
 import { Gamelog } from '../gamelog/gamelog';
-import { IPacket, IPacketData_JoinServer, IPacketData_MovePlayer, IPacketData_ServerList, IPacketData_StartCook, IPacketData_WorldData, PACKET_TYPE } from '../network/packet';
+import { IPacket, IPacketData_JoinServer, IPacketData_MovePlayer, IPacketData_ServerList, IPacketData_StartCook, IPacketData_StoveTakeDish, IPacketData_WorldData, PACKET_TYPE } from '../network/packet';
 import { Player } from '../player/player';
 import { PlayerClient } from '../player/playerClient';
 import { Server } from '../server/server';
@@ -191,6 +191,14 @@ export class Client extends BaseObject {
                 const stove = world.game.tileItemFactory.getTileItem(packetData.stoveId) as TileItemStove;
 
                 stove.startCook(dish);
+            }
+
+            if(packet.type == PACKET_TYPE.STOVE_TAKE_DISH) {
+                const packetData: IPacketData_StoveTakeDish = packet.data;
+
+                const stove = world.game.tileItemFactory.getTileItem(packetData.stoveId) as TileItemStove;
+
+                stove.takeDish();
             }
         }
 

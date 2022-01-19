@@ -38,12 +38,12 @@ export class PlayerWaiter extends Player {
     }
 
     private updateWaiterBehavior(dt: number) {
-        this._checkClientsTime += dt;
+        this._checkClientsTime -= dt;
 
         if(!this._isBusy) {
 
-            if(this._checkClientsTime >= 1000) {
-                this._checkClientsTime = 0;
+            if(this._checkClientsTime <= 0) {
+                this._checkClientsTime = Math.random()*1500;
                 //this.log("looking for clients");
                 this.checkClients_Serve();
             }

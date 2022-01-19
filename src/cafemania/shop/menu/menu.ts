@@ -1,4 +1,5 @@
 import { Dish } from "../../dish/dish";
+import { DishPlate } from "../../dish/dishPlate";
 import { GameScene } from "../../scenes/gameScene";
 import { HudScene } from "../../scenes/hudScene";
 import { TileItemStove } from "../../tileItem/items/tileItemStove";
@@ -23,7 +24,7 @@ export class Menu {
         const dishList: Dish[] = [];
         const menuItemList = new Map<number, MenuItem>();
 
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 1; i++) {
             for (const dishId in dishFactory.getDishList()) {
                 dishList.push(dishFactory.getDish(dishId));
             }
@@ -32,11 +33,16 @@ export class Menu {
         const gridList = this._gridList = new GridList(scene, 700, 500, 280, 180, 20);
         gridList.setItemsAmount(dishList.length);
         gridList.onShowItem = (index: number, position: Phaser.Math.Vector2) => {
+            const dish = dishList[index];
 
             const menuItem = new MenuItem(scene);
+
+            const dishPlate = new DishPlate(dish);
+            dishPlate.setPosition(80, 110)
+            menuItem.container.add(dishPlate.container)
+
             menuItem.button.onClick = () => {
 
-                const dish = dishList[index];
                 stove.startCook(dish);
 
                 WorldTextManager.drawWorldText(dish.name, stove.position.x, stove.position.y - 30, 1500, 0.3);
@@ -47,6 +53,10 @@ export class Menu {
             gridList.container?.add(menuItem.container);
             
             menuItem.container.setPosition(position.x, position.y);
+
+            
+            
+
 
             menuItemList.set(index, menuItem);
 

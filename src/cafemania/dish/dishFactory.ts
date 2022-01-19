@@ -31,6 +31,18 @@ export class DishFactory {
                 eating: 2
             }
         });
+
+        this.createDish({
+            id: "dish3",
+            name: "Dish 3",
+            cookTime: 12000,
+            texture: "dish3",
+            servings: 30,
+            frames: {
+                cooking: 2,
+                eating: 2
+            }
+        });
     }
 
     public createDish(dish: Dish) {

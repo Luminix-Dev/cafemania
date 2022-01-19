@@ -1,4 +1,5 @@
 export class MessageBox {
+    public get container() { return this._container; }
 
     private _container: Phaser.GameObjects.Container;
     private _backgroundContainer: Phaser.GameObjects.Container;
@@ -21,7 +22,7 @@ export class MessageBox {
         const bottom = this._bottom = scene.add.image(0, 0, "messagebox/" + texture + "_bottom").setOrigin(0.5, 1);
         container.add(bottom);
 
-        container.setDepth(1000000);
+        
 
         //
 

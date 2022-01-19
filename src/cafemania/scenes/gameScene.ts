@@ -5,9 +5,6 @@ import { Hud } from "../hud/hud";
 import { Input } from "../input/input";
 import { PACKET_TYPE } from "../network/packet";
 import { TileHoverDetection } from "../shop/tileHoverDetection";
-import { NewTileCollisionFactory } from "../tile/newTileCollisionFactory";
-import { Tile } from "../tile/tile";
-import { TileItem } from "../tileItem/tileItem";
 import { TileItemType } from "../tileItem/tileItemInfo";
 import { Button } from "../ui/button";
 import { MessageBox } from "../ui/messageBox";
@@ -37,6 +34,8 @@ export class GameScene extends Phaser.Scene {
     public setMessageBoxAboveTileItem(messageBox: MessageBox) {
         this.remomveMessageBoxAboveTileItem();
         this.messageBoxAboveTileItem = messageBox;
+
+        this.layerTop.add(messageBox.container); //.setDepth(1000000);
     }
 
     public remomveMessageBoxAboveTileItem() {
@@ -102,9 +101,10 @@ export class GameScene extends Phaser.Scene {
         
         //
 
-        Input.events.on("pointerdown", () => {
+        Input.events.on("pointerup", () => {
 
             if(!this._world) return;
+            if(Input.isDragging) return;
 
             const tileItem = TileHoverDetection.testTileItem(Input.getMouseWorldPosition());
 

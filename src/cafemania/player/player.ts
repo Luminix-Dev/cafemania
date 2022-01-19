@@ -245,7 +245,7 @@ export class Player extends BaseObject {
         this._animation = new PlayerAnimation(this);
         this._taskManager = new TaskManager();
 
-        this.speed = 3;
+        this.speed = 1.3;
     }
 
 

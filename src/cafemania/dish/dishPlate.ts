@@ -9,6 +9,7 @@ export enum DishPlateState {
 }
 
 export class DishPlate {
+    public get container() { return this._container; }
 
     private _state: DishPlateState = DishPlateState.NONE;
     private _dish: Dish;
@@ -90,7 +91,7 @@ export class DishPlate {
     }
 
     public setPercentage(value: number) {
-        if(Math.abs(value - this._percentage) < 0.05) return;
+        if(Math.abs(value - this._percentage) < 0.05 && (value != 1 && value != 0)) return;
 
         this._percentage = value;
         this.updateSprites();

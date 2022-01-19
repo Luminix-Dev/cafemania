@@ -131,6 +131,7 @@ export class Gameface extends BaseObject {
 
         const isSinglePlayer = false;
 
+        Debug.log(`Mode: ${isSinglePlayer ? "SINGLEPLAYER" : "MULTIPLAYER"}`)
     
         const gameface = this;
         const network = this.network;

@@ -79,6 +79,7 @@ export class PlayerCheff extends Player {
 
                 this.taskWalkNearToTile(tile);
                 this.taskPlaySpecialAction('look_to_tile', [tile.x, tile.y]);
+                this.taskPlaySpecialAction('cheff_prepare_to_cook', [toCookDish.id, stove.id]);
                 this.taskPlayAnimation("Eat", 1000);
                 this.taskPlaySpecialAction('cheff_start_cook', [toCookDish.id, stove.id]);
 
@@ -93,6 +94,17 @@ export class PlayerCheff extends Player {
 
     public async startSpecialAction(action: string, args: any[]) {
         await super.startSpecialAction(action, args);
+
+        if(action == "cheff_prepare_to_cook") {
+            const dishId = args[0] as string;
+            const stoveId = args[1] as string;
+
+            const dish = this.world.game.dishFactory.getDish(args[0]);
+
+            const stove = this.world.game.tileItemFactory.getTileItem(args[1]) as TileItemStove;
+
+            stove.prepareToCook();
+        }
 
         if(action == "cheff_start_cook") {
             const dishId = args[0] as string;

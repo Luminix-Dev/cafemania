@@ -50,7 +50,7 @@ export class World extends BaseObject {
     private _playerCheff: PlayerCheff;
     private _sidewalkSize: number = 0;
 
-    public canSpawnPlayer: boolean = false;
+    public canSpawnPlayer: boolean = true;
     public maxSpawnPlayers: number = 12;
     public spawnPlayerInterval: number = 500;
     private _lastSpawnedPlayer: number = 0;
@@ -117,22 +117,22 @@ export class World extends BaseObject {
  
         const counter1 = this.addTileItemToTile('counter1', 0, 0);
         const counter2 = this.addTileItemToTile('counter1', 1, 0);
-        const tileItem2 = this.addTileItemToTile('floorDecoration2', 3, 1);
+        const counter3 = this.addTileItemToTile('counter1', 2, 0);
+        const tileItem2 = this.addTileItemToTile('floorDecoration2', 4, 1);
 
         const window1 = this.addTileItemToTile('window1', 0, 0);
        
         const stove1 = this.addTileItemToTile('stove1', 0, 3);
         const stove2 = this.addTileItemToTile('stove1', 0, 4) as TileItemStove;
-        stove2.tmpCookDish = "dish2";
+
 
         const stove3 = this.addTileItemToTile('stove1', 0, 5);
         const stove4 = this.addTileItemToTile('stove1', 0, 6) as TileItemStove;
-        stove4.tmpCookDish = "dish2";
 
         //this.addTileItemToTile("stove1", 0, 2)
 
-        for (let y = 4; y < 7; y++) {
-            for (let x = 4; x < 7; x++)  {
+        for (let y = 4; y < 9; y++) {
+            for (let x = 4; x < 8; x++)  {
                 
                 if(y % 3 == 1) {
                     const chair = this.addTileItemToTile('chair1', x, y);
@@ -193,7 +193,7 @@ export class World extends BaseObject {
         //causes lag
         
         this.addDoor(0, 2)
-        this.addDoor(2, 0)
+        this.addDoor(4, 0)
         
         //this.toggleFloorCollision(true)
       

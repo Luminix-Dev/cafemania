@@ -372,7 +372,7 @@ export class TileItemRender extends BaseObject {
         const collisionShape = sprite.collisionShape = new Phaser.Geom.Polygon(points);
 
         //collisionSprite.setOrigin(0.5, 0.5)
-        collisionSprite.fillStyle(0xff0000, 0.2);
+        collisionSprite.fillStyle(0xff0000, 0.0);
         collisionSprite.fillPoints(points);
 
 
