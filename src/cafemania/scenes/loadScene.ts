@@ -111,6 +111,13 @@ export class LoadScene extends Phaser.Scene {
         this._amountLoaderAssets++;
     }
 
+    public loadAudio(key: string, url: string) {
+        console.log(`[loader] load audio '${key}'`);
+
+        this._loader.audio(key, url);
+        this._amountLoaderAssets++;
+    }
+
     public addLoadTask(name: string, fn: () => Promise<void>) {
         console.log(`[loader] add load task '${name}'`);
 

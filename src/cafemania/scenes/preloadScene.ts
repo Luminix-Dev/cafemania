@@ -1,4 +1,4 @@
-import { AssetManager } from "../assetManager/assetManager";
+import { AssetManager, AssetType } from "../assetManager/assetManager";
 import { Debug } from "../debug/debug";
 import { Gameface } from "../gameface/gameface";
 import { PACKET_TYPE } from "../network/packet";
@@ -64,8 +64,12 @@ export class PreloadScene extends Phaser.Scene {
                 this.getLoadTileItemInfo().map(a => AssetManager.addImage(a[0], a[1]));
                 this.getLoadDishes().map(a => AssetManager.addImage(a[0], a[1]));
     
-                AssetManager.getImageAssets().map(asset => {
-                    loadScene.loadImage(asset.key, asset.texture);
+                AssetManager.getAssets(AssetType.IMAGE).map(asset => {
+                    loadScene.loadImage(asset.key, asset.path);
+                })
+
+                AssetManager.getAssets(AssetType.AUDIO).map(asset => {
+                    loadScene.loadAudio(asset.key, asset.path);
                 })
 
                 await this.loadPlayerTextureFactory(loadScene);

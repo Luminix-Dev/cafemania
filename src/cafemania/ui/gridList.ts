@@ -5,6 +5,7 @@ export class GridList {
     public get container() { return this._container; }
     public onShowItem: (index: number, position: Phaser.Math.Vector2) => void;
     public onHideItem: (index: number) => void;
+    public onChangePage?: () => void;
 
     private _scene: Phaser.Scene;
     private _size: Phaser.Math.Vector2;
@@ -56,6 +57,8 @@ export class GridList {
     public changePageBy(by: number) {
         this._page += by;
         this.updateShowingItems();
+
+        this.onChangePage?.();
     }
 
     private hideAllItems() {

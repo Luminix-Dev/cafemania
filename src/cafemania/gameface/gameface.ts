@@ -21,6 +21,7 @@ import { Test1Scene } from "../scenes/test1Scene";
 import { WorldTextManager } from "../worldText/worldTextManager";
 import { TileHoverDetection } from "../shop/tileHoverDetection";
 import { Hud } from "../hud/hud";
+import { SoundManager } from "../soundManager/soundManager";
 
 
 export class Gameface extends BaseObject {
@@ -60,6 +61,7 @@ export class Gameface extends BaseObject {
 
         AssetManager.init();
         AssetManager.initAssets();
+        SoundManager.init();
         
         this.startScene(MainScene);
         this.startScene(GameScene);
@@ -68,9 +70,12 @@ export class Gameface extends BaseObject {
         Input.addScene(GameScene.Instance);
         Camera.setScene(GameScene.Instance);
         Camera.setupMoveEvents();
+        SoundManager.setScene(GameScene.Instance);
         MoveTileItem.init();
         WorldTextManager.init(GameScene.Instance);
         TileHoverDetection.init();
+
+        
     }
 
 

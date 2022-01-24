@@ -61,7 +61,7 @@ export class WorldSyncHelper {
                 
                 if(!tileItemFactory.hasTileItemCreated(tileItemData.id)) {
 
-                    console.log("create new")
+                    //console.log("create new")
 
                     tileItemFactory.createTileItem(tileItemData.tileItemInfo, tileItemData.id);
 
@@ -193,7 +193,7 @@ export class WorldSyncHelper {
 
         for (const taskData of playerData.tasks) {
             
-            console.warn("found task", taskData.action!)
+            //console.warn("found task", taskData.action!)
 
 
 

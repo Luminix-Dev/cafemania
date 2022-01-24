@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { SoundManager } from '../soundManager/soundManager';
 
 import { BaseObject } from "../baseObject/baseObject";
 import { Debug } from "../debug/debug";
@@ -241,6 +242,8 @@ export class TileItem extends BaseObject {
     }
 
     public setTransparent(value: boolean) {
+        if(!this._hasCreatedSprites) return;
+
         this.tileItemRender.setTransparent(value);
         //this.updateSprites();
     }
@@ -359,6 +362,8 @@ export class TileItem extends BaseObject {
 
     public onPointerDown() {
         this.log("onPointerDown");
+
+        
      
     }
 

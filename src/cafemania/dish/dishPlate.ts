@@ -80,7 +80,7 @@ export class DishPlate {
 
         container.add(sprite);
         container.add(graphics);
-        console.log("yes")
+        //console.log("yes")
     }
 
     public setState(state: DishPlateState) {
@@ -92,6 +92,7 @@ export class DishPlate {
 
     public setPercentage(value: number) {
         if(Math.abs(value - this._percentage) < 0.05 && (value != 1 && value != 0)) return;
+        if(value == this._percentage) return;
 
         this._percentage = value;
         this.updateSprites();
@@ -103,7 +104,7 @@ export class DishPlate {
 
         this._sprite.setFrame(this.getFrameKey());
 
-        console.log(this.getFrameKey())
+        //console.log(this.getFrameKey())
         
         const barSize = new Phaser.Structs.Size(50, 8);
 

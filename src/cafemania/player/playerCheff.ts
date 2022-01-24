@@ -1,4 +1,5 @@
 import { Dish } from "../dish/dish";
+import { SoundManager } from "../soundManager/soundManager";
 import { TileItemStove } from "../tileItem/items/tileItemStove";
 import { SyncType, World } from "../world/world";
 import { Player } from "./player";
@@ -11,6 +12,7 @@ export class PlayerCheff extends Player {
     private _goingToAnyStove: boolean = false;
 
     private _stovesToCook: TileItemStove[] = [];
+    private _stovesToTake: TileItemStove[] = [];
 
     constructor(world: World) {
         super(world);
@@ -52,17 +54,42 @@ export class PlayerCheff extends Player {
         this._stovesToCook.splice(this._stovesToCook.indexOf(stove), 1);
     }
 
-    private checkStoves() {
+    //
 
-        
+    public removeStoveFromTakeQuery(stove: TileItemStove) {
+        if(!this._stovesToTake.includes(stove)) return;
+        this._stovesToTake.splice(this._stovesToTake.indexOf(stove), 1);
+    }
 
-        /*
-        add: closest stove
-        */
-        
-        
-        if(this._goingToAnyStove) return;
+    public addStoveToTakeQuery(stove: TileItemStove) {
+        if(this._stovesToTake.includes(stove)) return;
+        this._stovesToTake.push(stove);
+    }
 
+    private checkStovesToTake() {
+        const stoves = this._stovesToTake;
+
+        for (const stove of stoves) {
+            if(this._goingToAnyStove) return;
+
+            this._goingToAnyStove = true;
+
+            const tile = stove.tile;
+            const dish = stove.getCookingDish();
+
+            this.log(">>>>>>>>>>>>>> going to stove", dish)
+
+            this.taskWalkNearToTile(tile);
+            this.taskPlaySpecialAction('look_to_tile', [tile.x, tile.y]);
+            this.taskPlaySpecialAction('cheff_prepare_to_take', [stove.id]);
+            this.taskPlayAnimation("Eat", 2000);
+            this.taskPlaySpecialAction('cheff_take_dish', [stove.id]);
+
+            this.setAsChangedState();
+        }
+    }
+
+    private checkStovesToCook() {
         const stoves = this._stovesToCook;
 
         for (const stove of stoves) {
@@ -80,14 +107,30 @@ export class PlayerCheff extends Player {
                 this.taskWalkNearToTile(tile);
                 this.taskPlaySpecialAction('look_to_tile', [tile.x, tile.y]);
                 this.taskPlaySpecialAction('cheff_prepare_to_cook', [toCookDish.id, stove.id]);
-                this.taskPlayAnimation("Eat", 1000);
+                this.taskPlayAnimation("Eat", 2000);
                 this.taskPlaySpecialAction('cheff_start_cook', [toCookDish.id, stove.id]);
 
                 this.setAsChangedState();
-
-                
             }
         }
+    }
+
+    private checkStoves() {
+        if(this._goingToAnyStove) return;
+
+        if(this._stovesToCook.length > 0) {
+            this.checkStovesToCook();
+            return;
+        }
+
+        this.checkStovesToTake();
+
+        /*
+        add: closest stove
+        */
+        
+        
+        
         
 
     }
@@ -104,6 +147,8 @@ export class PlayerCheff extends Player {
             const stove = this.world.game.tileItemFactory.getTileItem(args[1]) as TileItemStove;
 
             stove.prepareToCook();
+
+            SoundManager.play("begin_cook");
         }
 
         if(action == "cheff_start_cook") {
@@ -111,7 +156,6 @@ export class PlayerCheff extends Player {
             const stoveId = args[1] as string;
 
             const dish = this.world.game.dishFactory.getDish(args[0]);
-
             const stove = this.world.game.tileItemFactory.getTileItem(args[1]) as TileItemStove;
 
             stove.clearToCookDish();
@@ -123,5 +167,25 @@ export class PlayerCheff extends Player {
             
             this._goingToAnyStove = false;
         }   
+
+        if(action == "cheff_prepare_to_take") {
+        }
+        
+        if(action == "cheff_take_dish") {
+            //const dish = this.world.game.dishFactory.getDish(args[0]);
+            const stove = this.world.game.tileItemFactory.getTileItem(args[0]) as TileItemStove; 
+            
+            stove.sendDishToCounter();
+            stove.clearDish();
+            stove.setAsChangedState();
+
+            this.removeStoveFromTakeQuery(stove);
+            
+            this._goingToAnyStove = false;
+
+            stove.setTransparent(false);
+
+            SoundManager.play("counter")
+        }
     }
 }

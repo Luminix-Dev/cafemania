@@ -6,16 +6,22 @@ enum LoadState {
     LOADED
 }
 
-interface ImageAsset {
+export enum AssetType {
+    IMAGE,
+    AUDIO
+}
+
+interface Asset {
     key: string
-    texture: string
+    path: string
     loadState: LoadState
+    type: AssetType
 }
 
 export class AssetManager {
     public static ASSETS_URL = "";
 
-    private static _imageAssets = new Phaser.Structs.Map<string, ImageAsset>([]);
+    private static _assets = new Phaser.Structs.Map<string, Asset>([]);
 
     public static initAssets() {
         this.addImage('wallMask', 'wallMask.png');
@@ -35,18 +41,30 @@ export class AssetManager {
         
     }
 
-    public static getImageAssets() {
-        return this._imageAssets.values();
+    public static getAssets(type: AssetType) {
+        return this._assets.values().filter(asset => asset.type == type);
     }
 
     public static addImage(key: string, texture: string) {
-        const asset: ImageAsset = {
+        const asset: Asset = {
             key: key,
-            texture: texture,
-            loadState: LoadState.NOT_LOADED
+            path: texture,
+            loadState: LoadState.NOT_LOADED,
+            type: AssetType.IMAGE
         }
 
-        this._imageAssets.set(key, asset);
+        this._assets.set(key, asset);
+    }
+
+    public static addAudio(key: string, path: string) {
+        const asset: Asset = {
+            key: key,
+            path: path,
+            loadState: LoadState.NOT_LOADED,
+            type: AssetType.AUDIO
+        }
+
+        this._assets.set(key, asset);
     }
 
     public static init() {

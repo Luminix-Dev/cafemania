@@ -86,6 +86,12 @@ export class Hud {
     public static createHudButtons() {
         this.createTest1();
 
+        const sheet = GameScene.Instance.add.image(0, 0, "PlayerSpriteTexture_Client")
+        sheet.setDepth(1000)
+        sheet.setOrigin(0.5, 1)
+        sheet.setPosition(0, -300)
+
+
         return;
 
         /*

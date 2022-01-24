@@ -2,6 +2,7 @@ import { Dish } from "../../dish/dish";
 import { DishPlate } from "../../dish/dishPlate";
 import { GameScene } from "../../scenes/gameScene";
 import { HudScene } from "../../scenes/hudScene";
+import { SoundManager } from "../../soundManager/soundManager";
 import { TileItemStove } from "../../tileItem/items/tileItemStove";
 import { GridList } from "../../ui/gridList";
 import { WorldTextManager } from "../../worldText/worldTextManager";
@@ -16,6 +17,8 @@ export class Menu {
     public static show(stove: TileItemStove) {
         if(this._isOpen) return;
         this._isOpen = true;
+
+        SoundManager.play('menu_open');
 
         const scene = GameScene.Instance;
         const world = stove.world;
@@ -32,6 +35,9 @@ export class Menu {
 
         const gridList = this._gridList = new GridList(scene, 700, 500, 280, 180, 20);
         gridList.setItemsAmount(dishList.length);
+        gridList.onChangePage = () => {
+            SoundManager.play('menu_changepage');
+        }
         gridList.onShowItem = (index: number, position: Phaser.Math.Vector2) => {
             const dish = dishList[index];
 

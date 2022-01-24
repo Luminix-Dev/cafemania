@@ -1,3 +1,4 @@
+import { SoundManager } from "../soundManager/soundManager";
 import { Tile } from "../tile/tile";
 import { TileItemChair } from "../tileItem/items/tileItemChair";
 import { Utils } from "../utils/utils";
@@ -22,6 +23,7 @@ export interface PlayerClientData {
 
 export class PlayerClient extends Player {
     public static MAX_FIND_CHAIR_ATTEMPS = 4;
+    public static EAT_SOUND_VARIATION = 0;
     
     public waitingForWaiter: boolean = false;
 
@@ -42,12 +44,21 @@ export class PlayerClient extends Player {
 
     private _isExitingCafe: boolean = false;
 
+    private _hasStartedEating: boolean = false;
+
     constructor(world: World) {
         super(world);
         this._type = PlayerType.CLIENT;
         this._spriteTextureName = "PlayerSpriteTexture_Client";
 
         //this.speed = 1.7;
+    }
+
+    public playEatSound() {
+        PlayerClient.EAT_SOUND_VARIATION++;
+        if(PlayerClient.EAT_SOUND_VARIATION >= 4) PlayerClient.EAT_SOUND_VARIATION = 0;
+
+        SoundManager.play("begin_eat" + PlayerClient.EAT_SOUND_VARIATION)
     }
 
     public update(dt: number) {
@@ -58,6 +69,13 @@ export class PlayerClient extends Player {
             const table = chair.getTableInFront();
             if(table) {
                 if(!table.isEmpty) {
+
+                    if(!this._hasStartedEating) {
+                        this._hasStartedEating = true;
+
+                        this.playEatSound();
+                    }
+
                     this.setState(PlayerState.EATING);
                     table.currentEatTime -= dt;
 
@@ -143,7 +161,7 @@ export class PlayerClient extends Player {
 
             const chair = this.findAnyAvaliableChair();
             if(chair) {
-                this.log('found chair')
+                //this.log('found chair')
 
                 return chair;
 
@@ -253,6 +271,8 @@ export class PlayerClient extends Player {
                 table.clearDish();
 
                 WorldTextManager.drawWorldText("tip", table.position.x, table.position.y - 50, 1500, 0.3);
+
+                SoundManager.play("tip");
             }
 
             this.exitCafe();

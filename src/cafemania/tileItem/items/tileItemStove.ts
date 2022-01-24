@@ -5,6 +5,7 @@ import { DishPlate, DishPlateState } from "../../dish/dishPlate";
 import { Gameface } from "../../gameface/gameface";
 import { GameScene } from "../../scenes/gameScene";
 import { Menu } from "../../shop/menu/menu";
+import { SoundManager } from "../../soundManager/soundManager";
 import { Tile } from "../../tile/tile"
 import { MessageBox } from "../../ui/messageBox";
 import { SyncType } from "../../world/world";
@@ -86,17 +87,13 @@ export class TileItemStove extends TileItem {
     public clearDish() {
         this._data.cookingDish = undefined;
         this._data.cookTime = -1;
+
+        this._isReady = false;
     }
 
     public onDishReady() {
-
         WorldTextManager.drawWorldText("ready", this.position.x, this.position.y - 50, 1500, 0.3);
-
-        return;
-     
-        this.sendDishToCounter();
-        this.clearDish();
-        this.setAsChangedState();
+        SoundManager.play("beep_1")
     }
 
     private renderDishPlate() {
@@ -142,9 +139,20 @@ export class TileItemStove extends TileItem {
     }
 
     public takeDish() {
-        this.sendDishToCounter();
-        this.clearDish();
-        this.setAsChangedState();
+
+        //console.log(this)
+
+        this.setTransparent(true);
+
+        SoundManager.play("beep_2")
+
+        if(this.world.sync == SyncType.SYNC) {
+            Gameface.Instance.network.sendStoveTakeDish(this);
+            return;
+        }
+
+        this.world.getPlayerCheff().addStoveToTakeQuery(this);
+    
     }
 
     public onPointerUp() {
@@ -152,11 +160,9 @@ export class TileItemStove extends TileItem {
 
         
         if(this.isDishReady) {
-            if(this.world.sync == SyncType.SYNC) {
-                Gameface.Instance.network.sendStoveTakeDish(this);
-            } else {
-                this.takeDish();
-            }
+            this.takeDish();
+
+            
         } else {
             if(this.isCooking) {
 
@@ -259,7 +265,7 @@ export class TileItemStove extends TileItem {
         return this.world.game.dishFactory.getDish(this._data.toCookDish);
     }
 
-    private sendDishToCounter() {
+    public sendDishToCounter() {
         const counters = this.getAvaliableCounters();
 
         if(counters.length == 0) return false;

@@ -97,12 +97,31 @@ export class Input {
             this.onPointerUp(pointer);
         });
         scene.input.on('pointerdown', pointer => {
+
+            const sound = scene.game.sound;
+
+            /*
+            if(sound instanceof Phaser.Sound.HTML5AudioSoundManager) {
+                //sound
+            }
+            */
+
+            if(sound instanceof Phaser.Sound.WebAudioSoundManager) {
+                if(sound.context.state == 'suspended') {
+                    sound.context.resume()
+                }
+            }
+
+
+
+            
+
             //GameScene.Instance.input.
             
             //Debug.log(`pointerdownev ${scene.constructor.name} ${pointer.worldX} ${pointer.worldY}`)
             //Debug.log(`pointerdownev ${scene.constructor.name} ${pointer.worldX} ${pointer.worldY}`)
 
-            console.log(scene)
+            //console.log(scene)
 
             this.updateMouseWorldPosition(scene);
             this.onPointerDown(pointer);
