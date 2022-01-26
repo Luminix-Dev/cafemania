@@ -45,6 +45,8 @@ export class AssetManager {
 
         this.addImage('button/signin_google', 'button/signin_google.png');
         this.addImage('button/signin_guest', 'button/signin_guest.png');
+        this.addImage('button/signout', 'button/signout.png');
+        this.addImage('button/play', 'button/play.png');
         
         this.addImage('messagebox/1', 'messagebox/1.png');
         this.addImage('messagebox/1_bottom', 'messagebox/1_bottom.png');

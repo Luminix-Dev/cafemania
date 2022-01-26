@@ -47,7 +47,7 @@ export class LoginScene extends Phaser.Scene {
         const y = gameSize.height/2;
 
 
-        const signInGooglebutton = new Button(this, x, y - 25, 244, 45, "button/signin_google", 16, ``);
+        const signInGooglebutton = new Button(this, x, y - 25, 244, 45, "button/signin_google", 16, `Sign in with Google`);
         signInGooglebutton.onClick = () => {
 
             LoadScene.createScene(LoadSceneType.SIGN, () => {
@@ -70,7 +70,7 @@ export class LoginScene extends Phaser.Scene {
             })
         }
 
-        const signInGuestbutton = new Button(this, x, y + 25, 244, 45, "button/signin_guest", 16, ``);
+        const signInGuestbutton = new Button(this, x, y + 25, 244, 45, "button/signin_guest", 16, `Guest`);
         signInGuestbutton.onClick = () => {
             this.sendSignInPacket();
 
