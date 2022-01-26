@@ -1,3 +1,4 @@
+import { IUserInfo } from "../client/user";
 import { ServerListInfo } from "../server/server";
 import { IWorldSerializedData } from "../world/world";
 
@@ -11,10 +12,13 @@ export enum PACKET_TYPE {
     LEAVE_WORLD,
     SERVER_LIST,
     JOIN_SERVER,
+    JOIN_SERVER_STATUS,
     LEAVE_SERVER,
     JOINED_SERVER,
     REQUEST_SERVER_LIST,
-    MOVE_PLAYER
+    MOVE_PLAYER,
+    SIGN_IN,
+    SIGN_IN_RESULT
 }
 
 export interface IPacket {
@@ -26,6 +30,14 @@ export interface IPacketData_JoinServer {
     id: string
 }
 
+export interface IPacketData_SignIn {
+    id?: string
+}
+
+export interface IPacketData_SignInResult {
+    success: boolean
+    userInfo?: IUserInfo
+}
 
 export interface IPacketData_MovePlayer {
     x: number
@@ -35,6 +47,11 @@ export interface IPacketData_MovePlayer {
 export interface IPacketData_WorldData {
     worldData: IWorldSerializedData
 }
+
+export interface IPacketData_JoinServerStatus {
+    success: boolean
+}
+
 
 export interface IPacketData_ServerList {
     servers: ServerListInfo[]

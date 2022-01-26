@@ -1,85 +1,68 @@
+import { Auth } from "../auth/auth";
 import { Gameface } from "../gameface/gameface";
+import { PACKET_TYPE } from "../network/packet";
 import { ServerListInfo } from "../server/server";
 import { Button } from "../ui/button";
 
-export class ServerListScene extends Phaser.Scene {
-    public static Instance: ServerListScene;
+export class ServersListScene extends Phaser.Scene {
+    public static Instance: ServersListScene;
+    
+    private static _servers: ServerListInfo[] = [];
 
-    private _servers: ServerListInfo[] = [];
+    private _buttons = new Map<string, Button>();
 
+    
     constructor() {
         super({});
-        ServerListScene.Instance = this;
+        ServersListScene.Instance = this;
+    }
+
+    public static getServers() {
+        return this._servers;
+    }
+
+    public static updateServerList(servers: ServerListInfo[]) {
+        this._servers = servers;
     }
 
     public create() {
+        Gameface.Instance.network.requestServerList();
+
+        window['ServersListScene'] = ServersListScene;
+
+        //this.add.image(0, 0, 'background').setOrigin(0)
+
+        const gameSize = this.scale.gameSize;
+
+        const x = gameSize.width/2;
+        const y = gameSize.height/2;
+
         
     }
 
-    public updateServerList(servers: ServerListInfo[]) {
-        this._servers = servers;
+    public update(dt: number) {
 
-        this.createServersButtons();
-    }
+        const servers = ServersListScene.getServers();
 
-    private createServersButtons() {
-        let i = 0;
-
-        for (const serverInfo of this._servers) {
-            const joinBtn = new Button(this, this.scale.width/2, i * 40 + 20, 400, 35, "button/button1", 16, `${serverInfo.name} (- players)`);
+        for (const server of servers) {
             
-            joinBtn.onClick = () => {
-                this.joinServer(serverInfo.id);
+            if(!this._buttons.has(server.id)) {
+
+                const serverName = Auth.getUserInfo().id == server.ownerUserId ? "Home" : `${server.name}`;
+
+                const button = new Button(this, 200, 50 + servers.indexOf(server) * 50, 290, 45, "button/signin_guest", 16, serverName);
+                button.onClick = () => {
+                    console.log("sv")
+
+                    Gameface.Instance.network.sendJoinServer(server.id);
+                }
+
+                this._buttons.set(server.id, button);
+
             }
 
-            i++;
-        }  
-    }
-
-    public joinServer(id: string) {
-        Gameface.Instance.createBaseWorld(true);
-        
-        Gameface.Instance.removeScene(ServerListScene);
-        Gameface.Instance.setHudVisible(true)
-
-        Gameface.Instance.network.sendJoinServer(id);
-    }
-
-
-    
-    /*
-    private testButtons() {
-
-        const w = this.scale.width;
-        const h = this.scale.height;
-
-        const x = w * 0.5;
-        const y = h * 0.5;
-		
-        const multiplayerBtn = new Button(this, x, y + 100, 200, 40, "button/button1", "Multiplayer");
-        const singleplayerBtn = new Button(this, x, y + 160, 200, 40, "button/button1", "Singleplayer");
-
-
-        const gameface = Gameface.Instance;
-        const network = gameface.network;
-        
-        const destroyButtons = () => {
-            multiplayerBtn.destroy();
-            singleplayerBtn.destroy();
         }
 
-        multiplayerBtn.onClick = () => {
-            destroyButtons();
 
-            Gameface.Instance.createBaseWorld(true);
-            network.send(PACKET_TYPE.ENTER_WORLD, null);
-        }
-
-        singleplayerBtn.onClick = () => {
-            destroyButtons();
-
-            Gameface.Instance.createBaseWorld(false);
-        }
     }
-    */
 }

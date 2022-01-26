@@ -1,7 +1,6 @@
 import { Dish } from "../../dish/dish";
 import { DishPlate } from "../../dish/dishPlate";
 import { GameScene } from "../../scenes/gameScene";
-import { HudScene } from "../../scenes/hudScene";
 import { SoundManager } from "../../soundManager/soundManager";
 import { TileItemStove } from "../../tileItem/items/tileItemStove";
 import { GridList } from "../../ui/gridList";

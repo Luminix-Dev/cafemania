@@ -11,7 +11,6 @@ import { MessageBox } from "../ui/messageBox";
 import { MoveScene } from "../utils/moveScene";
 import { World } from "../world/world";
 import { MapGridScene } from "./mapGridScene";
-import { ServerListScene } from "./serverListScene";
 
 export class GameScene extends Phaser.Scene {
     public static Instance: GameScene;

@@ -3,153 +3,222 @@ import { Debug } from "../debug/debug";
 import { Gameface } from "../gameface/gameface";
 import { DebugScene } from "./debugScene";
 
-interface ILoadTask {
-    name: string
-    fn: () => Promise<void>
+enum LoadAssetType {
+    IMAGE,
+    AUDIO,
+    TASK
+}
+
+interface LoadAsset {
+    text: string
+    type: LoadAssetType
+    key?: string
+    url?: string
+    taskFn?: () => Promise<void>
+}
+
+export enum LoadSceneType {
+    NONE,
+    PROGRESS,
+    SIGN
 }
 
 export class LoadScene extends Phaser.Scene {
     public static Instance: LoadScene;
 
-    private _text: Phaser.GameObjects.Text;
-    private _loadingBar: Phaser.GameObjects.Graphics;
-    private _loadingBarProgress = 0;
-    private _loadingBarSize = new Phaser.Structs.Size(500, 30);
-    private _loadTasks: ILoadTask[] = [];
-    private _title: string = "";
+    public onProgress?: (progress: number, text: string) => void;
     
-    private _loader: Phaser.Loader.LoaderPlugin;
-    private _amountLoaderAssets: number = 0;
-    private _amountLoaderAssetsLoaded: number = 0;
-    
-    
-    private _onCreateCallback?: (loadScene: LoadScene) => void;
+    public get loader() { return this.load; }
 
-    //public get loader() { return this._loader; }
+    private _onCreateCallback?: (loadScene: LoadScene) => void;
+    private _loadAssetsIndexes = new Map<string, number>();
+    private _loadAssets: LoadAsset[] = [];
+    private _totalLoadedAssets: number = 0;
+
+    private _loadText?: Phaser.GameObjects.Text;
+    private _percentageText?: Phaser.GameObjects.Text;
+
+    private _type: LoadSceneType = LoadSceneType.NONE;
 
     constructor() {
         super({});
         LoadScene.Instance = this;
-
         window['LoadScene'] = LoadScene;
     }
 
-    public init(data) {
-        console.log(data)
-        
-        if(data.oncreate) {
-            this._onCreateCallback = data.oncreate;
+    public static createScene(type: LoadSceneType, callback: () => void) {
+
+        if(Gameface.Instance.hasSceneStarted(LoadScene)) {
+            console.log(`[loadScene] removing scene`)
+            Gameface.Instance.removeScene(LoadScene);
         }
+
+        console.log(`[loadScene] creating loadScene...`)
+
+        Gameface.Instance.phaser.scene.add('LoadScene', LoadScene, true, {type: type, oncreate: callback});
+    }
+
+    public static removeScene() {
+        LoadScene.Instance?.scene.remove();
+    }
+
+    public init(data) {
+        if(data.type) this._type = data.type;
+        if(data.oncreate) this._onCreateCallback = data.oncreate;
     }
 
     public create() {
         const self = this;
+        const loader = this.loader;
 
-        this._loader = this.load; //new Phaser.Loader.LoaderPlugin(this);
-        this._loader.setPath(AssetManager.ASSETS_URL);
-        this._loader.on('filecomplete', function(key, type, data) {
-            self._title = `Loading '${key}'`;
-            self._amountLoaderAssetsLoaded++;
+        loader.setPath(AssetManager.ASSETS_URL);
+        loader.on('filecomplete', function(key, type, data) {
+            const index = self._loadAssetsIndexes.get(key);
 
-            self.setProgress(self._amountLoaderAssetsLoaded / (self._amountLoaderAssets + self._loadTasks.length));
+            if(index != undefined) {
+                const loadAsset =  self._loadAssets[index];
 
-            console.log(self._amountLoaderAssetsLoaded, '/', (self._amountLoaderAssets + self._loadTasks.length))
+                self.onAssetFinishLoad(loadAsset);
+            }
         });
 
-        this._loadingBar = this.add.graphics();
-        this._text = this.add.text(0, 0, '');
+        //
+
+        const gameSize = this.scale.gameSize;
+
+        const x = gameSize.width/2;
+        const y = gameSize.height/2;
+
+        if(this._type == LoadSceneType.PROGRESS) {
+            const bg = this.add.image(x, y, 'loading_background');
+            bg.setScale(.9);
+
+            const loadText = this._loadText = this.add.text(x, y + 180, "Loading", {fontFamily: 'AlfaSlabOne-Regular', color: "#FFFFFF"});
+            loadText.setFontSize(18);
+            loadText.setStroke("#55330D", 10)
+            loadText.setOrigin(0.5)
+    
+            const percentageText = this._percentageText = this.add.text(x, y + 260, "0%", {fontFamily: 'AlfaSlabOne-Regular', color: "#FCE909"});
+            percentageText.setFontSize(30);
+            percentageText.setStroke("#55330D", 10)
+            percentageText.setOrigin(0.5)
+
+            
+        }
+        
+        if(this._type == LoadSceneType.SIGN) {
+            const sign = this.add.image(x, y, 'sign');
+            sign.setScale(0.7)
+
+            const loadText = this._loadText = this.add.text(x, y, "Loading\n...", {align: 'center', fontFamily: 'AlfaSlabOne-Regular', color: "#FFFFFF"});
+            loadText.setFontSize(26);
+            loadText.setStroke("#000000 ", 10)
+            loadText.setOrigin(0.5);
+        }
+
+        //
+
+        this.scene.bringToTop();
 
         this._onCreateCallback?.(this);
     }
 
     public update(time: number, delta: number) {
-        this.updateLoadingBar();
     }
 
-    public async loadAll() {
-        Debug.log("begin load");
+    private onAssetFinishLoad(loadAsset: LoadAsset) {
+        this._totalLoadedAssets++;
 
-        DebugScene.Instance?.updateText();
-        
-        const loader = this._loader;
-        const self = this;
+        const progress = this._totalLoadedAssets / this._loadAssets.length;
+        const text = loadAsset.text;
 
-        return new Promise<void>(async (resolve) => {
-            
-            console.log(self._amountLoaderAssets);
+        console.log(`[gameScene] loadAsset ${loadAsset.key} completed ( ${this._totalLoadedAssets} / ${this._loadAssets.length} )`);
 
-           
-            await new Promise<void>((res) => {
-                loader.once('complete', (key, type, data) => res());
-                loader.start();
-            })
+        console.log(progress)
 
-            var i = 0;
+        this._loadText?.setText(text);
+        this._percentageText?.setText(`${(progress * 100).toFixed(0)}%`);
 
-            for (const task of this._loadTasks) {
-                this._title = task.name;
-                Debug.log(task.name);
-                this.updateLoadingBar();
-                await task.fn();
-                i++;
+        this.onProgress?.(progress, text);
+    }
 
-      
-                this.setProgress((i + self._amountLoaderAssetsLoaded) / (self._amountLoaderAssets + this._loadTasks.length))
-                this.updateLoadingBar();
+    public async startLoadingAssets(callback: () => void) {
+        console.log(`[gameScene] startLoadingAssets`);
 
-                DebugScene.Instance?.updateText();
+        console.log(this._loadAssets)
+
+        const loader = this.loader;
+        const indexes = this._loadAssetsIndexes;
+
+        for (const loadAsset of this._loadAssets) {
+            if(loadAsset.type == LoadAssetType.TASK) continue;
+
+            const key = loadAsset.key!;
+            const url = loadAsset.url!;
+
+            indexes.set(key, this._loadAssets.indexOf(loadAsset));
+
+            if(loadAsset.type == LoadAssetType.IMAGE) loader.image(key, url);
+            if(loadAsset.type == LoadAssetType.AUDIO) loader.audio(key, url);
+        }
+
+        loader.once('complete', async () => {
+
+            for (const loadAsset of this._loadAssets) {
+                if(loadAsset.type == LoadAssetType.TASK) {
+                    await loadAsset.taskFn?.();
+                    this.onAssetFinishLoad(loadAsset);
+                }
             }
 
-            resolve();
-        })
+
+            console.log(`[gameScene] completed`);
+
+            
+
+            this._loadAssetsIndexes.clear();
+            this._loadAssets = [];
+            this._totalLoadedAssets = 0;
+
+            callback();
+        });
+        loader.start();
     }
+
+
 
     public loadImage(key: string, url: string) {
         console.log(`[loader] load image '${key}'`);
 
-        this._loader.image(key, url);
-        this._amountLoaderAssets++;
+        const asset: LoadAsset = {
+            text: `Loading image ${key}`,
+            key: key,
+            url: url,
+            type: LoadAssetType.IMAGE
+        }
+        this._loadAssets.push(asset);
     }
 
     public loadAudio(key: string, url: string) {
         console.log(`[loader] load audio '${key}'`);
 
-        this._loader.audio(key, url);
-        this._amountLoaderAssets++;
+        const asset: LoadAsset = {
+            text: `Loading audio ${key}`,
+            key: key,
+            url: url,
+            type: LoadAssetType.AUDIO
+        }
+        this._loadAssets.push(asset);
     }
 
-    public addLoadTask(name: string, fn: () => Promise<void>) {
-        console.log(`[loader] add load task '${name}'`);
+    public loadTask(text: string, fn: () => Promise<void>) {
+        console.log(`[loader] add load task '${text}'`);
 
-        this._loadTasks.push({
-            name: name,
-            fn: fn
-        })
-    }
-
-    public setProgress(progress: number) {
-        this._loadingBarProgress = progress;
-    }
-
-    private updateLoadingBar() {
-        const loadingBar = this._loadingBar;
-        const size = this._loadingBarSize;
-
-        loadingBar.clear();
-        loadingBar.fillStyle(0x2a2a2a);
-        loadingBar.fillRect(0, 0, size.width, size.height);
-        loadingBar.fillStyle(0xffff00);
-        loadingBar.fillRect(0, 0, size.width * this._loadingBarProgress, size.height);
-
-        //
-
-        const gameSize = this.game.scale.gameSize;
-        const centerPos = new Phaser.Structs.Size(gameSize.width / 2, gameSize.height / 2);
-
-        loadingBar.setPosition(centerPos.width - size.width/2, gameSize.height - size.height - 20);
-
-        const text = this._text;
-        text.setPosition(centerPos.width - size.width/2, gameSize.height - size.height - 20 - 20);
-        text.setText(this._title);
+        const asset: LoadAsset = {
+            text: text,
+            type: LoadAssetType.TASK,
+            taskFn: fn
+        }
+        this._loadAssets.push(asset);
     }
 }

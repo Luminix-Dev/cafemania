@@ -5,23 +5,22 @@ import { Game } from "../game/game";
 import { Input } from "../input/input";
 import { Network } from "../network/network";
 import { GameScene } from "../scenes/gameScene";
-import { PreloadScene } from "../scenes/preloadScene";
 import { MoveTileItem } from "../shop/moveTileItem";
 import { SyncType, World } from "../world/world";
 import { WorldSyncHelper } from "../world/worldSyncHelper";
 import { DebugScene } from "../scenes/debugScene";
 import { MapGridScene } from "../scenes/mapGridScene";
-import { HudScene } from "../scenes/hudScene";
 import { PhaserLoad } from "./phaserLoad";
 import { AssetManager } from "../assetManager/assetManager";
 import { MainScene } from "../scenes/mainScene";
-import { Button } from "../ui/button";
-import { ServerListScene } from "../scenes/serverListScene";
-import { Test1Scene } from "../scenes/test1Scene";
 import { WorldTextManager } from "../worldText/worldTextManager";
 import { TileHoverDetection } from "../shop/tileHoverDetection";
 import { Hud } from "../hud/hud";
 import { SoundManager } from "../soundManager/soundManager";
+import { Auth } from "../auth/auth";
+import { LoadScene, LoadSceneType } from "../scenes/loadScene";
+import { FirstLoadScene } from "../scenes/firstLoadScene";
+import { LoginScene } from "../scenes/loginScene";
 
 
 export class Gameface extends BaseObject {
@@ -60,27 +59,89 @@ export class Gameface extends BaseObject {
         this.setupResize();
 
         AssetManager.init();
-        AssetManager.initAssets();
-        SoundManager.init();
-        
-        this.startScene(MainScene);
-        this.startScene(GameScene);
-        this.startScene(PreloadScene);
 
-        Input.addScene(GameScene.Instance);
-        Camera.setScene(GameScene.Instance);
-        Camera.setupMoveEvents();
-        SoundManager.setScene(GameScene.Instance);
-        MoveTileItem.init();
-        WorldTextManager.init(GameScene.Instance);
-        TileHoverDetection.init();
+        this.startPreload(() => {
+            const mainScene = this.startScene(MainScene)
+    
+            this.startFirstLoad(() => {
 
+                this.startScene(GameScene);
+                this.startScene(DebugScene);
+                
+                Hud.createHudButtons();
+
+                Input.addScene(GameScene.Instance);
+            
+                Camera.setupMoveEvents();
+                SoundManager.setScene(GameScene.Instance);
+                MoveTileItem.init();
+                WorldTextManager.init(GameScene.Instance);
+                TileHoverDetection.init();
+
+                console.log("first load completed")
+
+                //Auth.init();
+
+                this.startScene(LoginScene);
+
+
+                return;
+
+                AssetManager.initAssets();
+                SoundManager.init();
+                
+                this.startScene(MainScene);
+                this.startScene(GameScene);
+                //this.startScene(PreloadScene);
+
+                Input.addScene(GameScene.Instance);
+            
+                Camera.setupMoveEvents();
+                SoundManager.setScene(GameScene.Instance);
+                MoveTileItem.init();
+                WorldTextManager.init(GameScene.Instance);
+                TileHoverDetection.init();
+
+            });
+        });
+
+    
         
     }
 
+    private startPreload(callback: () => void) {
+        AssetManager.initPreloadAssets();
+
+        LoadScene.createScene(LoadSceneType.NONE, () => {
+            const loadScene = LoadScene.Instance;
+            
+            AssetManager.getPreloadAssets().map(asset => loadScene.loadImage(asset.key, asset.path))
+
+            loadScene.startLoadingAssets(() => {
+                callback();
+            });
+        });
+    }
+
+
+    private startFirstLoad(callback: () => void) {
+        AssetManager.initAssets();
+        SoundManager.init();
+        
+        const firstLoadScene = this.startScene(FirstLoadScene) as FirstLoadScene;
+        firstLoadScene.startLoad(() => {
+            firstLoadScene.scene.remove();
+
+            callback();
+        })
+    }
+
+    private addAssetsToLoadScene(loadScene: LoadScene) {
+
+    }
 
     public render(dt: number) {
-        Camera.update(dt);
+        Camera.update(dt);  
         WorldTextManager.update(dt);
     }
 
@@ -105,8 +166,10 @@ export class Gameface extends BaseObject {
             const a = window.innerWidth / window.innerHeight;
             const s = 1;
 
-            if(a < 1) scaleManager.setGameSize(600 * s, 900 * s);
-            else scaleManager.setGameSize(1000, 600);
+            //if(a < 1) scaleManager.setGameSize(600 * s, 900 * s);
+            //else scaleManager.setGameSize(1000, 600);
+
+            scaleManager.setGameSize(1000, 600);
         });
 
         window.addEventListener('resize', () => {
@@ -121,6 +184,10 @@ export class Gameface extends BaseObject {
     }
 
     public onEnterMainMenu() {
+
+        //Auth.init();
+
+        /*
 
         this.startScene(DebugScene);
     
@@ -156,6 +223,7 @@ export class Gameface extends BaseObject {
                 gameface.createHud();
             });
         }
+        */
         
     }
     
@@ -191,12 +259,13 @@ export class Gameface extends BaseObject {
         
     }
 
+    
     public createHud() {
         return;
 
         this.startScene(DebugScene);
         //this.startScene(MapGridScene);
-        this.startScene(HudScene);
+        //this.startScene(HudScene);
 
         //Input.addScene(HudScene.Instance);
     }
@@ -216,7 +285,7 @@ export class Gameface extends BaseObject {
     public updateScenesOrder() {
         DebugScene.Instance?.scene.bringToTop();
         MapGridScene.Instance?.scene.bringToTop();
-        HudScene.Instance?.scene.bringToTop();
+        //HudScene.Instance?.scene.bringToTop();
     }
 
     public startScene(scene: typeof Phaser.Scene) {

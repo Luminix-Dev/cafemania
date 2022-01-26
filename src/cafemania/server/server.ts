@@ -1,11 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Client } from '../client/client';
+import { User } from '../client/user';
 import { Game } from '../game/game';
 import { PlayerState } from '../player/player';
 import { SyncType } from '../world/world';
 
 export class ServerListInfo {
     id: string
+    ownerUserId: string
     name: string
     players: number
 }
@@ -18,9 +20,14 @@ export class Server {
     private _id: string = uuidv4();
     private _name: string = "Server";
     private _game: Game;
+    private _ownerUser: User;
 
     constructor() {
         this._game = new Game();
+    }
+
+    public setOwnerUser(user: User) {
+        this._ownerUser = user;
     }
 
     public start() {
@@ -41,6 +48,7 @@ export class Server {
             id: this.id,
             name: this.name,
             players: 6,
+            ownerUserId: this._ownerUser.id
         }
 
         return info;
@@ -52,14 +60,14 @@ export class Server {
 
     }
 
-    public onClientJoin(client: Client) {
+    public onUserJoin(user: User) {
         const world = this.game.worlds[0];
 
         const player = world.spawnPlayer();
         player.setAtTileCoord(3, (Math.round(Math.random()*5)))
         player.setAsChangedState();
 
-        client.setPlayer(player);
+        user.setPlayer(player);
 
         /*
         setInterval(() => {

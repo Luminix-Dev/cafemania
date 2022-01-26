@@ -1,15 +1,12 @@
 import Phaser from 'phaser';
 import { Input } from '../input/input';
 import { GameScene } from '../scenes/gameScene';
-import { MainScene } from '../scenes/mainScene';
 import { MoveTileItem } from '../shop/moveTileItem';
 
 export class Camera {
     public static canMove = true;
 
     private static _position = new Phaser.Math.Vector2();
-
-    private static _scene: Phaser.Scene; //not using
 
     private static _startMovePosition = new Phaser.Math.Vector2();
     private static _startMoveScenePosition = new Phaser.Math.Vector2();
@@ -18,16 +15,15 @@ export class Camera {
 
     private static _isMoving: boolean = false;
 
-    public static setScene(scene: Phaser.Scene) {
-        this._scene = scene;
-    }
-
     public static getPosition() {
         return new Phaser.Math.Vector2(this._position.x, this._position.y);
     }
 
     public static update(dt: number) {
-        const scene = this._scene;
+        const scene = GameScene.Instance;
+
+        if(!scene) return;
+
         const position = this._position;
         const gameSize = scene.game.scale.gameSize;
 
@@ -52,11 +48,11 @@ export class Camera {
     }
 
     public static setZoom(zoom: number) {
-        this._scene.cameras.main.setZoom(zoom);
+        GameScene.Instance.cameras.main.setZoom(zoom);
     }
 
     public static zoomTo(zoom: number) {
-        this._scene.cameras.main.zoomTo(zoom);
+        GameScene.Instance.cameras.main.zoomTo(zoom);
     }
 
     public static setPosition(x: number, y: number) {

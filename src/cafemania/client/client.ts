@@ -1,9 +1,11 @@
 
+import { v4 as uuidv4 } from 'uuid';
+
 import socketio, { Socket } from 'socket.io';
 import { BaseObject } from '../baseObject/baseObject';
 import { Game } from "../game/game";
 import { Gamelog } from '../gamelog/gamelog';
-import { IPacket, IPacketData_JoinServer, IPacketData_MovePlayer, IPacketData_ServerList, IPacketData_StartCook, IPacketData_StoveTakeDish, IPacketData_WorldData, PACKET_TYPE } from '../network/packet';
+import { IPacket, IPacketData_JoinServer, IPacketData_JoinServerStatus, IPacketData_MovePlayer, IPacketData_ServerList, IPacketData_SignIn, IPacketData_SignInResult, IPacketData_StartCook, IPacketData_StoveTakeDish, IPacketData_WorldData, PACKET_TYPE } from '../network/packet';
 import { Player } from '../player/player';
 import { PlayerClient } from '../player/playerClient';
 import { Server } from '../server/server';
@@ -12,6 +14,9 @@ import { TileItemStove } from '../tileItem/items/tileItemStove';
 import { TileItem } from '../tileItem/tileItem';
 import { SyncType, World } from '../world/world';
 import { WorldEvent } from '../world/worldEvents';
+import { IUserInfo, User } from './user';
+import { Gameface } from '../gameface/gameface';
+import { ServersListScene } from '../scenes/serverListScene';
 
 /*
 const game = new Game();
@@ -22,34 +27,22 @@ world.generateBaseWorld();
 game.start();
 */
 
+
+
 export class Client extends BaseObject {
+    public get id() { return this._id; }
     public get socket() { return this._socket; }
-    public get username() { return this._username; }
-    public get mainServer() { return this._mainServer; }
-
+    public get user() { return this._user!; }
+    
+    private _id: string = uuidv4();
     private _socket: socketio.Socket;
+    private _user?: User;
 
-    private _mainServer: Server;
-
-    private _atServer?: Server;
-    private _atWorld?: World;
-
-    private _username: string = "Guest " + Math.ceil(Math.random()*10000);
-
-    private _player?: Player;
 
     constructor(socket: socketio.Socket) {
         super();
 
         this._socket = socket;
-    }
-
-    public setPlayer(player: Player) {
-        this._player = player;
-    }
-
-    public setMainServer(server: Server) {
-        this._mainServer = server;
     }
 
     public getCurrentAddress() {
@@ -62,7 +55,7 @@ export class Client extends BaseObject {
     public onConnect() {
         Gamelog.log(this.getCurrentAddress(), `${this.socket.id} connected`);
 
-        this.sendServersList();
+        //this.sendServersList();
     }
 
     public onDisconnect() {
@@ -76,10 +69,13 @@ export class Client extends BaseObject {
         this.send(PACKET_TYPE.SERVER_LIST, packetData);
     }
 
+    /*
+
     public leaveWorld() {
         this.removeListeners();
         this._atWorld = undefined;
     }
+    
 
     public joinServer(server: Server) {
         Gamelog.log(this.getCurrentAddress(), `${this.socket.id} joined server "${server.name}"`);
@@ -120,6 +116,8 @@ export class Client extends BaseObject {
 
     }
 
+    */
+
     public onPlayerStateChangedEvent(player: Player) {
         const playerData = player.serialize();
 
@@ -144,6 +142,7 @@ export class Client extends BaseObject {
         this.send(PACKET_TYPE.WORLD_DATA, packetData);
     }
 
+    /*
     private _bindedEvents = new Map<WorldEvent, (...args) => void>();
 
     public bindWorldEvent(ev: WorldEvent, fn: (...args) => void) {
@@ -166,6 +165,8 @@ export class Client extends BaseObject {
         this.unbindWorldEvent(WorldEvent.TILE_ITEM_CHANGED)
     }
 
+    */
+
     public send(packetId: number, data: any) {
         const packet: IPacket = {
             type: packetId,
@@ -176,32 +177,73 @@ export class Client extends BaseObject {
         //this.log(`sent packet '${packet.type}'`);
     }
 
+    public setUser(user: User) {
+        this._user = user;
+        
+        user.setClient(this);
+    }
+
     public onReceivePacket(packet: IPacket) {
         //this.log(`reiceved packet '${packet.type}'`);
 
-        const world = this._atWorld;
+        if(packet.type == PACKET_TYPE.SIGN_IN) {
+            const packetData: IPacketData_SignIn = packet.data;
 
-        if(world) {
-            if(packet.type == PACKET_TYPE.START_COOK) {
-                const packetData: IPacketData_StartCook = packet.data;
+            const id = packetData.id;
 
-                const dishFactory = world.game.dishFactory;
-                const dish = dishFactory.getDish(packetData.dish);
+            if(id) {
+                console.log("google", id)
 
-                const stove = world.game.tileItemFactory.getTileItem(packetData.stoveId) as TileItemStove;
+                const user = MasterServer.Instance.createUser();
+                user.nickname = "User";
 
-                stove.startCook(dish);
+                this.setUser(user);
+
+            } else {
+                console.log("guest")
+
+                const user = MasterServer.Instance.createUser();
+                user.nickname = "Guest";
+
+                this.setUser(user);
             }
 
-            if(packet.type == PACKET_TYPE.STOVE_TAKE_DISH) {
-                const packetData: IPacketData_StoveTakeDish = packet.data;
+            //
+            const server = MasterServer.Instance.createServer(`${this.user.nickname}'s server`);
+            server.setOwnerUser(this.user);
+            server.start();
+            this.user.setMainServer(server);
+            //
 
-                const stove = world.game.tileItemFactory.getTileItem(packetData.stoveId) as TileItemStove;
 
-                stove.takeDish();
+
+            const data: IPacketData_SignInResult = {
+                success: true,
+                userInfo: this.user.getUserInfo()
+            }
+            this.send(PACKET_TYPE.SIGN_IN_RESULT, data);
+        }
+
+        if(packet.type == PACKET_TYPE.REQUEST_SERVER_LIST) {
+            this.sendServersList();
+        }
+
+        if(packet.type == PACKET_TYPE.JOIN_SERVER) {
+            const packetData: IPacketData_JoinServer = packet.data;
+            const server = MasterServer.Instance.getServerById(packetData.id);
+
+            if(server) {
+                this.user.joinServer(server);
             }
         }
 
+        if(packet.type == PACKET_TYPE.LEAVE_SERVER) {
+            this.user.leaveServer();
+        }
+
+        this._user?.onReceivePacket(packet);
+
+        /*
         if(packet.type == PACKET_TYPE.JOIN_SERVER) {
             const packetData: IPacketData_JoinServer = packet.data;
 
@@ -218,21 +260,9 @@ export class Client extends BaseObject {
             this.leaveServer();
         }
 
-        if(packet.type == PACKET_TYPE.REQUEST_SERVER_LIST) {
-            this.sendServersList();
-        }
+        
 
-        if(packet.type == PACKET_TYPE.MOVE_PLAYER) {
-            const packetData: IPacketData_MovePlayer = packet.data;
-
-            const tile = this._atWorld?.tileMap.getTile(packetData.x, packetData.y);
-
-            if(tile && this._player) {
-                this._player.taskWalkToTile(tile);
-            }
-
-            //this.
-        }
+        
 
         if(packet.type == PACKET_TYPE.ENTER_WORLD) {
             //this.joinWorld(this.game.worlds[0]);
@@ -241,5 +271,6 @@ export class Client extends BaseObject {
         if(packet.type == PACKET_TYPE.LEAVE_WORLD) {
             //this.joinWorld(this.game.worlds[0]);
         }
+        */
     }
 }

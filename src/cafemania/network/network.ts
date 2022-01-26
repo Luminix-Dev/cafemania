@@ -1,11 +1,13 @@
 import { io, Socket } from "socket.io-client";
+import { Auth } from "../auth/auth";
 import { BaseObject } from "../baseObject/baseObject";
 import { Debug } from "../debug/debug";
 import { Dish } from "../dish/dish";
-import { ServerListScene } from "../scenes/serverListScene";
+import { Gameface } from "../gameface/gameface";
+import { ServersListScene } from "../scenes/serverListScene";
 import { TileItemStove } from "../tileItem/items/tileItemStove";
 import { WorldSyncHelper } from "../world/worldSyncHelper";
-import { IPacket, IPacketData_JoinServer, IPacketData_MovePlayer, IPacketData_ServerList, IPacketData_StartCook, IPacketData_StoveTakeDish, IPacketData_WorldData, PACKET_TYPE } from "./packet";
+import { IPacket, IPacketData_JoinServer, IPacketData_JoinServerStatus, IPacketData_MovePlayer, IPacketData_ServerList, IPacketData_SignInResult, IPacketData_StartCook, IPacketData_StoveTakeDish, IPacketData_WorldData, PACKET_TYPE } from "./packet";
 
 export class Network extends BaseObject {
     public static SERVER_ADDRESS: string = "https://cafemania.danilomaioli.repl.co";
@@ -106,6 +108,10 @@ export class Network extends BaseObject {
     public sendLeaveServer() {
         this.send(PACKET_TYPE.LEAVE_SERVER, null);
     }
+    
+    public requestServerList() {
+        this.send(PACKET_TYPE.REQUEST_SERVER_LIST, null);
+    }
 
     public onReceivePacket(packet: IPacket) {
         //this.log(`reiceved packet '${packet.type}'`);
@@ -117,7 +123,22 @@ export class Network extends BaseObject {
 
         if(packet.type == PACKET_TYPE.SERVER_LIST) {
             const packetData: IPacketData_ServerList = packet.data;
-            ServerListScene.Instance.updateServerList(packetData.servers);
+            ServersListScene.updateServerList(packetData.servers);
+        }
+
+        if(packet.type == PACKET_TYPE.SIGN_IN_RESULT) {
+            const packetData: IPacketData_SignInResult = packet.data;
+            Auth.onReceiveSignInResult(packetData);
+        }
+
+        if(packet.type == PACKET_TYPE.JOIN_SERVER_STATUS) {
+            const packetData: IPacketData_JoinServerStatus = packet.data;
+            console.log(packetData)
+
+            if(packetData.success) {
+                Gameface.Instance.removeScene(ServersListScene);
+                Gameface.Instance.createBaseWorld(true);
+            }
         }
 
         /*

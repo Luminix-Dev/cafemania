@@ -3,7 +3,7 @@ import { Gameface } from "../gameface/gameface";
 import { PACKET_TYPE } from "../network/packet";
 import { DebugScene } from "../scenes/debugScene";
 import { GameScene } from "../scenes/gameScene";
-import { ServerListScene } from "../scenes/serverListScene";
+import { ServersListScene } from "../scenes/serverListScene";
 import { Button } from "../ui/button";
 import { GridLayout } from "../ui/gridLayout";
 
@@ -55,8 +55,7 @@ export class Hud {
     }
 
     private static goBackToServerList() {
-        if(Gameface.Instance.hasSceneStarted(ServerListScene)) {
-
+        if(Gameface.Instance.hasSceneStarted(ServersListScene)) {
             console.log("cannot go back")
             return;
         }
@@ -68,8 +67,8 @@ export class Hud {
         Gameface.Instance.game.removeWorlds();
 
         
-        Gameface.Instance.startScene(ServerListScene)
-        Gameface.Instance.network.send(PACKET_TYPE.REQUEST_SERVER_LIST, null);
+        Gameface.Instance.startScene(ServersListScene);
+        Gameface.Instance.network.sendLeaveServer();
 
         
         

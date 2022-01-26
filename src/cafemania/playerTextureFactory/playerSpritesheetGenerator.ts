@@ -1,9 +1,9 @@
 import Three from "../three/three";
 import { PlayerAnimation } from "../player/playerAnimation";
-import { PreloadScene } from "../scenes/preloadScene";
 import { Direction } from "../utils/direction";
 import { SpriteSheetOrganizer } from "../utils/spriteSheetOrganizer";
 import { PlayerTextureFactory } from "./playerTextureFactory";
+import { MainScene } from "../scenes/mainScene";
 
 export interface IPlayerTextureOptions {
     animations: string[]
@@ -112,7 +112,7 @@ export class PlayerSpritesheetGenerator {
 
         sheet.organize()
 
-        const canvas = PreloadScene.Instance.textures.createCanvas(queryItem.name, sheet.width, sheet.height) 
+        const canvas = MainScene.Instance.textures.createCanvas(queryItem.name, sheet.width, sheet.height) 
         //canvas.context.fillStyle = "red"
         //canvas.context.fillRect(0, 0, canvas.width, canvas.height)
 

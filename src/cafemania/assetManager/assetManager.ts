@@ -16,14 +16,24 @@ interface Asset {
     path: string
     loadState: LoadState
     type: AssetType
+    preload: boolean
 }
 
 export class AssetManager {
     public static ASSETS_URL = "";
 
     private static _assets = new Phaser.Structs.Map<string, Asset>([]);
+    private static _isPreload: boolean = true;
+
+    public static initPreloadAssets() {
+        this.addImage('background', 'background.png');
+        this.addImage('loading_background', 'loading_background.png');
+        this.addImage('sign', 'sign.png');
+    }
 
     public static initAssets() {
+        this._isPreload = false;
+
         this.addImage('wallMask', 'wallMask.png');
         this.addImage('tile', 'tile.png');
         this.addImage('tile2', 'tile2.png');
@@ -33,16 +43,24 @@ export class AssetManager {
         this.addImage('button/zoom_out', 'button/zoom_out.png');
         this.addImage('button/fullscreen', 'button/fullscreen.png');
 
+        this.addImage('button/signin_google', 'button/signin_google.png');
+        this.addImage('button/signin_guest', 'button/signin_guest.png');
+        
         this.addImage('messagebox/1', 'messagebox/1.png');
         this.addImage('messagebox/1_bottom', 'messagebox/1_bottom.png');
         
         this.addImage('player/eye', 'player/eye.png');
-
-        
     }
 
-    public static getAssets(type: AssetType) {
-        return this._assets.values().filter(asset => asset.type == type);
+    public static getPreloadAssets() {
+        return this._assets.values().filter(asset => asset.preload == true);
+    }
+
+    public static getAssets(type?: AssetType) {
+        if(type == undefined) {
+            return this._assets.values();
+        }
+        return this._assets.values().filter(asset => asset.type == type && asset.preload == false);
     }
 
     public static addImage(key: string, texture: string) {
@@ -50,18 +68,26 @@ export class AssetManager {
             key: key,
             path: texture,
             loadState: LoadState.NOT_LOADED,
-            type: AssetType.IMAGE
+            type: AssetType.IMAGE,
+            preload: this._isPreload
         }
 
         this._assets.set(key, asset);
+
+        return asset;
     }
 
+
+
     public static addAudio(key: string, path: string) {
+        console.log("> added autdio")
+
         const asset: Asset = {
             key: key,
             path: path,
             loadState: LoadState.NOT_LOADED,
-            type: AssetType.AUDIO
+            type: AssetType.AUDIO,
+            preload: this._isPreload
         }
 
         this._assets.set(key, asset);

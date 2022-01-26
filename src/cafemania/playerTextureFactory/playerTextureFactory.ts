@@ -46,7 +46,7 @@ export class PlayerTextureFactory {
 
         this.animate();
         
-        Three.appendRenderer();
+        //Three.appendRenderer();
     }
 
     public static async attachModelToBone(modelPath: string, bone: BonePart) {

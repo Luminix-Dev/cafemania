@@ -3,7 +3,7 @@ import { Debug } from "../debug/debug";
 export class DebugScene extends Phaser.Scene {
     public static Instance: DebugScene;
     
-    public showDebugText: boolean = true;
+    public showDebugText: boolean = false;
     
     private _text: Phaser.GameObjects.Text;
     private _updateTextTime: number = -1;

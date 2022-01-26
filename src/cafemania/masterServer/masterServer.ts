@@ -4,6 +4,7 @@ import { BaseObject } from '../baseObject/baseObject';
 import { Client } from '../client/client';
 import { IPacket } from '../network/packet';
 import { Server } from '../server/server';
+import { User } from '../client/user';
 
 export class MasterServer extends BaseObject {
     public static Instance: MasterServer;
@@ -11,6 +12,7 @@ export class MasterServer extends BaseObject {
     public get servers() { return Array.from(this._servers.values()); }
 
     private _servers = new Phaser.Structs.Map<string, Server>([]); 
+    private _users = new Phaser.Structs.Map<string, User>([]); 
 
     constructor(io: socketio.Server) {
         super();
@@ -54,15 +56,23 @@ export class MasterServer extends BaseObject {
     }
 
     public onClientConnect(client: Client) {
+        /*
         const server = this.createServer(`${client.username}'s server`);
         server.start();
         client.setMainServer(server);
+        */
         client.onConnect()
     }
 
     public onClientDisconnect(client: Client) {
         client.onDisconnect()
 
-        this.removeServer(client.mainServer);
+        //this.removeServer(client.mainServer);
+    }
+    
+    public createUser() {
+        const user = new User();
+        this._users.set(user.id, user);
+        return user;
     }
 }
