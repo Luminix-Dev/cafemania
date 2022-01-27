@@ -350,6 +350,9 @@ export class World extends BaseObject {
         const player = new PlayerWaiter(this);
         this.addPlayer(player);
         player.setAtTileCoord(x, y);
+
+        player.playerInfo.nickname = "Waiter";
+
         return player;
     }
 

@@ -66,6 +66,8 @@ export class Server {
         const player = world.spawnPlayer();
         player.setAtTileCoord(3, (Math.round(Math.random()*5)))
         player.setAsChangedState();
+        player.playerInfo.nickname = user.nickname;
+        player.playerInfo.id = user.id;
 
         user.setPlayer(player);
 

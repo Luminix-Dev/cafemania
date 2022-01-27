@@ -37,6 +37,11 @@ export class AssetManager {
         this.addImage('wallMask', 'wallMask.png');
         this.addImage('tile', 'tile.png');
         this.addImage('tile2', 'tile2.png');
+        this.addImage('panel', 'panel.png');
+        
+        this.addImage('button/panel/gift', 'button/panel/gift.png');
+        this.addImage('button/panel/waiter', 'button/panel/waiter.png');
+
         this.addImage('button/button1', 'button/button1.png');
         this.addImage('button/button_small_green', 'button/button_small_green.png');
         this.addImage('button/zoom_in', 'button/zoom_in.png');

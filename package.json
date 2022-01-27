@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node src/server/index.ts",
-    "dev": "nodemon src/server/index.ts",
+    "dev": "nodemon src/server/index.ts --ignore ./public --ignore ./src",
     "cafemania": "webpack --config webpack/webpack.config.js --watch"
   },
   "keywords": [],

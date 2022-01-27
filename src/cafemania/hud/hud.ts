@@ -6,6 +6,7 @@ import { GameScene } from "../scenes/gameScene";
 import { ServersListScene } from "../scenes/serverListScene";
 import { Button } from "../ui/button";
 import { GridLayout } from "../ui/gridLayout";
+import { Panel } from "../ui/panel";
 
 export class Hud {
 
@@ -13,7 +14,37 @@ export class Hud {
 
     }
 
-    public static createTest1() {
+
+    public static createHud() {
+        this.createMainPanel();
+        this.createSideButtons();
+
+        const sheet = GameScene.Instance.add.image(0, 0, "PlayerSpriteTexture_NoTexture")
+        sheet.setDepth(1000)
+        sheet.setOrigin(0.5, 1)
+        sheet.setPosition(0, -300);
+    }
+
+    private static createMainPanel() {
+        const width = 760;
+        const height = 150;
+        const gameSize = GameScene.Instance.scale;
+
+        const panel = new Panel(GameScene.Instance, width, height);
+
+        panel.addTab("button/panel/waiter")
+        panel.addTab("button/panel/waiter")
+
+        panel.addButton("button/panel/gift")
+        panel.addButton("button/panel/gift")
+        panel.addButton("button/panel/gift")
+
+        panel.container.setPosition(gameSize.width/2 - width/2, gameSize.height - height - 5);
+
+        GameScene.Instance.hudContainer.add(panel.container);
+    }
+
+    private static createSideButtons() {
         const buttonSize = new Phaser.Math.Vector2(150, 35);
         const gameSize = GameScene.Instance.scale;
 
@@ -80,65 +111,6 @@ export class Hud {
         //Gameface.Instance.startMainScene();
 
         Gameface.Instance.network.send(PACKET_TYPE.LEAVE_WORLD, null);
-    }
-
-    public static createHudButtons() {
-        this.createTest1();
-
-        const sheet = GameScene.Instance.add.image(0, 0, "PlayerSpriteTexture_Client")
-        sheet.setDepth(1000)
-        sheet.setOrigin(0.5, 1)
-        sheet.setPosition(0, -300)
-
-
-        return;
-
-        /*
-
-        const gameSize = GameScene.Instance.scale;
-
-        const buttonSize = new Phaser.Math.Vector2(120, 30);
-
-        const gridLayout = new GridLayout(GameScene.Instance, buttonSize.x, gameSize.height, buttonSize.x, buttonSize.y, 10);
-        let sideButtons = 0;
-        const addSideButton = (button: Button) => {
-            const position = gridLayout.getItemCenterPosition(0, sideButtons);
-            button.container.setPosition(gameSize.width - position.x, position.y)
-            sideButtons++;
-        }
-
-        const zoomInButton = Hud.addButton("zoom in", 0, 0, buttonSize.x, buttonSize.y);
-        addSideButton(zoomInButton);
-
-        const zoomOuButton = Hud.addButton("zoom out", 0, 0, buttonSize.x, buttonSize.y);
-        addSideButton(zoomOuButton);
-
-        const backBtn = Hud.addButton("Back",   70, gameSize.height - 40,   100, 35);
-        backBtn.onClick = () => {
-            if(Gameface.Instance.hasSceneStarted(ServerListScene)) {
-                console.log("cannot go back")
-                return;
-            }
-
-            Gameface.Instance.network.sendLeaveServer();
-           
-            //Gameface.Instance.setHudVisible(false);
-            Gameface.Instance.destroyGameScene()
-            Gameface.Instance.game.removeWorlds();
-
-            
-            Gameface.Instance.startScene(ServerListScene)
-            Gameface.Instance.network.send(PACKET_TYPE.REQUEST_SERVER_LIST, null);
-
-            return;
-
-            Gameface.Instance.game.removeWorlds();
-            Gameface.Instance.destroyGameScene();
-            //Gameface.Instance.startMainScene();
-
-            Gameface.Instance.network.send(PACKET_TYPE.LEAVE_WORLD, null);
-        }
-        */
     }
 
     public static addButton(text: string, x: number, y: number, width: number, height: number, texture?: string, offset?: number) {

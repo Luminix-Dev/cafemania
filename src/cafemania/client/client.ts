@@ -195,7 +195,7 @@ export class Client extends BaseObject {
                 console.log("google", id)
 
                 const user = MasterServer.Instance.createUser();
-                user.nickname = "User";
+                user.nickname = "User " + user.id.slice(0, 8);
 
                 this.setUser(user);
 
@@ -203,13 +203,13 @@ export class Client extends BaseObject {
                 console.log("guest")
 
                 const user = MasterServer.Instance.createUser();
-                user.nickname = "Guest";
+                user.nickname = "Guest " + user.id.slice(0, 8);
 
                 this.setUser(user);
             }
 
             //
-            const server = MasterServer.Instance.createServer(`${this.user.nickname}'s server`);
+            const server = MasterServer.Instance.createServer(`${this.user.nickname}'s cafe`);
             server.setOwnerUser(this.user);
             server.start();
             this.user.setMainServer(server);

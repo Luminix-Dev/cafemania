@@ -68,7 +68,7 @@ export class Gameface extends BaseObject {
                 this.startScene(GameScene);
                 this.startScene(DebugScene);
                 
-                Hud.createHudButtons();
+                Hud.createHud();
 
                 Input.addScene(GameScene.Instance);
             
@@ -227,7 +227,7 @@ export class Gameface extends BaseObject {
         
     }
     
-    public createBaseWorld(isMultiplayer: boolean) {
+    public createBaseWorld(isMultiplayer?: boolean) {
         const world = this.game.createWorld();
 
         if(isMultiplayer) {

@@ -90,6 +90,7 @@ export class WorldSyncHelper {
                 world.addPlayer(player);
                 player.setAtTileCoord(playerData.x, playerData.y);
                 player.setDirection(playerData.direction)
+                player.setPlayerInfo(playerData.playerInfo);
             }
 
             if(playerData.type == PlayerType.CHEFF) {

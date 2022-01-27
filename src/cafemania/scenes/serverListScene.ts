@@ -48,9 +48,9 @@ export class ServersListScene extends Phaser.Scene {
             
             if(!this._buttons.has(server.id)) {
 
-                const serverName = Auth.getUserInfo().id == server.ownerUserId ? "Home" : `${server.name}`;
+                const serverName = (Auth.getUserInfo().id == server.ownerUserId ? "(Home) " : '') + server.name;
 
-                const button = new Button(this, 200, 50 + servers.indexOf(server) * 50, 290, 45, "button/signin_guest", 16, serverName);
+                const button = new Button(this, 300, 50 + servers.indexOf(server) * 50, 360, 45, "button/signout", 16, serverName);
                 button.onClick = () => {
                     console.log("sv")
 

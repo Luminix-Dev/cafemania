@@ -14,6 +14,7 @@ import { Utils } from '../utils/utils';
 import { World } from "../world/world";
 import { WorldEvent } from '../world/worldEvents';
 import { PlayerAnimation } from './playerAnimation';
+import { PlayerInfo } from './playerInfo';
 import { PlayerType } from './playerType';
 import { IPlayerTaskSerializedData, PlayerTaskType, TaskExecuteAction, TaskManager, TaskPlayAnimation, TaskPlaySpecialAction, TaskWalkToTile } from './taskManager';
 
@@ -33,6 +34,7 @@ export interface IPlayerSerializedData {
     y: number
     direction: number
     tasks: IPlayerTaskSerializedData[]
+    playerInfo: PlayerInfo
 }
 
 class PlayerPathFindMovement {
@@ -49,6 +51,8 @@ class PlayerPathFindMovement {
     private _currentIndex: number = 0;
 
     private _totalDistance: number = 0;
+
+    
     
     public setStart(position: Phaser.Math.Vector2) {
         this._startPosition.set(position.x, position.y);
@@ -206,6 +210,7 @@ export class Player extends BaseObject {
     public get state() { return this._state; }
     public get taskManager() { return this._taskManager; }
     public get pathFindMovement() { return this._pathFindMovement; }
+    public get playerInfo() { return this._playerInfo; }
     public speed: number = 1;
 
     private _position = new Phaser.Math.Vector2();
@@ -221,6 +226,7 @@ export class Player extends BaseObject {
     private _debugText = new DebugText();
     private _container?: Phaser.GameObjects.Container;
     private _sprite?: Phaser.GameObjects.Sprite;
+    private _nicknameText?: Phaser.GameObjects.Text;
 
     private _pathFind?: PathFind;
     private _pathFindVisuals?: PathFindVisualizer;
@@ -239,6 +245,12 @@ export class Player extends BaseObject {
     private _state: PlayerState = PlayerState.IDLE;
     private _sittingAtChair: TileItemChair | undefined;
 
+    private _playerInfo: PlayerInfo = {
+        id: '',
+        nickname: 'Player',
+        clothes: [],
+    }
+
     constructor(world: World) {
         super();
         this._world = world;
@@ -250,6 +262,10 @@ export class Player extends BaseObject {
 
 
     public getSprite() { return this._sprite; }
+
+    public setPlayerInfo(playerInfo: PlayerInfo) {
+        this._playerInfo = playerInfo;
+    }
 
     public setAtTileCoord(x: number, y: number, updatePosition = true) {
         this.setAtTile(this.world.tileMap.getTile(x, y), updatePosition);
@@ -623,6 +639,10 @@ export class Player extends BaseObject {
             scene.layerObjects.add(this._container);
 
             this.createSprite();
+
+            this._nicknameText = scene.add.text(0, -170, `${this.playerInfo.nickname}`, {color: "black"});
+            this._nicknameText.setOrigin(0.5);
+            this._container.add(this._nicknameText);
         }
 
         this._container?.setPosition(this._position.x, this._position.y);
@@ -710,7 +730,8 @@ export class Player extends BaseObject {
             x: this.atTile.x,
             y: this.atTile.y,
             direction: this.direction,
-            tasks: tasks
+            tasks: tasks,
+            playerInfo: this.playerInfo
             //data: this.data
         }
 
