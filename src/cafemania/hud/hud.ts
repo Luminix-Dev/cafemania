@@ -1,5 +1,6 @@
 import { Camera } from "../camera/camera";
 import { Gameface } from "../gameface/gameface";
+import { Input } from "../input/input";
 import { PACKET_TYPE } from "../network/packet";
 import { DebugScene } from "../scenes/debugScene";
 import { GameScene } from "../scenes/gameScene";
@@ -12,32 +13,173 @@ import { Panel } from "../ui/panel";
 import { TileItemShop } from "../ui/tileItemShop";
 import { TileItemShopItem } from "../ui/tileItemShopItem";
 
+
+
 export class Hud {
+
+    public static drawLockedZones: boolean = false;
 
     private static _mainPanel?: Panel;
 
+    private static _lockedRects = new Map<string, Phaser.Geom.Rectangle>();
+    private static _lockedRectsVisual = new Map<string, Phaser.GameObjects.Graphics>();
+    private static _lockedZones: string[] = [];
+
+    public static update(dt: number) {
+        this.updateLockedZones();
+
+        const gameScene = GameScene.Instance;
+
+        if(!gameScene) return;
+        
+        const position = Camera.getPosition();
+        const gameSize = gameScene.game.scale.gameSize;
+        
+        
+        gameScene.cameras.main.setScroll(
+            position.x - gameSize.width / 2,
+            position.y - gameSize.height / 2
+        );
+
+        
+
+      
+        const zoom = gameScene.cameras.main.zoom;
+        const s = 1/zoom;
+        gameScene.hudContainer.setScale(s);
+        gameScene.hudContainer.setPosition(
+            gameScene.cameras.main.scrollX - ((s-1)*(gameSize.width/2)),
+            gameScene.cameras.main.scrollY - ((s-1)*(gameSize.height/2))
+        );
+        
+    }
 
     public static createHud() {
         this.createMainPanel();
         this.createSideButtons();
 
+
         //this.createShopPanel();
 
+        /*
         const sheet = GameScene.Instance.add.image(0, 0, "PlayerSpriteTexture_NoTexture")
         sheet.setDepth(1000)
         sheet.setOrigin(0.5, 1)
         sheet.setPosition(0, -300);
+        */
+
+        Input.events.on("pointerdown", () => {
+
+            const worldPos = Input.getMouseWorldPosition();
+            const screenPos = this.getScreenCoordsFromWorldCoords(worldPos);
+
+            console.log("---")
+            console.log(worldPos)
+            console.log(screenPos);
+            console.log("---")
+
+        })
     }
 
+    private static updateLockedZones() {
+        this._lockedZones = [];
+
+        const mousePos = Input.mousePosition;
+    
+        for (const id of this._lockedRects.keys()) {
+            const rect = this._lockedRects.get(id)!;
+            
+            if(rect.contains(mousePos.x, mousePos.y)) {
+                this._lockedZones.push(id);
+            }
+
+        }
+    }
+
+    public static getLockedZones() {
+        return this._lockedZones;
+    }
+
+    public static isZoneLocked(id?: string) {
+        if(id == undefined) {
+            return this._lockedZones.length > 0;
+        }
+        return this._lockedZones.includes(id);
+    }
+
+    public static getScreenCoordsFromWorldCoords(worldPosition: Phaser.Math.Vector2) {
+        const position = new Phaser.Math.Vector2();
+       
+        
+        const gameScene = GameScene.Instance;
+        const gameSize = gameScene.game.scale.gameSize;
+
+        const zoom = gameScene.cameras.main.zoom;
+        const s = 1/zoom;
+        
+        //position.x = worldPosition.x * zoom;
+        //position.y = worldPosition.y * zoom;
+
+        position.x += worldPosition.x
+        position.y += worldPosition.y
+
+        position.x -= gameScene.cameras.main.scrollX - ((s-1)*(gameSize.width/2));
+        position.y -= gameScene.cameras.main.scrollY - ((s-1)*(gameSize.height/2));
+
+        position.x *= zoom;
+        position.y *= zoom;
+
+        //position.x -= (gameSize.width/4) * (1-s);
+        //position.y -= (gameSize.height/4) * (1-s);
+
+
+
+        //position.x -= (gameScene.cameras.main.scrollX - ((s-1)*(gameSize.width/2)));
+        //position.y -= (gameScene.cameras.main.scrollY - ((s-1)*(gameSize.height/2)))
+
+        //position.x += gameSize.width/2
+        //position.y += gameSize.height/2
+
+
+ 
+        return position;
+    }
+
+    public static addLockZone(id: string, x: number, y: number, width: number, height: number) {
+        const rectangle = new Phaser.Geom.Rectangle(x, y, width, height);
+
+        this._lockedRects.set(id, rectangle);
+
+        if(this.drawLockedZones) {
+            const scene = GameScene.Instance;
+            const graphics = scene.add.graphics();
+            graphics.fillStyle(0xff0000, 0.2);
+            graphics.fillRect(0, 0, width, height);
+            graphics.setPosition(x, y);
+            scene.hudContainer.add(graphics);
+
+            this._lockedRectsVisual.set(id, graphics);
+        }
+
+    }
+
+    public static removeLockZone(id: string) {
+        this._lockedRects.delete(id);
+
+        this._lockedRectsVisual.get(id)?.destroy();
+        this._lockedRectsVisual.delete(id);
+    }
+ 
     private static createShopPanel() {
         const scene = GameScene.Instance;
         const width = 760;
         const height = 250;
         const gameSize = GameScene.Instance.scale;
-
+        const positionX = gameSize.width/2 - width/2;
+        const positionY = gameSize.height - height - 5;
         
         const panel = new Panel(GameScene.Instance, width, height);
-        panel.setPosition(gameSize.width/2 - width/2, gameSize.height - height - 5);
+        panel.setPosition(positionX, positionY);
         GameScene.Instance.hudContainer.add(panel.container);
 
         const tileItemShop = new TileItemShop(scene);
@@ -46,7 +188,11 @@ export class Hud {
         tileItemShop.closeButton.onClick = () => {
             panel.container.destroy();
             this.createMainPanel();
+
+            this.removeLockZone('tileItemShopPanel');
         }
+
+        this.addLockZone('tileItemShopPanel', positionX, positionY, width, height);
 
         return;
 
@@ -112,16 +258,19 @@ export class Hud {
 
     private static destroyMainPanel() {
         this._mainPanel?.container.destroy();
+        this.removeLockZone('mainPanel');
     }
 
     private static createMainPanel() {
         const width = 760;
         const height = 150;
         const gameSize = GameScene.Instance.scale;
+        const positionX = gameSize.width/2 - width/2;
+        const positionY = gameSize.height - height - 5
 
         const panel = this._mainPanel = new Panel(GameScene.Instance, width, height);
         panel.setButtonsOffset(180, 0);
-        panel.container.setPosition(gameSize.width/2 - width/2, gameSize.height - height - 5);
+        panel.container.setPosition(positionX, positionY);
         GameScene.Instance.hudContainer.add(panel.container);
 
         //panel.addTab("button/panel/waiter")
@@ -138,7 +287,7 @@ export class Hud {
         panel.addButton("button/panel/clothes")
         panel.addButton("button/panel/clothes")
 
-        
+        this.addLockZone('mainPanel', positionX, positionY, width, height);
     }
 
     private static createSideButtons() {

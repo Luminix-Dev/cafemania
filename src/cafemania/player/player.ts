@@ -640,9 +640,9 @@ export class Player extends BaseObject {
 
             this.createSprite();
 
-            this._nicknameText = scene.add.text(0, -170, `${this.playerInfo.nickname}`, {color: "black"});
-            this._nicknameText.setOrigin(0.5);
-            this._container.add(this._nicknameText);
+            //this._nicknameText = scene.add.text(0, -170, `${this.playerInfo.nickname}`, {color: "black"});
+            //this._nicknameText.setOrigin(0.5);
+            //this._container.add(this._nicknameText);
         }
 
         this._container?.setPosition(this._position.x, this._position.y);

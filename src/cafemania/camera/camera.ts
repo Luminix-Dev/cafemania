@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { Hud } from '../hud/hud';
 import { Input } from '../input/input';
 import { GameScene } from '../scenes/gameScene';
 import { MoveTileItem } from '../shop/moveTileItem';
@@ -20,30 +21,8 @@ export class Camera {
     }
 
     public static update(dt: number) {
-        const scene = GameScene.Instance;
-
-        if(!scene) return;
-
-        const position = this._position;
-        const gameSize = scene.game.scale.gameSize;
-
-        //MainScene.Instance.worldContainer.setPosition(position.x, position.y)
-
-        const gameScene = GameScene.Instance;
-        
-        gameScene.cameras.main.setScroll(
-            position.x - gameSize.width / 2,
-            position.y - gameSize.height / 2
-        );
-
-      
-        const zoom = gameScene.cameras.main.zoom;
-        const s = 1/zoom;
-        gameScene.hudContainer.setScale(s);
-        gameScene.hudContainer.setPosition(
-            gameScene.cameras.main.scrollX - (((1/zoom)-1)*(gameSize.width/2)),
-            gameScene.cameras.main.scrollY - (((1/zoom)-1)*(gameSize.height/2))
-        );
+   
+        Hud.update(dt);
         
     }
 
@@ -62,7 +41,11 @@ export class Camera {
     public static setupMoveEvents() {
         
         Input.events.on('begindrag', (pointer) => {
+
             if(this.canMove) {
+
+                if(Hud.isZoneLocked()) return;
+
                 if(!this._isMoving) {
                     this._isMoving = true;
 
@@ -76,6 +59,7 @@ export class Camera {
                     this._startMoveScenePosition.y = scene.cameras.main.scrollY + gameSize.height/2
 
                     console.log("camera begin drag")
+
                 }
             }
         });
@@ -83,7 +67,7 @@ export class Camera {
         Input.events.on('enddrag', (pointer) => {
             if(this._isMoving) {
                 this._isMoving = false;
-                console.log("camera begin drag")
+                console.log("camera end drag")
             }
             
         });
