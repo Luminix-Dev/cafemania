@@ -19,6 +19,20 @@ export enum TileItemType {
     DOOR
 }
 
+
+export enum TileItemCategory {
+    DECORATION,
+    STOVE,
+    COUNTER,
+    MACHINE,
+    TABLE,
+    CHAIR,
+    DOOR,
+    WINDOW,
+    FLOOR,
+    WALL
+}
+
 export enum TileItemPlaceType {
     WALL,
     FLOOR
@@ -42,4 +56,5 @@ export interface TileItemInfo {
     extraLayers: number
     collision: TileItemInfoCollision
     originPosition: Phaser.Math.Vector2
+    category: TileItemCategory
 }

@@ -9,7 +9,7 @@ export class Panel {
     private _buttons: Button[] = [];
     private _tabButtons: Button[] = [];
 
-    private _buttonsOffset = new Phaser.Math.Vector2(180, 0);
+    private _buttonsOffset = new Phaser.Math.Vector2(0, 0);
     private _tabsOffset = new Phaser.Math.Vector2(40, -25);
 
     constructor(scene: Phaser.Scene, width: number, height: number) {
@@ -19,18 +19,27 @@ export class Panel {
 
         
 
-        /*
         const background = scene.add.graphics();
         background.fillStyle(0xffffff);
         background.fillRect(0, 0, width, height);
         background.setInteractive(new Phaser.Geom.Rectangle(0, 0, width, height), Phaser.Geom.Rectangle.Contains);
         container.add(background);
-        */
+        
 
-       
+        /*
         const background = scene.add.image(0, 0, "panel").setOrigin(0);
+        background.setSize(width, height)
         background.setInteractive();
         container.add(background);
+        */
+    }
+
+    public setPosition(x: number, y: number) {
+        this.container.setPosition(x, y);
+    }
+
+    public setButtonsOffset(x: number, y: number) {
+        this._buttonsOffset.set(x, y);
     }
 
     public addTab(texure: string) {
@@ -53,13 +62,13 @@ export class Panel {
         const scene = this._scene;
         const container = this._container;
         
-        const button = new Button(scene, 0, 0, 50, 50, texure, 16, "A");
+        const button = new Button(scene, 0, 0, 64, 64, texure, 16, "");
         container.add(button.container);
 
         this._buttons.push(button);
 
         const offset = this._buttonsOffset;
-        const x = this._buttons.indexOf(button) * 60;
+        const x = this._buttons.indexOf(button) * 70;
         button.container.setPosition(offset.x + x, offset.y)
 
         return button;

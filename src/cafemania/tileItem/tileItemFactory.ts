@@ -10,7 +10,7 @@ import { TileItemTable } from "./items/tileItemTable";
 import { TileItemWall } from "./items/tileItemWall";
 import { TileItemWallDecoration } from "./items/tileItemWallDecoration";
 import { TileItem } from "./tileItem";
-import { TileItemInfo, TileItemPlaceType, TileItemRotationType, TileItemType } from "./tileItemInfo";
+import { TileItemCategory, TileItemInfo, TileItemPlaceType, TileItemRotationType, TileItemType } from "./tileItemInfo";
 
 export class TileItemFactory extends BaseObject {
     public get tileItemInfoList() { return this._tileItemInfoList; }
@@ -40,7 +40,8 @@ export class TileItemFactory extends BaseObject {
                 y: 0,
                 height: 0
             },
-            originPosition: new Phaser.Math.Vector2(84, 0)
+            originPosition: new Phaser.Math.Vector2(84, 0),
+            category: TileItemCategory.FLOOR
         })
 
         this.addTileItemInfo({
@@ -58,7 +59,8 @@ export class TileItemFactory extends BaseObject {
                 y: 0,
                 height: 0
             },
-            originPosition: new Phaser.Math.Vector2(84, 0)
+            originPosition: new Phaser.Math.Vector2(84, 0),
+            category: TileItemCategory.FLOOR
         })
 
         this.addTileItemInfo({
@@ -76,7 +78,8 @@ export class TileItemFactory extends BaseObject {
                 y: 0,
                 height: 42
             },
-            originPosition: new Phaser.Math.Vector2(84, 42)
+            originPosition: new Phaser.Math.Vector2(84, 42),
+            category: TileItemCategory.DECORATION
         })
 
         this.addTileItemInfo({
@@ -94,7 +97,8 @@ export class TileItemFactory extends BaseObject {
                 y: 0,
                 height: 42
             },
-            originPosition: new Phaser.Math.Vector2(84, 42)
+            originPosition: new Phaser.Math.Vector2(84, 42),
+            category: TileItemCategory.DECORATION
         })
 
         this.addTileItemInfo({
@@ -112,7 +116,8 @@ export class TileItemFactory extends BaseObject {
                 y: 0,
                 height: 42
             },
-            originPosition: new Phaser.Math.Vector2(84, 42)
+            originPosition: new Phaser.Math.Vector2(84, 42),
+            category: TileItemCategory.TABLE
         })
 
         this.addTileItemInfo({
@@ -130,7 +135,8 @@ export class TileItemFactory extends BaseObject {
                 y: 25,
                 height: 80
             },
-            originPosition: new Phaser.Math.Vector2(84, 97)
+            originPosition: new Phaser.Math.Vector2(84, 97),
+            category: TileItemCategory.CHAIR
         })
 
         this.addTileItemInfo({
@@ -151,7 +157,8 @@ export class TileItemFactory extends BaseObject {
                 wallAtFront: true,
                 wallSize: 0
             },
-            originPosition: new Phaser.Math.Vector2(84, 252)
+            originPosition: new Phaser.Math.Vector2(84, 252),
+            category: TileItemCategory.WALL
         })
 
         this.addTileItemInfo({
@@ -172,7 +179,8 @@ export class TileItemFactory extends BaseObject {
                 wallAtFront: false,
                 wallSize: 5
             },
-            originPosition: new Phaser.Math.Vector2(84, 215)
+            originPosition: new Phaser.Math.Vector2(84, 215),
+            category: TileItemCategory.DOOR
         })
 
         this.addTileItemInfo({
@@ -190,7 +198,8 @@ export class TileItemFactory extends BaseObject {
                 y: 0,
                 height: 42
             },
-            originPosition: new Phaser.Math.Vector2(84, 42)
+            originPosition: new Phaser.Math.Vector2(84, 42),
+            category: TileItemCategory.STOVE
         })
 
         this.addTileItemInfo({
@@ -208,7 +217,8 @@ export class TileItemFactory extends BaseObject {
                 y: 0,
                 height: 42
             },
-            originPosition: new Phaser.Math.Vector2(84, 42)
+            originPosition: new Phaser.Math.Vector2(84, 42),
+            category: TileItemCategory.COUNTER
         })
 
         //height is wrong!!
@@ -228,7 +238,8 @@ export class TileItemFactory extends BaseObject {
                 y: 0,
                 height: 55
             },
-            originPosition: new Phaser.Math.Vector2(84, 55)
+            originPosition: new Phaser.Math.Vector2(84, 55),
+            category: TileItemCategory.TABLE
         })
 
         this.addTileItemInfo({
@@ -249,7 +260,8 @@ export class TileItemFactory extends BaseObject {
                 wallAtFront: false,
                 wallSize: 5
             },
-            originPosition: new Phaser.Math.Vector2(84, 198)
+            originPosition: new Phaser.Math.Vector2(84, 198),
+            category: TileItemCategory.WINDOW
         })
     }
 

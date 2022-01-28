@@ -32,7 +32,7 @@ export class Menu {
             }
         }
 
-        const gridList = this._gridList = new GridList(scene, 700, 500, 280, 180, 20);
+        const gridList = this._gridList = new GridList(scene, 700, 500, 280, 180, 20, 20);
         gridList.setItemsAmount(dishList.length);
         gridList.onChangePage = () => {
             SoundManager.play('menu_changepage');

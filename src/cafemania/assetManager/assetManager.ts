@@ -41,6 +41,12 @@ export class AssetManager {
         
         this.addImage('button/panel/gift', 'button/panel/gift.png');
         this.addImage('button/panel/waiter', 'button/panel/waiter.png');
+        this.addImage('button/panel/shop', 'button/panel/shop.png');
+        this.addImage('button/panel/clothes', 'button/panel/clothes.png');
+        this.addImage('button/panel/stove', 'button/panel/stove.png');
+        this.addImage('button/panel/counter', 'button/panel/counter.png');
+        this.addImage('button/panel/table', 'button/panel/table.png');
+        this.addImage('button/panel/none', 'button/panel/none.png');
 
         this.addImage('button/button1', 'button/button1.png');
         this.addImage('button/button_small_green', 'button/button_small_green.png');

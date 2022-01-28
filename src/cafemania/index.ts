@@ -1,6 +1,7 @@
 import { Camera } from "./camera/camera";
 import { Debug } from "./debug/debug";
 import { Gameface } from "./gameface/gameface";
+import { Hud } from "./hud/hud";
 import { Input } from "./input/input";
 import { DebugScene } from "./scenes/debugScene";
 import { GameScene } from "./scenes/gameScene";
@@ -24,3 +25,4 @@ window['Tile'] = Tile;
 window['Shop'] = Shop;
 window['MoveTileItem'] = MoveTileItem;
 window['TileHoverDetection'] = TileHoverDetection;
+window['Hud'] = Hud;

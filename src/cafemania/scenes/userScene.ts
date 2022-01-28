@@ -51,17 +51,21 @@ export class UserScene extends Phaser.Scene {
             //gameface.updateScenesOrder();
         }
 
+        
         const userInfo = Auth.getUserInfo();
-
+        
         const userText = this.add.text(x, y + 140, userInfo.name, {fontFamily: 'AlfaSlabOne-Regular', color: "#FFFFFF"});
         userText.setFontSize(18);
         userText.setStroke("#55330D", 10)
         userText.setOrigin(0.5)
-
+        
         const idText = this.add.text(x, y + 170, "ID " + userInfo.id, {fontFamily: 'AlfaSlabOne-Regular', color: "#FFFFFF"});
         idText.setFontSize(18);
         idText.setStroke("#55330D", 10)
         idText.setOrigin(0.5)
+
+        //
+        //singleplayer.onClick();
     }
 
   

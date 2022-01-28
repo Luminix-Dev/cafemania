@@ -9,8 +9,6 @@ export class GridList {
 
     private _scene: Phaser.Scene;
     private _size: Phaser.Math.Vector2;
-    private _itemSize: Phaser.Math.Vector2;
-    private _padding: number;
 
     private _gridLayout: GridLayout;
 
@@ -20,13 +18,12 @@ export class GridList {
     private _numberOfItems: number = 6;
     private _page: number = 0;
 
-    constructor(scene: Phaser.Scene, width: number, height: number, itemWidth: number, itemHeight: number, padding: number = 0) {
+    constructor(scene: Phaser.Scene, width: number, height: number, itemWidth: number, itemHeight: number, paddingX: number, paddingY: number) {
         this._scene = scene;
         this._size = new Phaser.Math.Vector2(width, height);
-        this._itemSize = new Phaser.Math.Vector2(itemWidth, itemHeight);
-        this._padding = padding;
 
-        const gridLayout = this._gridLayout = new GridLayout(scene, width, height, itemWidth, itemHeight, padding, padding);
+
+        const gridLayout = this._gridLayout = new GridLayout(scene, width, height, itemWidth, itemHeight, paddingX, paddingY);
         
         const container = this._container = scene.add.container();
         
