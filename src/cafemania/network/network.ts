@@ -14,7 +14,8 @@ import { WorldSyncHelper } from "../world/worldSyncHelper";
 import { IPacket, IPacketData_BuyTileItem, IPacketData_JoinServer, IPacketData_JoinServerStatus, IPacketData_MovePlayer, IPacketData_MoveTileItem, IPacketData_ServerList, IPacketData_SignInResult, IPacketData_StartCook, IPacketData_StoveTakeDish, IPacketData_WorldData, PACKET_TYPE } from "./packet";
 
 export class Network extends BaseObject {
-    public static SERVER_ADDRESS: string = "https://cafemania.danilomaioli.repl.co";
+    //public static SERVER_ADDRESS: string = "https://cafemania.danilomaioli.repl.co";
+    public static SERVER_ADDRESS: string = "https://cafemania.glitch.me";
     public sendPacketIntervalMs: number = 80;
 
     public get socket() { return this._socket; }
