@@ -14,12 +14,12 @@ export class MenuItem {
 
         
         const graphics = scene.add.graphics();
-        graphics.fillStyle(0xffffff, 0.3);
+        graphics.fillStyle(0xffffff, 1);
         graphics.fillRect(0, 0, 280, 180);
         graphics.setInteractive(new Phaser.Geom.Rectangle(0, 0, 280, 180), Phaser.Geom.Rectangle.Contains);
         this._container.add(graphics);
 
-        const button = this._button = new Button(scene, 190, 150,  140, 25, "button/button_small_green", 6, 'Cozinhar');
+        const button = this._button = new Button(scene, '', 190, 150,  140, 25, "button/button_cook");
         button.onClick = () => {
             console.log("click")
         };

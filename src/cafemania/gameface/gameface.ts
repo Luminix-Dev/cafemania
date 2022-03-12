@@ -5,13 +5,11 @@ import { Game } from "../game/game";
 import { Input } from "../input/input";
 import { Network } from "../network/network";
 import { GameScene } from "../scenes/gameScene";
-import { MoveTileItem } from "../shop/moveTileItem";
-import { SyncType, World } from "../world/world";
 import { WorldSyncHelper } from "../world/worldSyncHelper";
 import { DebugScene } from "../scenes/debugScene";
 import { MapGridScene } from "../scenes/mapGridScene";
 import { PhaserLoad } from "./phaserLoad";
-import { AssetManager } from "../assetManager/assetManager";
+import { AssetManager, AssetType } from "../assetManager/assetManager";
 import { MainScene } from "../scenes/mainScene";
 import { WorldTextManager } from "../worldText/worldTextManager";
 import { TileHoverDetection } from "../shop/tileHoverDetection";
@@ -21,6 +19,10 @@ import { Auth } from "../auth/auth";
 import { LoadScene, LoadSceneType } from "../scenes/loadScene";
 import { FirstLoadScene } from "../scenes/firstLoadScene";
 import { LoginScene } from "../scenes/loginScene";
+import { WorldSyncType } from "../world/worldSyncType";
+import { World } from "../world/world";
+import { TileItemDrag } from "../tileItemDrag/tileItemDrag";
+import { GamefaceEvent } from "./gamefaceEvent";
 
 
 export class Gameface extends BaseObject {
@@ -30,10 +32,13 @@ export class Gameface extends BaseObject {
     public get game() { return this._game; }
     public get phaser() { return this._phaser; }
     public get network() { return this._network; }
+    public get currentWorld() { return this._currentWorld; }
 
     private _game: Game;
     private _phaser: Phaser.Game;
     private _network: Network;
+
+    private _currentWorld?: World;
 
     constructor() {
         super();
@@ -61,47 +66,34 @@ export class Gameface extends BaseObject {
         AssetManager.init();
 
         this.startPreload(() => {
-            const mainScene = this.startScene(MainScene)
+
+            LoadScene.removeScene();
+
+            this.startScene(GameScene);
+            this.startScene(DebugScene);
+            this.startScene(MapGridScene);
+
+        
+            //const mainScene = this.startScene(MainScene)
     
             this.startFirstLoad(() => {
-
-                this.startScene(GameScene);
-                this.startScene(DebugScene);
-                
                 Hud.createHud();
+                Hud.setVisible(false);
 
                 Input.addScene(GameScene.Instance);
             
                 Camera.setupMoveEvents();
                 SoundManager.setScene(GameScene.Instance);
-                MoveTileItem.init();
                 WorldTextManager.init(GameScene.Instance);
                 TileHoverDetection.init();
+                WorldSyncHelper.init();
+                TileItemDrag.init();
 
                 console.log("first load completed")
 
                 //Auth.init();
 
                 this.startScene(LoginScene);
-
-
-                return;
-
-                AssetManager.initAssets();
-                SoundManager.init();
-                
-                this.startScene(MainScene);
-                this.startScene(GameScene);
-                //this.startScene(PreloadScene);
-
-                Input.addScene(GameScene.Instance);
-            
-                Camera.setupMoveEvents();
-                SoundManager.setScene(GameScene.Instance);
-                MoveTileItem.init();
-                WorldTextManager.init(GameScene.Instance);
-                TileHoverDetection.init();
-
             });
         });
 
@@ -115,7 +107,18 @@ export class Gameface extends BaseObject {
         LoadScene.createScene(LoadSceneType.NONE, () => {
             const loadScene = LoadScene.Instance;
             
-            AssetManager.getPreloadAssets().map(asset => loadScene.loadImage(asset.key, asset.path))
+            AssetManager.getPreloadAssets().map(asset => {
+
+                switch(asset.type) {
+                    case AssetType.IMAGE:
+                        loadScene.loadImage(asset.key, asset.path)
+                        break;
+                    case AssetType.FONT:
+                        loadScene.loadFont(asset.key, asset.path)
+                        break;
+                }
+                
+            })
 
             loadScene.startLoadingAssets(() => {
                 callback();
@@ -134,10 +137,6 @@ export class Gameface extends BaseObject {
 
             callback();
         })
-    }
-
-    private addAssetsToLoadScene(loadScene: LoadScene) {
-
     }
 
     public render(dt: number) {
@@ -180,51 +179,7 @@ export class Gameface extends BaseObject {
         })
         this.events.emit('resize');
 
-        setInterval(() => this.events.emit('resize'), 1000)
-    }
-
-    public onEnterMainMenu() {
-
-        //Auth.init();
-
-        /*
-
-        this.startScene(DebugScene);
-    
-
-        Hud.createHudButtons();
-
-        //GameScene.Instance.test1();
-
-        //this.startScene(Test1Scene);
-
-
-        //return;
-
-        const isSinglePlayer = false;
-
-        Debug.log(`Mode: ${isSinglePlayer ? "SINGLEPLAYER" : "MULTIPLAYER"}`)
-    
-        const gameface = this;
-        const network = this.network;
-
-        if(isSinglePlayer) {
-            gameface.createBaseWorld(false);
-            //gameface.setHudVisible(true)
-            gameface.createHud();
-            gameface.updateScenesOrder();
-        } else {
-            Debug.log("connecting to " + network.getAddress())
-            
-            network.connect(() => {
-                Debug.log("connected");
-    
-                gameface.startScene(ServerListScene);
-                gameface.createHud();
-            });
-        }
-        */
-        
+        //setInterval(() => this.events.emit('resize'), 1000)
     }
     
     public createBaseWorld(isMultiplayer?: boolean) {
@@ -232,31 +187,38 @@ export class Gameface extends BaseObject {
 
         if(isMultiplayer) {
             world.canSpawnPlayer = false;
-            world.sync = SyncType.SYNC;
-
-            WorldSyncHelper.setWorld(world);
+            world.sync = WorldSyncType.SYNC;
         } else {
             world.generateBaseWorld();
         }
 
-        GameScene.startNewScene(world);
-        MoveTileItem.setWorld(world);
-        Camera.setZoom(1)
+        console.log("start game scene..")
 
+        if(!Gameface.Instance.hasSceneStarted(GameScene)) {
+            Gameface.Instance.startScene(GameScene);
+
+            console.log("created new");
+        }
+
+        this.setCurrentWorld(world);
+
+        Camera.setZoom(1)
+        Hud.setVisible(true);
+     
         return world;
     }
-
+    
+    private setCurrentWorld(world?: World) {
+        this._currentWorld = world;
+        //GameScene.Instance.setWorld(undefined);
+        this.events.emit(GamefaceEvent.SET_WORLD, world);
+    }
 
     public destroyGameScene() {
-        WorldSyncHelper.setWorld(undefined);
-        
         const world = GameScene.Instance.world;
         world.destroyRender();
 
-        GameScene.Instance.setWorld(undefined);
-
-        //this.removeScene(GameScene);
-        
+        this.setCurrentWorld(undefined);
     }
 
     
@@ -283,6 +245,9 @@ export class Gameface extends BaseObject {
     }
 
     public updateScenesOrder() {
+        GameScene.Instance?.scene.bringToTop();
+        FirstLoadScene.Instance?.scene.bringToTop();
+        LoadScene.Instance?.scene.bringToTop();
         DebugScene.Instance?.scene.bringToTop();
         MapGridScene.Instance?.scene.bringToTop();
         //HudScene.Instance?.scene.bringToTop();

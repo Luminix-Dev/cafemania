@@ -1,15 +1,15 @@
-import { Camera } from "../../camera/camera";
-import { Debug } from "../../debug/debug";
+
 import { Dish } from "../../dish/dish";
 import { DishPlate, DishPlateState } from "../../dish/dishPlate";
 import { Gameface } from "../../gameface/gameface";
+import { Input } from "../../input/input";
 import { GameScene } from "../../scenes/gameScene";
 import { Menu } from "../../shop/menu/menu";
 import { SoundManager } from "../../soundManager/soundManager";
 import { Tile } from "../../tile/tile"
 import { MessageBox } from "../../ui/messageBox";
-import { SyncType } from "../../world/world";
-import { WorldEvent } from "../../world/worldEvents";
+import { WorldEvent } from "../../world/worldEvent";
+import { WorldSyncType } from "../../world/worldSyncType";
 import { WorldTextManager } from "../../worldText/worldTextManager";
 import { TileItem } from "../tileItem"
 import { TileItemInfo } from "../tileItemInfo";
@@ -29,6 +29,7 @@ export class TileItemStove extends TileItem {
 
     private _isWaitingForCheff: boolean = false;
     private _isPreparingToCook: boolean = false;
+    private _isPreparingToTake: boolean = false;
     private _isReady: boolean = false;
 
     private _data: StoveData = {
@@ -47,6 +48,13 @@ export class TileItemStove extends TileItem {
         this._isPreparingToCook = true;
 
         console.log(this._data.toCookDish)
+    }
+
+
+    public prepareToTake() {
+        this._isPreparingToTake = true;
+
+        //this.setTransparent(true);
     }
 
     public update(dt: number) {
@@ -125,7 +133,7 @@ export class TileItemStove extends TileItem {
 
     public startCook(dish: Dish) {
         
-        if(this.world.sync == SyncType.SYNC) {
+        if(this.world.sync == WorldSyncType.SYNC) {
             Gameface.Instance.network.sendStartCook(this, dish);
             return;
         }
@@ -142,11 +150,13 @@ export class TileItemStove extends TileItem {
 
         //console.log(this)
 
+        
+
         this.setTransparent(true);
 
-        SoundManager.play("beep_2")
+        //SoundManager.play("beep_2")
 
-        if(this.world.sync == SyncType.SYNC) {
+        if(this.world.sync == WorldSyncType.SYNC) {
             Gameface.Instance.network.sendStoveTakeDish(this);
             return;
         }
@@ -158,7 +168,8 @@ export class TileItemStove extends TileItem {
     public onPointerUp() {
         super.onPointerUp();
 
-        
+        if(Input.isDragging) return;
+
         if(this.isDishReady) {
             this.takeDish();
 
@@ -316,7 +327,12 @@ export class TileItemStove extends TileItem {
     }
 
     public unserializeData(data: StoveData) {
+        if(this._isPreparingToTake) return;
+
         this._data = data;
+
+
+        console.log('unserializeData', data);
     };
 
 

@@ -10,7 +10,7 @@ import { Tile } from "../tile/tile";
 import { DebugText } from '../utils/debugText';
 import { Direction } from '../utils/direction';
 import { EventRegister } from '../utils/eventRegister';
-import { WorldEvent } from '../world/worldEvents';
+import { WorldEvent } from '../world/worldEvent';
 import { TileItemInfo, TileItemPlaceType, TileItemRotationType, TileItemType } from "./tileItemInfo";
 import { TileItemRender } from "./tileItemRender";
 
@@ -293,6 +293,7 @@ export class TileItem extends BaseObject {
     }
 
     public destroy() {
+        
         Debug.log("destroy tileItem");
         this.destroyVisuals();
     }
@@ -304,6 +305,8 @@ export class TileItem extends BaseObject {
         this._tileItemRender = undefined;
         this._debugText.setEnabled(false);
         this._eventRegister.removeAllListeners();
+
+        this._isPointerOver = false;
     }
 
     public setPosition(x: number, y: number) {

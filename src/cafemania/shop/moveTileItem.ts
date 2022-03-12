@@ -4,10 +4,10 @@ import { Tile } from "../tile/tile";
 import { TileItem } from "../tileItem/tileItem";
 import { TileItemType } from "../tileItem/tileItemInfo";
 import { World } from "../world/world";
-import { WorldEvent } from "../world/worldEvents";
+import { WorldEvent } from "../world/worldEvent";
 import { TileHoverDetection } from "./tileHoverDetection";
 
-export class MoveTileItem {
+export class KMoveTileItem {
     public static get isMovingAnyTileItem() { return this._movingTileItem != undefined; }
 
     private static _movingTileItem?: TileItem;

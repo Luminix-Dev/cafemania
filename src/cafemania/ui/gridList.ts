@@ -99,14 +99,14 @@ export class GridList {
         const container = this._container!;
 
         
-        const leftButton = new Button(scene, 0, 0, 40, 40, "button/button1", 16, "<");
+        const leftButton = new Button(scene, "<", 0, 0, 40, 40, "button/button1");
         leftButton.container.setPosition(0, this._size.y/2);
         leftButton.onClick = () => {
             this.changePageBy(-1);
         }
         container.add(leftButton.container);
         
-        const rightButton = new Button(scene, 0, 0, 40, 40, "button/button1", 16, ">");
+        const rightButton = new Button(scene, ">", 0, 0, 40, 40, "button/button1");
         rightButton.container.setPosition(this._size.x, this._size.y/2);
         rightButton.onClick = () => {
             this.changePageBy(1);

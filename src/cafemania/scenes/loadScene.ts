@@ -5,6 +5,7 @@ import { DebugScene } from "./debugScene";
 
 enum LoadAssetType {
     IMAGE,
+    FONT,
     AUDIO,
     TASK
 }
@@ -160,6 +161,7 @@ export class LoadScene extends Phaser.Scene {
 
             if(loadAsset.type == LoadAssetType.IMAGE) loader.image(key, url);
             if(loadAsset.type == LoadAssetType.AUDIO) loader.audio(key, url);
+            if(loadAsset.type == LoadAssetType.FONT) loader.bitmapFont(key, `${url}.png`, `${url}.xml`);
         }
 
         loader.once('complete', async () => {
@@ -195,6 +197,18 @@ export class LoadScene extends Phaser.Scene {
             key: key,
             url: url,
             type: LoadAssetType.IMAGE
+        }
+        this._loadAssets.push(asset);
+    }
+
+    public loadFont(key: string, url: string) {
+        console.log(`[loader] load font '${key}'`);
+
+        const asset: LoadAsset = {
+            text: `Loading font ${key}`,
+            key: key,
+            url: url,
+            type: LoadAssetType.FONT
         }
         this._loadAssets.push(asset);
     }

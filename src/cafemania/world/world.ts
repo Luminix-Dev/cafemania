@@ -1,14 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { BaseObject } from '../baseObject/baseObject';
+import { Dish } from '../dish/dish';
 import { Game } from "../game/game";
 import { IPlayerSerializedData, Player } from '../player/player';
 import { PlayerCheff } from '../player/playerCheff';
 import { PlayerClient } from '../player/playerClient';
 import { PlayerType } from '../player/playerType';
 import { PlayerWaiter } from '../player/playerWaiter';
-import { MoveTileItem } from '../shop/moveTileItem';
 import { Shop } from '../shop/shop';
+import { SoundManager } from '../soundManager/soundManager';
 import { ITileSerializedData, Tile } from '../tile/tile';
 import { TileItemChair } from '../tileItem/items/tileItemChair';
 import { TileItemCounter } from '../tileItem/items/tileItemCounter';
@@ -18,8 +19,10 @@ import { TileItemTable } from '../tileItem/items/tileItemTable';
 import { TileItem } from '../tileItem/tileItem';
 import { TileItemRotationType, TileItemType } from '../tileItem/tileItemInfo';
 import { Direction } from '../utils/direction';
+import { WorldTextManager } from '../worldText/worldTextManager';
 import { TileMap } from './tileMap';
-import { WorldEvent } from './worldEvents';
+import { WorldEvent } from './worldEvent';
+import { WorldSyncType } from './worldSyncType';
 
 
 
@@ -29,12 +32,6 @@ export interface IWorldSerializedData {
     players: IPlayerSerializedData[]
 }
 
-export enum SyncType {
-    DONT_SYNC,
-    SYNC,
-    HOST
-}
-
 export class World extends BaseObject {
     public events = new Phaser.Events.EventEmitter();
     public id: string = uuidv4();
@@ -42,7 +39,7 @@ export class World extends BaseObject {
     public get game() { return this._game; }
     public get players() { return this._players.values(); }
 
-    public sync: SyncType = SyncType.DONT_SYNC;
+    public sync: WorldSyncType = WorldSyncType.DONT_SYNC;
 
     private _game: Game;
     private _tileMap: TileMap;
@@ -71,24 +68,14 @@ export class World extends BaseObject {
             if(this.canSpawnPlayer) this._spawnedPlayersAmount--;
         })
 
-        //PAREI AQUI?
+        this.events.on(WorldEvent.PLAYER_CLIENT_FINISH_EAT, (table: TileItemTable, dish: Dish) => {
+            const money = 16;
 
-        this.events.on(WorldEvent.TILE_ITEM_POINTER_DOWN, (tileItem: TileItem) => {
-           
+            WorldTextManager.drawWorldText(`${money}`, table.position.x, table.position.y - 50, 1500, 0.3);
+            SoundManager.play("tip");
+
+            this.game.money += money;
         })
-
-        this.events.on(WorldEvent.TILE_ITEM_POINTER_UP, (tileItem: TileItem) => {
-        })
-
-        this.events.on(WorldEvent.TILE_ITEM_POINTER_OVER, (tileItem: TileItem) => {
-
-        })
-
-        
-        this.events.on(WorldEvent.TILE_ITEM_POINTER_OUT, (tileItem: TileItem) => {
-
-        })
-
 
         window['world'] = this;
     }
@@ -307,6 +294,13 @@ export class World extends BaseObject {
     }
 
     public removeTileItem(tileItem: TileItem) {
+        if(tileItem.isAtAnyTile) {
+            tileItem.tile.removeTileItem(tileItem);
+            tileItem.destroyVisuals();
+        }
+
+        this.tileMap.grid.removeItem(tileItem.id);
+
         if(this.game.tileItemFactory.hasTileItemCreated(tileItem.id)) {
             this.game.tileItemFactory.removeTileItem(tileItem.id);
             tileItem.destroy();
@@ -490,6 +484,14 @@ export class World extends BaseObject {
         if(canBePlaced) this.forceAddTileItemToTile(tileItem, tile);
         
         return tileItem;
+    }
+
+    public tryAddTileItemToTile(tileItem: TileItem, tile: Tile) {
+        const canBePlaced = this.tileMap.canTileItemBePlacedAtTile(tileItem, tile);
+
+        if(canBePlaced) this.forceAddTileItemToTile(tileItem, tile);
+        
+        return canBePlaced;
     }
 
     public forceAddTileItemToTile(tileItem: TileItem, tile: Tile) {

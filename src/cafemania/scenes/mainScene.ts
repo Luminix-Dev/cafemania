@@ -14,6 +14,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     public update(time: number, delta: number) {
-        Gameface.Instance.render(delta);
+        //Gameface.Instance.render(delta);
     }
 }

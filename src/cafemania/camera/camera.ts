@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 import { Hud } from '../hud/hud';
+import { HudLockZone } from '../hud/hudLockZone';
 import { Input } from '../input/input';
 import { GameScene } from '../scenes/gameScene';
-import { MoveTileItem } from '../shop/moveTileItem';
+import { TileItemDrag } from '../tileItemDrag/tileItemDrag';
 
 export class Camera {
     public static canMove = true;
@@ -44,7 +45,7 @@ export class Camera {
 
             if(this.canMove) {
 
-                if(Hud.isZoneLocked()) return;
+                if(HudLockZone.isZoneLocked()) return;
 
                 if(!this._isMoving) {
                     this._isMoving = true;
@@ -74,7 +75,7 @@ export class Camera {
 
         Input.events.on('pointermove', (pointer) => {
             
-            if(MoveTileItem.isMovingAnyTileItem) return;
+            if(TileItemDrag.isMovingAnyTileItem) return;
             
             if(this._isMoving) {
                 console.log("camera mov")

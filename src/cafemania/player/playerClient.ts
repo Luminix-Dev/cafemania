@@ -2,8 +2,9 @@ import { SoundManager } from "../soundManager/soundManager";
 import { Tile } from "../tile/tile";
 import { TileItemChair } from "../tileItem/items/tileItemChair";
 import { Utils } from "../utils/utils";
-import { SyncType, World } from "../world/world";
-import { WorldEvent } from "../world/worldEvents";
+import { World } from "../world/world";
+import { WorldEvent } from "../world/worldEvent";
+import { WorldSyncType } from "../world/worldSyncType";
 import { WorldTextManager } from "../worldText/worldTextManager";
 import { Player, PlayerState } from "./player";
 import { PlayerType } from "./playerType";
@@ -82,7 +83,7 @@ export class PlayerClient extends Player {
                     if(table.currentEatTime <= 0) {
 
                         
-                        if(this.world.sync != SyncType.SYNC) {
+                        if(this.world.sync != WorldSyncType.SYNC) {
                             this.taskPlaySpecialAction('client_exit_cafe', []);
                         }
 
@@ -92,7 +93,7 @@ export class PlayerClient extends Player {
 
         }
 
-        if(this.world.sync != SyncType.SYNC) {
+        if(this.world.sync != WorldSyncType.SYNC) {
             this.updateClientBehavior(dt);
         }
     }
@@ -268,11 +269,13 @@ export class PlayerClient extends Player {
                 this.liftUpfromChair();
 
                 const table = chair.getTableInFront()!;
+                const dish = table.getDish();
+
                 table.clearDish();
+                
+                this.world.events.emit(WorldEvent.PLAYER_CLIENT_FINISH_EAT, table, dish)
 
-                WorldTextManager.drawWorldText("tip", table.position.x, table.position.y - 50, 1500, 0.3);
-
-                SoundManager.play("tip");
+                
             }
 
             this.exitCafe();

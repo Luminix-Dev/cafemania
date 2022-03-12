@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Gamelog } from '../gamelog/gamelog';
-import { IPacket, IPacketData_JoinServerStatus, IPacketData_MovePlayer, IPacketData_StartCook, IPacketData_StoveTakeDish, IPacketData_WorldData, PACKET_TYPE } from '../network/packet';
+import { IPacket, IPacketData_BuyTileItem, IPacketData_JoinServerStatus, IPacketData_MovePlayer, IPacketData_MoveTileItem, IPacketData_StartCook, IPacketData_StoveTakeDish, IPacketData_WorldData, PACKET_TYPE } from '../network/packet';
 
 import { Player } from "../player/player";
 import { Server } from "../server/server";
@@ -8,7 +8,7 @@ import { TileItemStove } from '../tileItem/items/tileItemStove';
 import { TileItem } from '../tileItem/tileItem';
 import { EventRegister } from '../utils/eventRegister';
 import { World } from "../world/world";
-import { WorldEvent } from '../world/worldEvents';
+import { WorldEvent } from '../world/worldEvent';
 import { Client } from './client';
 
 export interface IUserInfo {
@@ -182,6 +182,52 @@ export class User {
 
             if(tile && this._player) {
                 this._player.taskWalkToTile(tile);
+            }
+        }
+
+        if(packet.type == PACKET_TYPE.BUY_TILEITEM) {
+            const packetData: IPacketData_BuyTileItem = packet.data;
+            
+            const world = this._atWorld!;
+
+            const tileItem = world.game.tileItemFactory.createTileItem(packetData.id);
+            const tile = world.tileMap.getTile(packetData.x, packetData.y);
+
+            const result = world.tryAddTileItemToTile(tileItem, tile);
+
+            if(result) {
+                tileItem.setAsChangedState();
+            } else {
+
+                world.game.tileItemFactory.removeTileItem(tileItem.id);
+
+                console.log("nope")
+
+            }
+        }
+
+        
+        if(packet.type == PACKET_TYPE.MOVE_TILEITEM) {
+            const packetData: IPacketData_MoveTileItem = packet.data;
+            
+            const world = this._atWorld!;
+
+            const tileItem = world.game.tileItemFactory.getTileItem(packetData.id);
+            
+            const tile = world.tileMap.getTile(packetData.x, packetData.y);
+
+            //console.log(tileItem, tile)
+
+            const result = world.tryMoveTileItem(tileItem, tile);
+
+            if(result) {
+                tileItem.setAsChangedState();
+            } else {
+
+                //world.game.tileItemFactory.removeTileItem(tileItem.id);
+
+                console.log("nope")
+
             }
         }
     }

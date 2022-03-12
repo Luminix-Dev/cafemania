@@ -3,20 +3,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 import socketio, { Socket } from 'socket.io';
 import { BaseObject } from '../baseObject/baseObject';
-import { Game } from "../game/game";
 import { Gamelog } from '../gamelog/gamelog';
 import { IPacket, IPacketData_JoinServer, IPacketData_JoinServerStatus, IPacketData_MovePlayer, IPacketData_ServerList, IPacketData_SignIn, IPacketData_SignInResult, IPacketData_StartCook, IPacketData_StoveTakeDish, IPacketData_WorldData, PACKET_TYPE } from '../network/packet';
 import { Player } from '../player/player';
-import { PlayerClient } from '../player/playerClient';
-import { Server } from '../server/server';
 import { MasterServer } from '../masterServer/masterServer';
-import { TileItemStove } from '../tileItem/items/tileItemStove';
 import { TileItem } from '../tileItem/tileItem';
-import { SyncType, World } from '../world/world';
-import { WorldEvent } from '../world/worldEvents';
-import { IUserInfo, User } from './user';
-import { Gameface } from '../gameface/gameface';
-import { ServersListScene } from '../scenes/serverListScene';
+import { User } from './user';
 
 /*
 const game = new Game();

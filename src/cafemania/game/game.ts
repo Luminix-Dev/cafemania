@@ -13,10 +13,18 @@ export class Game extends BaseObject {
     public get dishFactory() { return this._dishFactory; }
     public get shop() { return this._shop; }
     
+    public get money() { return this._money }
+    public set money(value: number) { this._money = value; }
+    public get experience() { return this._experience }
+    public set experience(value: number) { this._experience = value; }
+    
     private _worlds = new Phaser.Structs.Map<string, World>([]);
     private _tileItemFactory: TileItemFactory;
     private _dishFactory: DishFactory;
     private _shop: Shop;
+
+    private _money: number = 800;
+    private _experience: number = 0;
 
     constructor() {
         super();

@@ -31,7 +31,7 @@ export class MapGridScene extends Phaser.Scene {
     private drawGrid() {
         const graphics = this.add.graphics()
 
-        graphics.setPosition(this.scale.gameSize.width - 30 - 150, 0)
+        graphics.setPosition(this.scale.gameSize.width - 30 - 150, 190)
         
         setInterval(() => {
             graphics.clear()

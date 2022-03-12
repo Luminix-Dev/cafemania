@@ -36,6 +36,9 @@ export class FirstLoadScene extends Phaser.Scene {
         console.log('processLoadScene')
 
         LoadScene.createScene(LoadSceneType.PROGRESS, async () => {
+            gameface.updateScenesOrder();
+
+
             const loadScene = LoadScene.Instance;
 
             loadScene.scene.bringToTop();

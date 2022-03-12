@@ -1,6 +1,6 @@
 import { Gameface } from "../gameface/gameface";
-import { TileItemCategory, TileItemInfo } from "../tileItem/tileItemInfo";
 import { Button } from "./button";
+import { TileItemCategory, TileItemInfo } from "../tileItem/tileItemInfo";
 import { GridList } from "./gridList";
 import { TileItemShopItem } from "./tileItemShopItem";
 
@@ -9,6 +9,9 @@ export class Item {
 }
 
 export class TileItemShop {
+    //public static Instance: TileItemShop;
+
+    //public selectedTileItemInfo?: TileItemInfo;
     public get container() { return this._container; }
     public get closeButton() { return this._closeButton; }
 
@@ -34,6 +37,8 @@ export class TileItemShop {
         this._scene = scene;
         this._container = scene.add.container();
         
+        //TileItemShop.Instance = this;
+
         const categoryTextures = this._categoryTextures;
         categoryTextures.set(TileItemCategory.STOVE, "button/panel/stove");
         categoryTextures.set(TileItemCategory.COUNTER, "button/panel/counter");
@@ -52,7 +57,7 @@ export class TileItemShop {
         const scene = this._scene;
         const container = this._container;
         
-        const button = new Button(scene, 0, 0, this._categoryButtonSize, this._categoryButtonSize, texture, 0, text);
+        const button = new Button(scene, text, 0, 0, this._categoryButtonSize, this._categoryButtonSize, texture);
         container.add(button.container);
 
         button.container.setPosition(x, y);

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import { AssetManager } from "../assetManager/assetManager";
 import { PlayerAnimation } from "../player/playerAnimation";
-import { MainScene } from "../scenes/mainScene";
+import { GameScene } from '../scenes/gameScene';
 import Three, { ThreeModel } from "../three/three";
 import { BonePart } from "./bonePart";
 
@@ -27,7 +27,7 @@ export class PlayerTextureFactory {
     public static async init() {
         window['PlayerTextureFactory'] = PlayerTextureFactory;
 
-        const textureManager = MainScene.Instance.textures;
+        const textureManager = GameScene.Instance.textures;
 
         const canvas = this._canvas = textureManager.createCanvas(this.canvasTextureKey, Three.size.x, Three.size.y);
         
@@ -204,6 +204,6 @@ export class PlayerTextureFactory {
     }
 
     private static getTextureManager() {
-        return MainScene.Instance.textures;
+        return GameScene.Instance.textures;
     }
 }

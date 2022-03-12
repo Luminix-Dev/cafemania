@@ -20,7 +20,7 @@ export class UserScene extends Phaser.Scene {
         const x = gameSize.width/2;
         const y = gameSize.height/2;
 
-        const playbutton = new Button(this, x, y - 25, 244, 45, "button/play", 16, `Play`);
+        const playbutton = new Button(this, `Play`, x, y - 25, 244, 45, "button/play");
         playbutton.onClick = () => {
             console.log("play")
 
@@ -28,7 +28,7 @@ export class UserScene extends Phaser.Scene {
             Gameface.Instance.startScene(ServersListScene);
         }
 
-        const signOutButton = new Button(this, x, y + 25, 244, 45, "button/signout", 16, `Sign out`);
+        const signOutButton = new Button(this, `Sign out`, x, y + 25, 244, 45, "button/signout");
         signOutButton.onClick = () => {
             console.log("sign out")
 
@@ -40,7 +40,7 @@ export class UserScene extends Phaser.Scene {
 
         }
 
-        const singleplayer = new Button(this, x, gameSize.height - 30, 244, 45, "button/play", 16, `Singleplayer`);
+        const singleplayer = new Button(this, `Singleplayer`, x, gameSize.height - 30, 244, 45, "button/play");
         singleplayer.onClick = () => {
             console.log("singleplayer")
 

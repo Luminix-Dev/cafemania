@@ -5,10 +5,9 @@ export class DebugScene extends Phaser.Scene {
     
     public showDebugText: boolean = false;
     
-    private _text: Phaser.GameObjects.Text;
+    private _text: Phaser.GameObjects.BitmapText;
+    private _updateTextInterval: number = 100;
     private _updateTextTime: number = -1;
-    private _i = 0;
-
 
     constructor() {
         super({});
@@ -16,35 +15,36 @@ export class DebugScene extends Phaser.Scene {
     }
 
     public create() {
-        this._text = this.add.text(0, 0, "");
-        this._text.setColor("#FFFF00");
-        this._text.setFontSize(16);
+        this._text = this.add.bitmapText(0, 0, 'gem', 'PHASER 3', 12);
     }
     
     public updateText() {
-        if(!this._text) return;
+        let str = '';
 
-        this._updateTextTime = 0;
+        if(this.showDebugText) {
+            str += `${this.game.loop.actualFps.toFixed(1)} fps\n`;
 
-        let str = ``;
+            Debug.messages.map(message => {
+                str += `${((message.time - Debug.startedAt)/1000).toFixed(2)} | ${message.text}\n`;
+            })
+        }
 
-        str += `${this.game.loop.actualFps.toFixed(2)} FPS [${this._i++}]\n`;
-
-        Debug.messages.map(message => {
-            str += `${((message.time - Debug.startedAt)/1000).toFixed(2)} | ${message.text}\n`;
-        })
 
         this._text.setText(str);
     }
 
     public update(time: number, delta: number) {
-        if(!this.showDebugText) {
-            this._text.setText('');
-            return;
-        }
+        //if(!this.showDebugText) return;
+        //if(!this._text) return;
 
+        
+        if(this._updateTextTime >= this._updateTextInterval || this._updateTextTime == -1) {
+            this._updateTextTime = 0;
+            this.updateText();
+        }
         this._updateTextTime += delta;
-        if(this._updateTextTime < 10 && this._updateTextTime != -1) return;
-        this.updateText();
+
+
+        //if(this._updateTextTime < this._updateTextInterval && this._updateTextTime != -1) return;
     }
 }

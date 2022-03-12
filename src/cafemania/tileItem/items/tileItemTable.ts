@@ -51,7 +51,7 @@ export class TileItemTable extends TileItem {
     private renderDishPlate() {
         if(!this.isEmpty) {
             if(!this._dishPlate) {
-                const h = 20;
+                const h = 25;
                 const position = new Phaser.Math.Vector2(
                     this.position.x,
                     this.position.y - h

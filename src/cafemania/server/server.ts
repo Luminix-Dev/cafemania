@@ -2,8 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Client } from '../client/client';
 import { User } from '../client/user';
 import { Game } from '../game/game';
-import { PlayerState } from '../player/player';
-import { SyncType } from '../world/world';
+import { WorldSyncType } from '../world/worldSyncType';
 
 export class ServerListInfo {
     id: string
@@ -33,7 +32,7 @@ export class Server {
     public start() {
         const game = this._game;
         const world = game.createWorld();
-        world.sync = SyncType.HOST;
+        world.sync = WorldSyncType.HOST;
         world.generateBaseWorld();
 
         game.start();

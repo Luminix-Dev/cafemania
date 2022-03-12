@@ -1,6 +1,5 @@
 import { Debug } from "../debug/debug";
 import { GameScene } from "../scenes/gameScene";
-import { MoveTileItem } from "../shop/moveTileItem";
 
 export class Input {
     public static events = new Phaser.Events.EventEmitter();
@@ -51,6 +50,8 @@ export class Input {
         console.log(this._dragStartPos)
 
         Debug.log('pointerdown');
+
+        
         this.events.emit('pointerdown', ev);
     }
 

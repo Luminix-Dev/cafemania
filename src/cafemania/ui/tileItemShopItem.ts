@@ -1,5 +1,7 @@
 import { TileItemInfo } from "../tileItem/tileItemInfo";
+import { TileItemDrag } from "../tileItemDrag/tileItemDrag";
 import { Button } from "./button";
+import { TileItemShop } from "./tileItemShop";
 
 export class TileItemShopItem {
     public get container() { return this._container; }
@@ -20,10 +22,21 @@ export class TileItemShopItem {
         graphics.setInteractive(new Phaser.Geom.Rectangle(0, 0, width, height), Phaser.Geom.Rectangle.Contains);
         this._container.add(graphics);
 
-        const button = this._button = new Button(scene, width/2, height/2,  width, height, "button/button_small_green", 6, `${tileItemInfo.name}`);
+        const button = this._button = new Button(scene, `${tileItemInfo.name}`, width/2, height/2,  width, height, "button/signout");
         button.onClick = () => {
             console.log("click")
         };
+
+        
+
+
+        button.onPointerOver = () => {
+        }
+
+        button.onPointerOut = () => {
+            //TileItemShop.Instance.selectedTileItemInfo = undefined;
+        }
+
         this._container.add(button.container);
 
     }

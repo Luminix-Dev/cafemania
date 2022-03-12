@@ -46,7 +46,7 @@ export class Panel {
         const scene = this._scene;
         const container = this._container;
         
-        const button = new Button(scene, 0, 0, 50, 50, texure, 16, "A");
+        const button = new Button(scene, "A", 0, 0, 50, 50, texure);
         container.add(button.container);
 
         this._tabButtons.push(button);
@@ -62,7 +62,7 @@ export class Panel {
         const scene = this._scene;
         const container = this._container;
         
-        const button = new Button(scene, 0, 0, 64, 64, texure, 16, "");
+        const button = new Button(scene, "", 0, 0, 64, 64, texure);
         container.add(button.container);
 
         this._buttons.push(button);

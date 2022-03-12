@@ -3,7 +3,8 @@ import { DishPlate } from "../dish/dishPlate";
 import { TileItemCounter } from "../tileItem/items/tileItemCounter";
 import { TileItemTable } from "../tileItem/items/tileItemTable";
 import { Utils } from "../utils/utils";
-import { SyncType, World } from "../world/world";
+import { World } from "../world/world";
+import { WorldSyncType } from "../world/worldSyncType";
 import { WorldTextManager } from "../worldText/worldTextManager";
 import { Player } from "./player";
 import { PlayerClient } from "./playerClient";
@@ -31,7 +32,7 @@ export class PlayerWaiter extends Player {
     public update(dt: number) {
         super.update(dt);
 
-        if(this.world.sync != SyncType.SYNC) {
+        if(this.world.sync != WorldSyncType.SYNC) {
             this.updateWaiterBehavior(dt);
         }
 

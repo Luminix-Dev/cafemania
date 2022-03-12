@@ -2,6 +2,7 @@ import { Camera } from "../camera/camera";
 import { Debug } from "../debug/debug";
 import { Gameface } from "../gameface/gameface";
 import { Hud } from "../hud/hud";
+import { HudLockZone } from "../hud/hudLockZone";
 import { Input } from "../input/input";
 import { PACKET_TYPE } from "../network/packet";
 import { TileHoverDetection } from "../shop/tileHoverDetection";
@@ -11,6 +12,7 @@ import { MessageBox } from "../ui/messageBox";
 import { MoveScene } from "../utils/moveScene";
 import { World } from "../world/world";
 import { MapGridScene } from "./mapGridScene";
+import { GamefaceEvent } from "../gameface/gamefaceEvent";
 
 export class GameScene extends Phaser.Scene {
     public static Instance: GameScene;
@@ -45,9 +47,13 @@ export class GameScene extends Phaser.Scene {
     constructor() {
         super({});
         GameScene.Instance = this;
+
+        Gameface.Instance.events.on(GamefaceEvent.SET_WORLD, (world?: World) => {
+            this.setWorld(world);
+        });
     }
 
-    public setWorld(world: World | undefined) {
+    private setWorld(world: World | undefined) {
         this._world = world;
 
         if(world) {
@@ -96,7 +102,7 @@ export class GameScene extends Phaser.Scene {
         this.hudContainer = this.add.container();
         this.layerHud.add(this.hudContainer);
 
-        this.cameras.main.setBackgroundColor(0x000D56);
+        //this.cameras.main.setBackgroundColor(0x000D56);
         
         //
 
@@ -104,6 +110,7 @@ export class GameScene extends Phaser.Scene {
 
             if(!this._world) return;
             if(Input.isDragging) return;
+            if(HudLockZone.isZoneLocked()) return;
 
             const tileItem = TileHoverDetection.testTileItem(Input.getMouseWorldPosition());
 
@@ -122,26 +129,12 @@ export class GameScene extends Phaser.Scene {
     }
     
     public update(time: number, delta: number) {
-
+        Gameface.Instance.render(delta);
+        
         if(!this._world) return;
         this._world.render(delta);
     }
 
-    public static startNewScene(world: World) {
-        //Gameface.Instance.removeScene(GameScene);
-
-        console.log("start net")
-
-        if(!Gameface.Instance.hasSceneStarted(GameScene)) {
-            console.log("create")
-            const s = Gameface.Instance.startScene(GameScene) as GameScene;
-        }
-
-        GameScene.Instance.setWorld(world);
-
-        //const phaser = Gameface.Instance.phaser;
-        //const scene = phaser.scene.add('GameScene', GameScene, true, {world: world}) as GameScene;
-    }
 
     public destroy() {
 

@@ -1,5 +1,6 @@
 import { Dish } from "../../dish/dish";
 import { DishPlate } from "../../dish/dishPlate";
+import { Hud } from "../../hud/hud";
 import { GameScene } from "../../scenes/gameScene";
 import { SoundManager } from "../../soundManager/soundManager";
 import { TileItemStove } from "../../tileItem/items/tileItemStove";
@@ -50,7 +51,7 @@ export class Menu {
 
                 stove.startCook(dish);
 
-                WorldTextManager.drawWorldText(dish.name, stove.position.x, stove.position.y - 30, 1500, 0.3);
+                Hud.drawWorldText(dish.name, stove.position.x, stove.position.y - 30, 1500, 0.3);
 
                 gridList.hide();
                 Menu.hide();

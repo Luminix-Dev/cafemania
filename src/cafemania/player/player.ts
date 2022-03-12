@@ -12,7 +12,7 @@ import { PathFind } from '../utils/pathFind';
 import { PathFindVisualizer } from '../utils/pathFindVisualizer';
 import { Utils } from '../utils/utils';
 import { World } from "../world/world";
-import { WorldEvent } from '../world/worldEvents';
+import { WorldEvent } from '../world/worldEvent';
 import { PlayerAnimation } from './playerAnimation';
 import { PlayerInfo } from './playerInfo';
 import { PlayerType } from './playerType';

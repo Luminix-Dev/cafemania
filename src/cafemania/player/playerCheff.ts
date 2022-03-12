@@ -1,7 +1,8 @@
 import { Dish } from "../dish/dish";
 import { SoundManager } from "../soundManager/soundManager";
 import { TileItemStove } from "../tileItem/items/tileItemStove";
-import { SyncType, World } from "../world/world";
+import { World } from "../world/world";
+import { WorldSyncType } from "../world/worldSyncType";
 import { Player } from "./player";
 import { PlayerType } from "./playerType";
 
@@ -25,7 +26,7 @@ export class PlayerCheff extends Player {
     public update(dt: number) {
         super.update(dt);
 
-        if(this.world.sync != SyncType.SYNC) {
+        if(this.world.sync != WorldSyncType.SYNC) {
             this.updateCheffBehavior(dt);
         }
     }
@@ -139,10 +140,10 @@ export class PlayerCheff extends Player {
         await super.startSpecialAction(action, args);
 
         if(action == "cheff_prepare_to_cook") {
-            const dishId = args[0] as string;
-            const stoveId = args[1] as string;
+            //const dishId = args[0] as string;
+            //const stoveId = args[1] as string;
 
-            const dish = this.world.game.dishFactory.getDish(args[0]);
+            //const dish = this.world.game.dishFactory.getDish(args[0]);
 
             const stove = this.world.game.tileItemFactory.getTileItem(args[1]) as TileItemStove;
 
@@ -152,8 +153,8 @@ export class PlayerCheff extends Player {
         }
 
         if(action == "cheff_start_cook") {
-            const dishId = args[0] as string;
-            const stoveId = args[1] as string;
+            //const dishId = args[0] as string;
+            //const stoveId = args[1] as string;
 
             const dish = this.world.game.dishFactory.getDish(args[0]);
             const stove = this.world.game.tileItemFactory.getTileItem(args[1]) as TileItemStove;
@@ -169,17 +170,23 @@ export class PlayerCheff extends Player {
         }   
 
         if(action == "cheff_prepare_to_take") {
+            const stove = this.world.game.tileItemFactory.getTileItem(args[0]) as TileItemStove; 
+            stove.prepareToTake();
         }
         
         if(action == "cheff_take_dish") {
             //const dish = this.world.game.dishFactory.getDish(args[0]);
             const stove = this.world.game.tileItemFactory.getTileItem(args[0]) as TileItemStove; 
             
+            console.log(stove.getCookingDish())
+
             stove.sendDishToCounter();
             stove.clearDish();
             stove.setAsChangedState();
 
             this.removeStoveFromTakeQuery(stove);
+
+            
             
             this._goingToAnyStove = false;
 

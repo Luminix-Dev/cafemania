@@ -18,7 +18,9 @@ export enum PACKET_TYPE {
     REQUEST_SERVER_LIST,
     MOVE_PLAYER,
     SIGN_IN,
-    SIGN_IN_RESULT
+    SIGN_IN_RESULT,
+    BUY_TILEITEM,
+    MOVE_TILEITEM
 }
 
 export interface IPacket {
@@ -64,4 +66,16 @@ export interface IPacketData_StartCook {
 
 export interface IPacketData_StoveTakeDish {
     stoveId: string
+}
+
+export interface IPacketData_BuyTileItem {
+    id: string
+    x: number
+    y: number
+}
+
+export interface IPacketData_MoveTileItem {
+    id: string
+    x: number
+    y: number
 }

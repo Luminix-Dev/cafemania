@@ -18,6 +18,11 @@ export class LoginScene extends Phaser.Scene {
 
         LoadScene.createScene(LoadSceneType.SIGN, () => {
 
+
+            //
+            this.sendSignInPacket();
+            return;
+
             Auth.init(() => {
 
                 if(Auth.getIsSignedIn()) {
@@ -47,7 +52,7 @@ export class LoginScene extends Phaser.Scene {
         const y = gameSize.height/2;
 
 
-        const signInGooglebutton = new Button(this, x, y - 25, 244, 45, "button/signin_google", 16, `Sign in with Google`);
+        const signInGooglebutton = new Button(this, `Sign in with Google`, x, y - 25, 244, 45, "button/signin_google");
         signInGooglebutton.onClick = () => {
 
             LoadScene.createScene(LoadSceneType.SIGN, () => {
@@ -70,7 +75,7 @@ export class LoginScene extends Phaser.Scene {
             })
         }
 
-        const signInGuestbutton = new Button(this, x, y + 25, 244, 45, "button/signin_guest", 16, `Guest`);
+        const signInGuestbutton = new Button(this, `Guest`, x, y + 25, 244, 45, "button/signin_guest");
         signInGuestbutton.onClick = () => {
             this.sendSignInPacket();
 

@@ -3,7 +3,7 @@ Need to fix this mess someday..
 */
 
 import { Camera } from "../camera/camera"
-import { MoveTileItem } from "../shop/moveTileItem"
+import { TileItemDrag } from "../tileItemDrag/tileItemDrag"
 
 export interface MPixelConfig
 {
@@ -48,7 +48,7 @@ export class MoveScene
 
         scene.input.on('pointermove', pointer => {
             if(!pointerDown) return
-            if(MoveTileItem.isMovingAnyTileItem) return;
+            if(TileItemDrag.isMovingAnyTileItem) return;
             
             const delta = new Phaser.Math.Vector2(startPos.x - pointer.x, startPos.y - pointer.y);
 

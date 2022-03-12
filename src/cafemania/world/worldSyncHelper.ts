@@ -1,39 +1,34 @@
 
+import { Gameface } from "../gameface/gameface";
+import { GamefaceEvent } from "../gameface/gamefaceEvent";
 import { IPlayerSerializedData, Player } from "../player/player";
 import { PlayerCheff } from "../player/playerCheff";
 import { PlayerClient, PlayerClientState } from "../player/playerClient";
 import { PlayerType } from "../player/playerType";
 import { PlayerWaiter } from "../player/playerWaiter";
 import { PlayerTaskType, TaskPlayAnimation, TaskPlaySpecialAction, TaskWalkToTile } from "../player/taskManager";
+import { TileItem } from "../tileItem/tileItem";
 import { IWorldSerializedData, World } from "./world";
+import { WorldSyncType } from "./worldSyncType";
 
 export class WorldSyncHelper {
     public static get world() { return this._world; }
 
     private static _world?: World;
 
-    public static setWorld(world?: World) {
+    public static init() {
+        Gameface.Instance.events.on(GamefaceEvent.SET_WORLD, (world?: World) => {
+
+            if(world) if(world.sync != WorldSyncType.SYNC) return;
 
 
+
+            this.setWorld(world);
+        });
+    }
+
+    private static setWorld(world?: World) {
         this._world = world;
-
-        if(world) {
-
-            /*
-
-            world.events.on(WorldEvent.TILE_ITEM_STOVE_START_COOK, (stove: TileItemStove, dish: Dish) => {
-                console.log("ev", stove, dish)
-                
-                const packetData: IPacketData_StoveBeginCookData = {
-                    stoveId: stove.id,
-                    dish: dish.id
-                }
-                
-                Gameface.Instance.network.send(PACKET_TYPE.STOVE_BEGIN_COOK, packetData);
-            })
-
-            */
-        }
     }
 
     public static processWorldData(worldData: IWorldSerializedData) {
@@ -55,20 +50,24 @@ export class WorldSyncHelper {
         });
 
         worldData.tiles.map(tileData => {
-            const tile =  world.tileMap.getTile(tileData.x, tileData.y);
+            const tile = world.tileMap.getTile(tileData.x, tileData.y);
 
             for (const tileItemData of tileData.tileItems) {
-                
-                if(!tileItemFactory.hasTileItemCreated(tileItemData.id)) {
 
-                    //console.log("create new")
+                let tileItem: TileItem | undefined = tileItemFactory.getTileItem(tileItemData.id);
 
-                    tileItemFactory.createTileItem(tileItemData.tileItemInfo, tileItemData.id);
-
-                    
+                if(tileItem) {
+                    if(tileItem.tile != tile) {
+                        world.removeTileItem(tileItem);
+                        tileItem = undefined;
+                    }
                 }
 
-                const tileItem = tileItemFactory.getTileItem(tileItemData.id);
+                if(!tileItem) {
+                    tileItem = tileItemFactory.createTileItem(tileItemData.tileItemInfo, tileItemData.id);
+                }
+
+                //const tileItem = tileItemFactory.getTileItem(tileItemData.id);
 
                 if(!tileItem.isAtAnyTile) world.forceAddTileItemToTile(tileItem, tile);
 

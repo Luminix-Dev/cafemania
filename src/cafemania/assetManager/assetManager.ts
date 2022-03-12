@@ -8,7 +8,8 @@ enum LoadState {
 
 export enum AssetType {
     IMAGE,
-    AUDIO
+    AUDIO,
+    FONT
 }
 
 interface Asset {
@@ -29,6 +30,7 @@ export class AssetManager {
         this.addImage('background', 'background.png');
         this.addImage('loading_background', 'loading_background.png');
         this.addImage('sign', 'sign.png');
+        this.addFont('gem', 'fonts/gem');
     }
 
     public static initAssets() {
@@ -48,8 +50,10 @@ export class AssetManager {
         this.addImage('button/panel/table', 'button/panel/table.png');
         this.addImage('button/panel/none', 'button/panel/none.png');
 
+        this.addImage('button/button1_large', 'button/button1_large.png');
         this.addImage('button/button1', 'button/button1.png');
         this.addImage('button/button_small_green', 'button/button_small_green.png');
+        this.addImage('button/button_cook', 'button/button_cook.png');
         this.addImage('button/zoom_in', 'button/zoom_in.png');
         this.addImage('button/zoom_out', 'button/zoom_out.png');
         this.addImage('button/fullscreen', 'button/fullscreen.png');
@@ -90,6 +94,20 @@ export class AssetManager {
         return asset;
     }
 
+
+    public static addFont(key: string, path: string) {
+        const asset: Asset = {
+            key: key,
+            path: path,
+            loadState: LoadState.NOT_LOADED,
+            type: AssetType.FONT,
+            preload: this._isPreload
+        }
+
+        this._assets.set(key, asset);
+
+        return asset;
+    }
 
 
     public static addAudio(key: string, path: string) {

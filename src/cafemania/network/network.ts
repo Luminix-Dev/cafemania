@@ -4,10 +4,14 @@ import { BaseObject } from "../baseObject/baseObject";
 import { Debug } from "../debug/debug";
 import { Dish } from "../dish/dish";
 import { Gameface } from "../gameface/gameface";
+import { Hud } from "../hud/hud";
 import { ServersListScene } from "../scenes/serverListScene";
+import { Tile } from "../tile/tile";
 import { TileItemStove } from "../tileItem/items/tileItemStove";
+import { TileItem } from "../tileItem/tileItem";
+import { TileItemInfo } from "../tileItem/tileItemInfo";
 import { WorldSyncHelper } from "../world/worldSyncHelper";
-import { IPacket, IPacketData_JoinServer, IPacketData_JoinServerStatus, IPacketData_MovePlayer, IPacketData_ServerList, IPacketData_SignInResult, IPacketData_StartCook, IPacketData_StoveTakeDish, IPacketData_WorldData, PACKET_TYPE } from "./packet";
+import { IPacket, IPacketData_BuyTileItem, IPacketData_JoinServer, IPacketData_JoinServerStatus, IPacketData_MovePlayer, IPacketData_MoveTileItem, IPacketData_ServerList, IPacketData_SignInResult, IPacketData_StartCook, IPacketData_StoveTakeDish, IPacketData_WorldData, PACKET_TYPE } from "./packet";
 
 export class Network extends BaseObject {
     public static SERVER_ADDRESS: string = "https://cafemania.danilomaioli.repl.co";
@@ -113,6 +117,26 @@ export class Network extends BaseObject {
         this.send(PACKET_TYPE.REQUEST_SERVER_LIST, null);
     }
 
+    public sendBuyTileItem(tileItemInfo: TileItemInfo, tile: Tile) {
+        const packetData: IPacketData_BuyTileItem = {
+            id: tileItemInfo.id,
+            x: tile.x,
+            y: tile.y
+        }
+        this.send(PACKET_TYPE.BUY_TILEITEM, packetData);
+
+    }
+
+    public sendMoveTileItem(tileItem: TileItem, tile: Tile) {
+        const packetData: IPacketData_MoveTileItem = {
+            id: tileItem.id,
+            x: tile.x,
+            y: tile.y
+        }
+        this.send(PACKET_TYPE.MOVE_TILEITEM, packetData);
+
+    }
+
     public onReceivePacket(packet: IPacket) {
         //this.log(`reiceved packet '${packet.type}'`);
 
@@ -138,6 +162,7 @@ export class Network extends BaseObject {
             if(packetData.success) {
                 Gameface.Instance.removeScene(ServersListScene);
                 Gameface.Instance.createBaseWorld(true);
+                
             }
         }
 
