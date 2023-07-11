@@ -1,6 +1,8 @@
 import { Gameface } from "../gameface/gameface";
 import { GameScene } from "../scenes/gameScene";
+import { Button } from "../ui/button";
 import { Hud } from "./hud";
+import { HudShopPanel } from "./hudShopPanel";
 
 export class HudTopStatus {
     public static create() {
@@ -17,7 +19,12 @@ export class HudTopStatus {
         const text3 = Hud.addText("+18 XP", 20, 100, {fontFamily: 'AlfaSlabOne-Regular', color: "#D3900E"});
         text3.setFontSize(12);
         text3.setStroke("#55330D", 10)
-
+        
+        const shopButton =  Hud.addButton("Shop", 60, 150, 80, 40, "button/button1")
+        shopButton.onClick = () => {
+            HudShopPanel.create()
+        }
+        
         setInterval(() => {
             const money = Gameface.Instance.game.money;
             text.setText(`${money}`);

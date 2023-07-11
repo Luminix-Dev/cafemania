@@ -79,7 +79,7 @@ export class Hud {
 
         //----------
         HudMainPanel.destroy();
-        HudShopPanel.create();
+        //HudShopPanel.create();
     }
 
     public static getScreenCoordsFromWorldCoords(worldPosition: Phaser.Math.Vector2) {

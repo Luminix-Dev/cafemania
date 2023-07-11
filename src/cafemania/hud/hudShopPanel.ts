@@ -26,6 +26,8 @@ export class HudShopPanel {
     private static _currentCategory: TileItemCategory = TileItemCategory.FLOOR;
 
     public static create() {
+        if(this._container) return
+
         this._container = GameScene.Instance.add.container();
 
         const width = 760;
@@ -44,6 +46,13 @@ export class HudShopPanel {
         //this.createGridList();
 
         panel.container.add(this.container);
+
+        //close button
+        const closeButton = new Button(GameScene.Instance, 'X', width - 100, 0, this._categoryButtonSize, this._categoryButtonSize, "button/button1");
+        this.container.add(closeButton.container);
+        closeButton.onClick = () => {
+            HudShopPanel.destroy()
+        }
 
         window['HudShopPanel'] = HudShopPanel;
     }
@@ -169,6 +178,8 @@ export class HudShopPanel {
     
     public static destroy() {
         this._panel?.container.destroy();
+        this._container?.destroy();
+        this._container = undefined
         HudLockZone.removeLockZone('tileItemShopPanel');
     }
 }
