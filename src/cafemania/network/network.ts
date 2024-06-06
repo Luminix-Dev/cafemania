@@ -158,7 +158,7 @@ export class Network extends BaseObject {
 
         if(packet.type == PACKET_TYPE.JOIN_SERVER_STATUS) {
             const packetData: IPacketData_JoinServerStatus = packet.data;
-            console.log(packetData)
+            if (Debug.consoleLog) console.log(packetData)
 
             if(packetData.success) {
                 Gameface.Instance.removeScene(ServersListScene);

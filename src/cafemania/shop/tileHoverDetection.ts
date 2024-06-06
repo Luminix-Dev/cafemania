@@ -1,3 +1,4 @@
+import { Debug } from "../debug/debug";
 import { Input } from "../input/input";
 import { GameScene } from "../scenes/gameScene";
 import { NewTileCollisionFactory } from "../tile/newTileCollisionFactory";
@@ -21,11 +22,11 @@ export class TileHoverDetection {
             
             /*
             const worldPos = Input.getMouseWorldPosition();
-            console.log("down", worldPos)
+            if (Debug.consoleLog) console.log("down", worldPos)
 
             const tileItem = this.testTileItem(worldPos);
 
-            console.log(tileItem)
+            if (Debug.consoleLog) console.log(tileItem)
             */
         })
 
@@ -147,7 +148,7 @@ export class TileHoverDetection {
             }
         }
 
-        console.log(this._pointsDrawn.length)
+        if (Debug.consoleLog) console.log(this._pointsDrawn.length)
 
         return hoveringTiles;
     }

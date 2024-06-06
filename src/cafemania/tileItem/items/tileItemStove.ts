@@ -1,4 +1,5 @@
 
+import { Debug } from "../../debug/debug";
 import { Dish } from "../../dish/dish";
 import { DishPlate, DishPlateState } from "../../dish/dishPlate";
 import { Gameface } from "../../gameface/gameface";
@@ -47,7 +48,7 @@ export class TileItemStove extends TileItem {
     public prepareToCook() {
         this._isPreparingToCook = true;
 
-        console.log(this._data.toCookDish)
+        if (Debug.consoleLog) console.log(this._data.toCookDish)
     }
 
 
@@ -138,7 +139,7 @@ export class TileItemStove extends TileItem {
             return;
         }
 
-        console.log("actually start cook")
+        if (Debug.consoleLog) console.log("actually start cook")
 
         this.world.getPlayerCheff().addStoveToCookQuery(this);
         this.addDishToCook(dish);
@@ -148,7 +149,7 @@ export class TileItemStove extends TileItem {
 
     public takeDish() {
 
-        //console.log(this)
+        //if (Debug.consoleLog) console.log(this)
 
         
 
@@ -332,7 +333,7 @@ export class TileItemStove extends TileItem {
         this._data = data;
 
 
-        console.log('unserializeData', data);
+        if (Debug.consoleLog) console.log('unserializeData', data);
     };
 
 
@@ -345,7 +346,7 @@ export class TileItemStove extends TileItem {
     public onPointerOver() {
         super.onPointerOver();
 
-        const messageBox = new MessageBox(GameScene.Instance, this.position.x, this.position.y - 45, 300, 70, '1', (22-7));
-        GameScene.Instance.setMessageBoxAboveTileItem(messageBox); 
+        //const messageBox = new MessageBox(GameScene.Instance, this.position.x, this.position.y - 45, 300, 70, '1', (22-7));
+        //GameScene.Instance.setMessageBoxAboveTileItem(messageBox); 
     }
 }

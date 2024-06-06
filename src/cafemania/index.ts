@@ -9,7 +9,7 @@ import { Shop } from "./shop/shop";
 import { TileHoverDetection } from "./shop/tileHoverDetection";
 import { Tile } from "./tile/tile";
 
-console.log("cafemania index");
+if (Debug.consoleLog) console.log("cafemania index");
 
 const gameface = new Gameface();
 gameface.start();

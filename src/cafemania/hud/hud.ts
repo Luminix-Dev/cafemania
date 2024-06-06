@@ -17,6 +17,7 @@ import { HudLockZone } from "./hudLockZone";
 import { HudTopStatus } from "./hudTopStatus";
 import { HudMainPanel } from "./hudMainPanel";
 import { HudShopPanel } from "./hudShopPanel";
+import { Debug } from "../debug/debug";
 
 
 
@@ -70,10 +71,10 @@ export class Hud {
             const worldPos = Input.getMouseWorldPosition();
             const screenPos = this.getScreenCoordsFromWorldCoords(worldPos);
 
-            console.log("---")
-            console.log(worldPos)
-            console.log(screenPos);
-            console.log("---")
+            if (Debug.consoleLog) console.log("---")
+            if (Debug.consoleLog) console.log(worldPos)
+            if (Debug.consoleLog) console.log(screenPos);
+            if (Debug.consoleLog) console.log("---")
 
         })
 
@@ -193,7 +194,7 @@ export class Hud {
 
     private static goBackToServerList() {
         if(Gameface.Instance.hasSceneStarted(ServersListScene)) {
-            console.log("cannot go back")
+            if (Debug.consoleLog) console.log("cannot go back")
             return;
         }
 
@@ -226,6 +227,29 @@ export class Hud {
 
         const textgo = GameScene.Instance.add.text(x, y, text, style);
         
+        GameScene.Instance.hudContainer.add(textgo);
+
+        return textgo;
+    }
+
+    /*public static addProgressBar(background: string, progress: string, min: number, max: number, x_background: number, y_background: number, x_progress: number, y_progress: number, style: Phaser.Types.GameObjects.Text.TextStyle) {
+
+        const backgroundgo = GameScene.Instance.add.image(x_background, y_background, background).setOrigin(0);
+        const icongo = GameScene.Instance.add.image(x_icon, y_icon, icon).setOrigin(0);
+        const textgo = GameScene.Instance.add.text(x_text, y_text, text, style);
+        
+        GameScene.Instance.hudContainer.add(icongo);
+        GameScene.Instance.hudContainer.add(textgo);
+
+        return textgo;
+    }*/
+
+    public static addTextWithIcon(text: string, icon: string, x_icon: number, y_icon: number, x_text: number, y_text: number, style: Phaser.Types.GameObjects.Text.TextStyle) {
+
+        const icongo = GameScene.Instance.add.image(x_icon, y_icon, icon).setOrigin(0);
+        const textgo = GameScene.Instance.add.text(x_text, y_text, text, style);
+        
+        GameScene.Instance.hudContainer.add(icongo);
         GameScene.Instance.hudContainer.add(textgo);
 
         return textgo;

@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import { Hud } from "./hud";
 import { HudLockZone } from "./hudLockZone";
 import { TileItemDrag } from "../tileItemDrag/tileItemDrag";
+import { Debug } from "../debug/debug";
 
 export class HudShopPanel {
     public static get container() { return this._container!; }
@@ -77,7 +78,7 @@ export class HudShopPanel {
         for (const category of categoryItems.keys()) {
             const texture = categoryTextures.get(category) || "button/panel/none";
 
-            console.log(texture)
+            if (Debug.consoleLog) console.log(texture)
 
             const button = this.addButton(texture, btnx += (this._categoryButtonSize + 5), 0);
 
@@ -104,7 +105,7 @@ export class HudShopPanel {
         this.container.add(gridList.container!);
 
         gridList.onShowItem = (index: number, position: Phaser.Math.Vector2) => {
-            console.warn("showitem", index);
+            if (Debug.consoleLog) console.warn("showitem", index);
 
             const item = items[index];
 
@@ -113,7 +114,7 @@ export class HudShopPanel {
             gridList.container?.add(shopItem.container);
 
             shopItem.button.onBeginDrag = () => {
-                console.log("onBeginDrag")
+                if (Debug.consoleLog) console.log("onBeginDrag")
     
                 const game = Gameface.Instance.game;
                 const world = Gameface.Instance.currentWorld!;
@@ -125,13 +126,13 @@ export class HudShopPanel {
                     const tile = tileItem.tile;
 
                     if(tile) {
-                        console.log("ok fine", tileItem)
+                        if (Debug.consoleLog) console.log("ok fine", tileItem)
 
                         world.removeTileItem(tileItem);
 
                         game.shop.buyTileItem(tileItem.tileItemInfo, tile)
                     } else {
-                        console.log("didnt move")
+                        if (Debug.consoleLog) console.log("didnt move")
                     }
 
                     

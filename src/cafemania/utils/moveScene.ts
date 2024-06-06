@@ -75,7 +75,7 @@ export class MoveScene
     {
         this._mPixelsX = config
 
-        //console.log('x', this._mPixelsX, config)
+        //if (Debug.consoleLog) console.log('x', this._mPixelsX, config)
     }
 
     public setConfigY(config: MPixelConfig)

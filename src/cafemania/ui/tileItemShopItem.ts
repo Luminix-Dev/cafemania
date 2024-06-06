@@ -1,3 +1,4 @@
+import { Debug } from "../debug/debug";
 import { TileItemInfo } from "../tileItem/tileItemInfo";
 import { TileItemDrag } from "../tileItemDrag/tileItemDrag";
 import { Button } from "./button";
@@ -24,7 +25,7 @@ export class TileItemShopItem {
 
         const button = this._button = new Button(scene, `${tileItemInfo.name}`, width/2, height/2,  width, height, "button/signout");
         button.onClick = () => {
-            console.log("click")
+            if (Debug.consoleLog) console.log("click")
         };
 
         

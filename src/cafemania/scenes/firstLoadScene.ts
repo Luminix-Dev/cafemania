@@ -33,7 +33,7 @@ export class FirstLoadScene extends Phaser.Scene {
         const gameface = Gameface.Instance;
         //const phaser = gameface.phaser;
         
-        console.log('processLoadScene')
+        if (Debug.consoleLog) console.log('processLoadScene')
 
         LoadScene.createScene(LoadSceneType.PROGRESS, async () => {
             gameface.updateScenesOrder();

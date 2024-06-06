@@ -1,3 +1,4 @@
+import { Debug } from "../debug/debug";
 import { Network } from "../network/network";
 
 enum LoadState {
@@ -27,9 +28,13 @@ export class AssetManager {
     private static _isPreload: boolean = true;
 
     public static initPreloadAssets() {
-        this.addImage('background', 'background.png');
-        this.addImage('loading_background', 'loading_background.png');
-        this.addImage('sign', 'sign.png');
+        //this.addImage('background', 'background.png');
+        //this.addImage('loading_background', 'loading_background.png');
+        //this.addImage('sign', 'sign.png');
+        //this.addFont('gem', 'fonts/gem');
+        this.addImage('background', 'background.svg');
+        this.addImage('loading_background', 'loading_background.svg');
+        this.addImage('sign', 'sign.svg');
         this.addFont('gem', 'fonts/gem');
     }
 
@@ -40,6 +45,9 @@ export class AssetManager {
         this.addImage('tile', 'tile.png');
         this.addImage('tile2', 'tile2.png');
         this.addImage('panel', 'panel.png');
+        
+        this.addImage('hud/gold', 'hud/gold.svg');
+        this.addImage('hud/money', 'hud/money.svg');
         
         this.addImage('button/panel/gift', 'button/panel/gift.png');
         this.addImage('button/panel/waiter', 'button/panel/waiter.png');
@@ -111,7 +119,7 @@ export class AssetManager {
 
 
     public static addAudio(key: string, path: string) {
-        console.log("> added autdio")
+        if (Debug.consoleLog) console.log("> added autdio")
 
         const asset: Asset = {
             key: key,
@@ -130,6 +138,6 @@ export class AssetManager {
         } else {
             this.ASSETS_URL = `${Network.SERVER_ADDRESS}/assets/`;
         }
-        console.log(this.ASSETS_URL)
+        if (Debug.consoleLog) console.log(this.ASSETS_URL)
     }
 }

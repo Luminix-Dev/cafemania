@@ -1,4 +1,5 @@
 import { IUserInfo } from "../client/user";
+import { Debug } from "../debug/debug";
 import { IPacketData_SignInResult } from "../network/packet";
 import { LoginScene } from "../scenes/loginScene";
 
@@ -38,11 +39,11 @@ export class Auth {
                     var currentUser = auth2.currentUser.get();
     
                     var authResponse = currentUser.getAuthResponse();
-                    console.log('authResponse', authResponse);
+                    if (Debug.consoleLog) console.log('authResponse', authResponse);
                     //Get Token from authResponse
                     
                     var basicProfile = currentUser.getBasicProfile();
-                    console.log('basicProfile', basicProfile);
+                    if (Debug.consoleLog) console.log('basicProfile', basicProfile);
                     //Get Email, Name, etc. from basicProfile
     
                     //btnGoogleLogin.html("Logged in: <b>" + basicProfile.getName() + "</b>");
@@ -59,20 +60,20 @@ export class Auth {
 
             // Listen for changes to current user.
             auth2.currentUser.listen((a, b, c) => {
-                console.log("user changed", a, b, c)
+                if (Debug.consoleLog) console.log("user changed", a, b, c)
 
                 
 
                 const isSignedIn = this.getIsSignedIn()
 
                 if(isSignedIn) {
-                    console.log("signed in")
+                    if (Debug.consoleLog) console.log("signed in")
 
                     const basicProfile = this.getGoogleBasicProfile();
                     const name = basicProfile.getName();
                     const id = basicProfile.getId();
 
-                    console.log(`as ${name} (${id})`)
+                    if (Debug.consoleLog) console.log(`as ${name} (${id})`)
 
                     if(this._onSignInCallback) {
                         this._onSignInCallback(true, id);
@@ -81,7 +82,7 @@ export class Auth {
 
 
                 } else {
-                    console.log("signed out")
+                    if (Debug.consoleLog) console.log("signed out")
 
                     if(this._onSignOutCallback) {
                         this._onSignOutCallback();

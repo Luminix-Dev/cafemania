@@ -47,7 +47,7 @@ export class Input {
         this._dragStartPos.x = ev.position.x;
         this._dragStartPos.y = ev.position.y;
 
-        console.log(this._dragStartPos)
+        if (Debug.consoleLog) console.log(this._dragStartPos)
 
         Debug.log('pointerdown');
 
@@ -91,7 +91,7 @@ export class Input {
     }
 
     public static addScene(scene: Phaser.Scene) {
-        console.log("input add scene", scene);
+        if (Debug.consoleLog) console.log("input add scene", scene);
 
         scene.input.on('pointerup', pointer => {
             this.updateMouseWorldPosition(scene);
@@ -122,7 +122,7 @@ export class Input {
             //Debug.log(`pointerdownev ${scene.constructor.name} ${pointer.worldX} ${pointer.worldY}`)
             //Debug.log(`pointerdownev ${scene.constructor.name} ${pointer.worldX} ${pointer.worldY}`)
 
-            //console.log(scene)
+            //if (Debug.consoleLog) console.log(scene)
 
             this.updateMouseWorldPosition(scene);
             this.onPointerDown(pointer);

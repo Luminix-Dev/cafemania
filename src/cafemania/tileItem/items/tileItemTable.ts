@@ -1,3 +1,4 @@
+import { Debug } from "../../debug/debug";
 import { Dish } from "../../dish/dish";
 import { DishPlate, DishPlateState } from "../../dish/dishPlate";
 import { Tile } from "../../tile/tile"
@@ -77,7 +78,7 @@ export class TileItemTable extends TileItem {
     }
 
     public setDish(dish: Dish) {
-        console.log("set dish")
+        if (Debug.consoleLog) console.log("set dish")
 
         this._data.dish = dish.id;
 

@@ -45,7 +45,7 @@ export class TileMap extends BaseObject {
 
     public canTileItemBePlacedAtTile(tileItem: TileItem, tile: Tile, direction?: Direction)
     {
-        //console.log(`canTileItemBePlacedAtTile :`, tileItem.getInfo().name)
+        //if (Debug.consoleLog) console.log(`canTileItemBePlacedAtTile :`, tileItem.getInfo().name)
 
         if(direction === undefined) direction = tileItem.direction
 
@@ -69,7 +69,7 @@ export class TileMap extends BaseObject {
 
             const compareTileItem = this.getTile(compareItem.getOriginCell().x, compareItem.getOriginCell().y).getTileItem(compareItem.id)!
 
-            //console.log(`compare ${compareTileItem.getInfo().name}`)
+            //if (Debug.consoleLog) console.log(`compare ${compareTileItem.getInfo().name}`)
 
 
             if(tileItem.tileItemInfo.type == TileItemType.WALL)
@@ -84,7 +84,7 @@ export class TileMap extends BaseObject {
             return true
         })
 
-        //console.log("the result was ", result)
+        //if (Debug.consoleLog) console.log("the result was ", result)
 
         return result;
     }

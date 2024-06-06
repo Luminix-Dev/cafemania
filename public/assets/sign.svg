@@ -1,0 +1,24 @@
+<svg width="513" height="329" viewBox="0 0 513 329" fill="none"
+    xmlns="http://www.w3.org/2000/svg">
+    <g clip-path="url(#clip0_2_23)">
+        <path d="M24.5 6.5L509 0L513 303.5L0 329L24.5 6.5Z" fill="black" fill-opacity="0.5"/>
+        <path d="M24.5 6.5L509 0L513 303.5L29.5 310.5L24.5 6.5Z" fill="white"/>
+        <g clip-path="url(#clip1_2_23)">
+            <path d="M46.5 29.5L484.5 26.5L490 289L52 295.5L46.5 29.5Z" fill="#FF393C"/>
+            <path d="M92 29C92 53.8528 71.8528 74 47 74C22.1472 74 2 53.8528 2 29C2 4.14719 22.1472 -16 47 -16C71.8528 -16 92 4.14719 92 29Z" fill="white"/>
+            <ellipse cx="267" cy="164.5" rx="146" ry="98.5" fill="#F0363B"/>
+            <path d="M529 26C529 50.8528 508.853 71 484 71C459.147 71 439 50.8528 439 26C439 1.14719 459.147 -19 484 -19C508.853 -19 529 1.14719 529 26Z" fill="white"/>
+            <path d="M536 289C536 313.853 515.853 334 491 334C466.147 334 446 313.853 446 289C446 264.147 466.147 244 491 244C515.853 244 536 264.147 536 289Z" fill="white"/>
+            <path d="M97 295C97 319.853 76.8528 340 52 340C27.1472 340 7 319.853 7 295C7 270.147 27.1472 250 52 250C76.8528 250 97 270.147 97 295Z" fill="white"/>
+        </g>
+    </g>
+    <defs>
+        <clipPath id="clip0_2_23">
+            <rect width="513" height="329" fill="white"/>
+        </clipPath>
+        <clipPath id="clip1_2_23">
+            <rect width="444" height="269" fill="white" transform="translate(47 26)"/>
+        </clipPath>
+    </defs>
+</svg>
+    

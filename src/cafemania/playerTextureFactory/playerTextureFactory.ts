@@ -5,6 +5,7 @@ import { PlayerAnimation } from "../player/playerAnimation";
 import { GameScene } from '../scenes/gameScene';
 import Three, { ThreeModel } from "../three/three";
 import { BonePart } from "./bonePart";
+import { Debug } from '../debug/debug';
 
 export class PlayerTextureFactory {
     public static get canvas() { return this._canvas; } 
@@ -29,16 +30,19 @@ export class PlayerTextureFactory {
 
         const textureManager = GameScene.Instance.textures;
 
-        const canvas = this._canvas = textureManager.createCanvas(this.canvasTextureKey, Three.size.x, Three.size.y);
+        const canvas = textureManager.createCanvas(this.canvasTextureKey, Three.size.x, Three.size.y);
+
+        if (canvas)
+            this._canvas = canvas;
         
         await Three.init();
 
-        console.log("loading player model...")
+        if (Debug.consoleLog) console.log("loading player model...")
 
         const playerModel = this._playerModel = await Three.loadGLTFModel(AssetManager.ASSETS_URL + 'models/player.glb', true);
         playerModel.object.position.set(0, 0.7, 0);
 
-        console.log("player model loaded")
+        if (Debug.consoleLog) console.log("player model loaded")
 
         
 
@@ -109,14 +113,15 @@ export class PlayerTextureFactory {
         if(textureManager.exists('PlayerTextureFactory_SkinTexture')) textureManager.get('PlayerTextureFactory_SkinTexture').destroy();
         const skinTexture = await this.createPixelColorTexture('PlayerTextureFactory_SkinTexture', skinColor);
         
-
-        const headTexture = await this.generateTempSkin('PlayerTextureFactory_HeadTexture', [skinTexture, textureManager.get('player/eye')!], 300, 300)
-        const bodyTexture = await this.generateTempSkin('PlayerTextureFactory_BodyTexture', [skinTexture], 300, 300)
-        const legsTexture = await this.generateTempSkin('PlayerTextureFactory_LegsTexture', [skinTexture], 300, 300)
-     
-        await this.applyTextureToObject(headTexture, this._playerModel.object.getObjectByName("Head_1")!)
-        await this.applyTextureToObject(skinTexture, this._playerModel.object.getObjectByName("Body")!)
-        await this.applyTextureToObject(skinTexture, this._playerModel.object.getObjectByName("Legs")!)
+        if (skinTexture) {
+            const headTexture = await this.generateTempSkin('PlayerTextureFactory_HeadTexture', [skinTexture, textureManager.get('player/eye')!], 300, 300)
+            const bodyTexture = await this.generateTempSkin('PlayerTextureFactory_BodyTexture', [skinTexture], 300, 300)
+            const legsTexture = await this.generateTempSkin('PlayerTextureFactory_LegsTexture', [skinTexture], 300, 300)
+        
+            if (headTexture) await this.applyTextureToObject(headTexture, this._playerModel.object.getObjectByName("Head_1")!);
+            if (bodyTexture) await this.applyTextureToObject(bodyTexture, this._playerModel.object.getObjectByName("Body")!);
+            if (legsTexture) await this.applyTextureToObject(legsTexture, this._playerModel.object.getObjectByName("Legs")!)
+        }
     }
 
     public static updateBoneParts() {
@@ -159,11 +164,16 @@ export class PlayerTextureFactory {
         if(textureManager.exists(textureName)) { textureManager.get(textureName).destroy(); }
 
         const canvas = textureManager.createCanvas(textureName, 1, 1);
-        canvas.context.fillStyle = color;
-        canvas.context.fillRect(0, 0, 1, 1);
-        canvas.refresh();
 
-        return canvas;
+        if (canvas) {
+            canvas.context.fillStyle = color;
+            canvas.context.fillRect(0, 0, 1, 1);
+            canvas.refresh();
+
+            return canvas;
+        }
+
+        return null;
     }
 
     private static async applyTextureToObject(texture: Phaser.Textures.CanvasTexture, object: THREE.Object3D) {
@@ -185,12 +195,14 @@ export class PlayerTextureFactory {
         const textureManager = this.getTextureManager();
         const canvasTexture = textureManager.createCanvas(name, width, height)
 
-        for (const t of textures) {
-            const texture = textureManager.get(t)
-            canvasTexture.context.drawImage(texture.getSourceImage() as HTMLImageElement , 0, 0, width, height)
-        }
+        if (canvasTexture) {
+            for (const t of textures) {
+                const texture = textureManager.get(t)
+                canvasTexture.context.drawImage(texture.getSourceImage() as HTMLImageElement , 0, 0, width, height)
+            }
 
-        canvasTexture.refresh()
+            canvasTexture.refresh();
+        }
         
         return canvasTexture;
     }

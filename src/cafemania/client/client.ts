@@ -9,6 +9,7 @@ import { Player } from '../player/player';
 import { MasterServer } from '../masterServer/masterServer';
 import { TileItem } from '../tileItem/tileItem';
 import { User } from './user';
+import { Debug } from '../debug/debug';
 
 /*
 const game = new Game();
@@ -121,7 +122,7 @@ export class Client extends BaseObject {
         }
         this.send(PACKET_TYPE.WORLD_DATA, packetData);
 
-        console.log("sent WORLD_DATA : onPlayerStateChangedEvent")
+        if (Debug.consoleLog) console.log("sent WORLD_DATA : onPlayerStateChangedEvent")
     }
 
     public onTileItemChangedEvent(tileItem: TileItem) {
@@ -184,7 +185,7 @@ export class Client extends BaseObject {
             const id = packetData.id;
 
             if(id) {
-                console.log("google", id)
+                if (Debug.consoleLog) console.log("google", id)
 
                 const user = MasterServer.Instance.createUser();
                 user.nickname = "User " + user.id.slice(0, 8);
@@ -192,7 +193,7 @@ export class Client extends BaseObject {
                 this.setUser(user);
 
             } else {
-                console.log("guest")
+                if (Debug.consoleLog) console.log("guest")
 
                 const user = MasterServer.Instance.createUser();
                 user.nickname = "Guest " + user.id.slice(0, 8);
@@ -241,7 +242,7 @@ export class Client extends BaseObject {
 
             const server = MasterServer.Instance.getServerById(packetData.id);
 
-            console.log(packetData);
+            if (Debug.consoleLog) console.log(packetData);
 
             if(server) {
                 this.joinServer(server)

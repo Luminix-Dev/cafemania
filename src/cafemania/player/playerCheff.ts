@@ -1,3 +1,4 @@
+import { Debug } from "../debug/debug";
 import { Dish } from "../dish/dish";
 import { SoundManager } from "../soundManager/soundManager";
 import { TileItemStove } from "../tileItem/items/tileItemStove";
@@ -178,7 +179,7 @@ export class PlayerCheff extends Player {
             //const dish = this.world.game.dishFactory.getDish(args[0]);
             const stove = this.world.game.tileItemFactory.getTileItem(args[0]) as TileItemStove; 
             
-            console.log(stove.getCookingDish())
+            if (Debug.consoleLog) console.log(stove.getCookingDish())
 
             stove.sendDishToCounter();
             stove.clearDish();

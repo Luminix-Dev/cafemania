@@ -4,6 +4,7 @@ import { Direction } from "../utils/direction";
 import { SpriteSheetOrganizer } from "../utils/spriteSheetOrganizer";
 import { PlayerTextureFactory } from "./playerTextureFactory";
 import { GameScene } from "../scenes/gameScene";
+import { Debug } from "../debug/debug";
 
 export interface IPlayerTextureOptions {
     animations: string[]
@@ -36,12 +37,12 @@ export class PlayerSpritesheetGenerator {
 
     private static async process() {
         if(this._running) {
-            console.log("Running, wait")
+            if (Debug.consoleLog) console.log("Running, wait")
             return
         }
 
         if(this._query.length == 0) {
-            console.log("Query is empty")
+            if (Debug.consoleLog) console.log("Query is empty")
             return
         }
 
@@ -49,14 +50,14 @@ export class PlayerSpritesheetGenerator {
 
         const queryItem = this._query.splice(0, 1)[0]
 
-        console.log("Started")
+        if (Debug.consoleLog) console.log("Started")
 
         interface IFrame {
             imageData: ImageData
             frameKey: string
         }
 
-        console.log(`[PlayerTextureFactory] Generating...`)
+        if (Debug.consoleLog) console.log(`[PlayerTextureFactory] Generating...`)
 
       
   
@@ -73,17 +74,17 @@ export class PlayerSpritesheetGenerator {
 
             if(queryItem.options.animations.includes(animName)) {
 
-                console.log('[PlayerTextureFactory]', `Anim ${animName}`)
+                if (Debug.consoleLog) console.log('[PlayerTextureFactory]', `Anim ${animName}`)
 
                 for (const direction of anim.directions)
                 {
-                    //console.log('[PlayerTextureFactory]', `Direction ${direction}`)
+                    //if (Debug.consoleLog) console.log('[PlayerTextureFactory]', `Direction ${direction}`)
 
                     PlayerTextureFactory.setAngle(this.angleFromDirection(direction) || 0)
 
                     for (let frame = 0; frame < anim.frames; frame++)
                     {
-                        //console.log('[PlayerTextureFactory]', `Frame ${frame} (${pastFrames + frame} / ${totalAnimFrames})`)
+                        //if (Debug.consoleLog) console.log('[PlayerTextureFactory]', `Frame ${frame} (${pastFrames + frame} / ${totalAnimFrames})`)
 
                         PlayerTextureFactory.setAnimationFrame(pastFrames + frame);
                         PlayerTextureFactory.animate()
@@ -116,33 +117,35 @@ export class PlayerSpritesheetGenerator {
         //canvas.context.fillStyle = "red"
         //canvas.context.fillRect(0, 0, canvas.width, canvas.height)
 
-        canvas.add('MAIN', 0, 0, 0, canvas.width, canvas.height)
+        if (canvas) {
+            canvas.add('MAIN', 0, 0, 0, canvas.width, canvas.height)
 
 
-        frames.map((frame, index) =>
-        {
-            const position = sheet.getItemPosition(`${index}`)
+            frames.map((frame, index) =>
+            {
+                const position = sheet.getItemPosition(`${index}`)
 
-            canvas.putData(frame.imageData, position.x, position.y)
-            canvas.add(frame.frameKey, 0, position.x, position.y, frame.imageData.width, frame.imageData.height)
+                canvas.putData(frame.imageData, position.x, position.y)
+                canvas.add(frame.frameKey, 0, position.x, position.y, frame.imageData.width, frame.imageData.height)
 
-            //console.log(frame.frameKey)
-        })
+                //if (Debug.consoleLog) console.log(frame.frameKey)
+            })
 
-        canvas.refresh()
+            canvas.refresh()
 
-        //this._cachedTextures.map(texture => texture.destroy())
-        //this._cachedTextures = []
+            //this._cachedTextures.map(texture => texture.destroy())
+            //this._cachedTextures = []
 
-        console.log("Completed")
+            if (Debug.consoleLog) console.log("Completed")
 
-        queryItem.callback()
+            queryItem.callback()
 
-        setTimeout(() => {
-            this._running = false
+            setTimeout(() => {
+                this._running = false
 
-            this.process()
-        }, 0);
+                this.process()
+            }, 0);
+        }
     }
 
     private static angleFromDirection(direction: Direction) {

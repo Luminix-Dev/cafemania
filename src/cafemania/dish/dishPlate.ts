@@ -26,7 +26,7 @@ export class DishPlate {
 
         texture.getFrameNames()
 
-        console.log(texture.getFrameNames())
+        if (Debug.consoleLog) console.log(texture.getFrameNames())
 
         if(texture.getFrameNames().length == 0)
         {
@@ -80,7 +80,7 @@ export class DishPlate {
 
         container.add(sprite);
         container.add(graphics);
-        //console.log("yes")
+        //if (Debug.consoleLog) console.log("yes")
     }
 
     public setState(state: DishPlateState) {
@@ -104,7 +104,7 @@ export class DishPlate {
 
         this._sprite.setFrame(this.getFrameKey());
 
-        //console.log(this.getFrameKey())
+        //if (Debug.consoleLog) console.log(this.getFrameKey())
         
         const barSize = new Phaser.Structs.Size(50, 8);
 

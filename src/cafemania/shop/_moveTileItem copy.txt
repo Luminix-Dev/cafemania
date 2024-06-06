@@ -43,10 +43,10 @@ export class MoveTileItem {
         })
 
 
-        console.error("add input events to fix drag");
+        if (Debug.consoleLog) console.error("add input events to fix drag");
 
         world.events.on(WorldEvent.TILE_ITEM_POINTER_UP, (tileItem: TileItem) => {
-            //console.log("TILE_ITEM_POINTER_UP")
+            //if (Debug.consoleLog) console.log("TILE_ITEM_POINTER_UP")
         })
 
         world.events.on(WorldEvent.TILE_ITEM_POINTER_OVER, (tileItem: TileItem) => {
@@ -110,7 +110,7 @@ export class MoveTileItem {
     public static stopMoving() {
         if(this._movingTileItem) {
 
-            console.log(Input.isDragging)
+            if (Debug.consoleLog) console.log(Input.isDragging)
 
             this._movingTileItem.setIsMoving(false);
         }

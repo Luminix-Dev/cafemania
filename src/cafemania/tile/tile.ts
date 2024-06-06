@@ -1,4 +1,5 @@
 import { BaseObject } from "../baseObject/baseObject";
+import { Debug } from "../debug/debug";
 import { GameScene } from "../scenes/gameScene";
 import { TileItemDoor } from "../tileItem/items/tileItemDoor";
 import { TileItemWall } from "../tileItem/items/tileItemWall";
@@ -132,8 +133,8 @@ export class Tile extends BaseObject {
         }
         
         } catch (error) {
-            console.error(error);
-            console.log(this);
+            if (Debug.consoleLog) console.error(error);
+            if (Debug.consoleLog) console.log(this);
         }
 
         

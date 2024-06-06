@@ -1,4 +1,5 @@
 import { Auth } from "../auth/auth";
+import { Debug } from "../debug/debug";
 import { Gameface } from "../gameface/gameface";
 import { IPacketData_SignIn, IPacketData_SignInResult, PACKET_TYPE } from "../network/packet";
 import { Button } from "../ui/button";
@@ -26,13 +27,13 @@ export class LoginScene extends Phaser.Scene {
             Auth.init(() => {
 
                 if(Auth.getIsSignedIn()) {
-                    console.log("wait..");
+                    if (Debug.consoleLog) console.log("wait..");
 
                     this.sendSignInPacket(Auth.getGoogleBasicProfileId());
                 } else {
                     LoadScene.removeScene();
 
-                    console.log("login buttons..")
+                    if (Debug.consoleLog) console.log("login buttons..")
                     this.createLoginButtons();
                 }
     
@@ -62,7 +63,7 @@ export class LoginScene extends Phaser.Scene {
 
                     if(signedIn) {
 
-                        console.log("YES")
+                        if (Debug.consoleLog) console.log("YES")
 
                         this.sendSignInPacket(Auth.getGoogleBasicProfileId());
                     }
@@ -71,7 +72,7 @@ export class LoginScene extends Phaser.Scene {
 
                 
 
-                console.log("created")
+                if (Debug.consoleLog) console.log("created")
             })
         }
 
@@ -82,7 +83,7 @@ export class LoginScene extends Phaser.Scene {
             LoadScene.createScene(LoadSceneType.SIGN, () => {
                 const loadScene = LoadScene.Instance;
 
-                console.log("created")
+                if (Debug.consoleLog) console.log("created")
             })
         }
     }
@@ -99,7 +100,7 @@ export class LoginScene extends Phaser.Scene {
     public onReceiveSignInResult(data: IPacketData_SignInResult) {
         LoadScene.removeScene();
 
-        console.log(data)
+        if (Debug.consoleLog) console.log(data)
 
         this.scene.remove();
 

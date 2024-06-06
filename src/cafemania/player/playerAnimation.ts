@@ -1,3 +1,4 @@
+import { Debug } from "../debug/debug";
 import { Direction } from "../utils/direction";
 import { Player } from "./player";
 
@@ -101,8 +102,8 @@ export class PlayerAnimation {
         {
             this._lastChangedFrame = now;
             this._currentFrame++;
-
-            //console.log(this._currentFrame, totalNumOfFrames)
+            
+            //if (Debug.consoleLog) console.log(this._currentFrame, totalNumOfFrames)
 
             if(this._currentFrame >= totalNumOfFrames) this._currentFrame = 0;
 
@@ -128,7 +129,7 @@ export class PlayerAnimation {
             this._oldAnim = this._currentAnim
             this._currentDirection = playerDirection
 
-            //console.log(`Animation is now ${this._currentAnim} (${this._currentDirection})`)
+            //if (Debug.consoleLog) console.log(`Animation is now ${this._currentAnim} (${this._currentDirection})`)
         
             if(!this._player.getSprite()) return
 

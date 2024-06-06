@@ -1,3 +1,4 @@
+import { Debug } from "../../debug/debug";
 import { GameScene } from "../../scenes/gameScene";
 import { Tile } from "../../tile/tile"
 import { TileItem } from "../tileItem"
@@ -42,7 +43,7 @@ export class TileItemWall extends TileItem {
                 const sprite = this.getSpriteWithImage();
                 const image = sprite.image!;
 
-                console.log(image.texture.key)
+                if (Debug.consoleLog) console.log(image.texture.key)
 
 
                 image.destroy()
@@ -86,10 +87,12 @@ export class TileItemWall extends TileItem {
         const imageData = canvas.getContext('2d')!.getImageData(0, 0, canvas.width, canvas.height)
         const wallMask = scene.textures.get('wallMask').getSourceImage() as HTMLImageElement 
 
-        wallHoleCanvas.putData(imageData, 0, 0)
-        wallHoleCanvas.context.globalCompositeOperation="destination-out";
-        wallHoleCanvas.context.drawImage(wallMask, 0, wallHoleCanvas.height - wallMask.height)
-        wallHoleCanvas.refresh()
+        if (wallHoleCanvas) {
+            wallHoleCanvas.putData(imageData, 0, 0)
+            wallHoleCanvas.context.globalCompositeOperation="destination-out";
+            wallHoleCanvas.context.drawImage(wallMask, 0, wallHoleCanvas.height - wallMask.height)
+            wallHoleCanvas.refresh()
+        }
     }
 
     private getWallHoleKey() {

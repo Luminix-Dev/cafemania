@@ -45,7 +45,7 @@ export class HudScene extends Phaser.Scene {
 
             if(Gameface.Instance.hasSceneStarted(ServerListScene)) {
 
-                console.log("cannot go back")
+                if (Debug.consoleLog) console.log("cannot go back")
                 return;
             }
 

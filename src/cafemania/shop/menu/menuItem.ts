@@ -1,3 +1,4 @@
+import { Debug } from "../../debug/debug";
 import { DishPlate } from "../../dish/dishPlate";
 import { Button } from "../../ui/button";
 
@@ -21,7 +22,7 @@ export class MenuItem {
 
         const button = this._button = new Button(scene, '', 190, 150,  140, 25, "button/button_cook");
         button.onClick = () => {
-            console.log("click")
+            if (Debug.consoleLog) console.log("click")
         };
         this._container.add(button.container);
 

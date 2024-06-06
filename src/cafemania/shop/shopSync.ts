@@ -61,5 +61,5 @@ this._playersStoredData = [];
             world.removePlayer(player);
         })
 
-        console.log(this._playersStoredData)
+        if (Debug.consoleLog) console.log(this._playersStoredData)
 */

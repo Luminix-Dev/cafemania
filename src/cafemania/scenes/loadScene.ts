@@ -50,11 +50,11 @@ export class LoadScene extends Phaser.Scene {
     public static createScene(type: LoadSceneType, callback: () => void) {
 
         if(Gameface.Instance.hasSceneStarted(LoadScene)) {
-            console.log(`[loadScene] removing scene`)
+            if (Debug.consoleLog) console.log(`[loadScene] removing scene`)
             Gameface.Instance.removeScene(LoadScene);
         }
 
-        console.log(`[loadScene] creating loadScene...`)
+        if (Debug.consoleLog) console.log(`[loadScene] creating loadScene...`)
 
         Gameface.Instance.phaser.scene.add('LoadScene', LoadScene, true, {type: type, oncreate: callback});
     }
@@ -133,9 +133,9 @@ export class LoadScene extends Phaser.Scene {
         const progress = this._totalLoadedAssets / this._loadAssets.length;
         const text = loadAsset.text;
 
-        console.log(`[gameScene] loadAsset ${loadAsset.key} completed ( ${this._totalLoadedAssets} / ${this._loadAssets.length} )`);
+        if (Debug.consoleLog) console.log(`[gameScene] loadAsset ${loadAsset.key} completed ( ${this._totalLoadedAssets} / ${this._loadAssets.length} )`);
 
-        console.log(progress)
+        if (Debug.consoleLog) console.log(progress)
 
         this._loadText?.setText(text);
         this._percentageText?.setText(`${(progress * 100).toFixed(0)}%`);
@@ -144,9 +144,9 @@ export class LoadScene extends Phaser.Scene {
     }
 
     public async startLoadingAssets(callback: () => void) {
-        console.log(`[gameScene] startLoadingAssets`);
+        if (Debug.consoleLog) console.log(`[gameScene] startLoadingAssets`);
 
-        console.log(this._loadAssets)
+        if (Debug.consoleLog) console.log(this._loadAssets)
 
         const loader = this.loader;
         const indexes = this._loadAssetsIndexes;
@@ -174,7 +174,7 @@ export class LoadScene extends Phaser.Scene {
             }
 
 
-            console.log(`[gameScene] completed`);
+            if (Debug.consoleLog) console.log(`[gameScene] completed`);
 
             
 
@@ -190,7 +190,7 @@ export class LoadScene extends Phaser.Scene {
 
 
     public loadImage(key: string, url: string) {
-        console.log(`[loader] load image '${key}'`);
+        if (Debug.consoleLog) console.log(`[loader] load image '${key}'`);
 
         const asset: LoadAsset = {
             text: `Loading image ${key}`,
@@ -202,7 +202,7 @@ export class LoadScene extends Phaser.Scene {
     }
 
     public loadFont(key: string, url: string) {
-        console.log(`[loader] load font '${key}'`);
+        if (Debug.consoleLog) console.log(`[loader] load font '${key}'`);
 
         const asset: LoadAsset = {
             text: `Loading font ${key}`,
@@ -214,7 +214,7 @@ export class LoadScene extends Phaser.Scene {
     }
 
     public loadAudio(key: string, url: string) {
-        console.log(`[loader] load audio '${key}'`);
+        if (Debug.consoleLog) console.log(`[loader] load audio '${key}'`);
 
         const asset: LoadAsset = {
             text: `Loading audio ${key}`,
@@ -226,7 +226,7 @@ export class LoadScene extends Phaser.Scene {
     }
 
     public loadTask(text: string, fn: () => Promise<void>) {
-        console.log(`[loader] add load task '${text}'`);
+        if (Debug.consoleLog) console.log(`[loader] add load task '${text}'`);
 
         const asset: LoadAsset = {
             text: text,

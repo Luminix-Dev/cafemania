@@ -44,14 +44,14 @@ export class GridLayout {
         const itemsPerPage = new Phaser.Math.Vector2(0, 0);
 
         for (let y = 0; y < size.y; y += itemSize.y) {
-            //console.log("test y", y, 'to', y + itemSize.y)
+            //if (Debug.consoleLog) console.log("test y", y, 'to', y + itemSize.y)
 
             if((y + itemSize.y) <= size.y) itemsPerPage.y++;
             y += padding.y;
         }
 
         for (let x = 0; x < size.x; x += itemSize.x) {
-            //console.log("test x", x, 'to', x + itemSize.x)
+            //if (Debug.consoleLog) console.log("test x", x, 'to', x + itemSize.x)
 
             if((x + itemSize.x) <= size.x) itemsPerPage.x++;
             x += padding.x;

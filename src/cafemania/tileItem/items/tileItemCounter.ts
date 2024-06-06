@@ -1,3 +1,4 @@
+import { Debug } from "../../debug/debug";
 import { Dish } from "../../dish/dish"
 import { DishPlate } from "../../dish/dishPlate"
 import { GameScene } from "../../scenes/gameScene";
@@ -39,8 +40,8 @@ export class TileItemCounter extends TileItem {
 
 
         if(this._updateTime >= 500 && this._newAmount != undefined) {
-            console.log(this._updateTime)
-            console.log(this._data.amount, 'to', this._newAmount)
+            if (Debug.consoleLog) console.log(this._updateTime)
+            if (Debug.consoleLog) console.log(this._data.amount, 'to', this._newAmount)
 
             this._updateTime = 0;
             this._data.amount = this._newAmount;
@@ -144,7 +145,7 @@ export class TileItemCounter extends TileItem {
     public onPointerOver() {
         super.onPointerOver();
 
-        const messageBox = new MessageBox(GameScene.Instance, this.position.x, this.position.y - 45, 200, 70, '1', (22-7));
-        GameScene.Instance.setMessageBoxAboveTileItem(messageBox); 
+        //const messageBox = new MessageBox(GameScene.Instance, this.position.x, this.position.y - 45, 200, 70, '1', (22-7));
+        //GameScene.Instance.setMessageBoxAboveTileItem(messageBox); 
     }
 }

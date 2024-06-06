@@ -41,7 +41,7 @@ export class WorldSyncHelper {
         if(worldData.sidewalkSize)
             world.generateSideWalks(worldData.sidewalkSize);
 
-        //console.log(worldData)
+        //if (Debug.consoleLog) console.log(worldData)
 
         worldData.tiles.map(tileData => {
             if(!world.tileMap.tileExists(tileData.x, tileData.y)) {
@@ -131,10 +131,10 @@ export class WorldSyncHelper {
 
     private static checkPlayerTasks(player: Player, playerData: IPlayerSerializedData) {
         /*
-        console.log(`Checking ${playerData.tasks.length} tasks (player has ${player.taskManager.tasks.length})`);
-        console.log(`Currently doing: ${player.taskManager.tasks[0]?.id}`);
-        console.log(`Should be doing: ${playerData.tasks[0]?.taskId}`);
-        console.log(`----`);
+        if (Debug.consoleLog) console.log(`Checking ${playerData.tasks.length} tasks (player has ${player.taskManager.tasks.length})`);
+        if (Debug.consoleLog) console.log(`Currently doing: ${player.taskManager.tasks[0]?.id}`);
+        if (Debug.consoleLog) console.log(`Should be doing: ${playerData.tasks[0]?.taskId}`);
+        if (Debug.consoleLog) console.log(`----`);
         */
 
 
@@ -147,7 +147,7 @@ export class WorldSyncHelper {
 
             var index = -1;
             
-            //console.warn("--");
+            //if (Debug.consoleLog) console.warn("--");
 
             for (const task of player.taskManager.tasks) {
                 
@@ -158,7 +158,7 @@ export class WorldSyncHelper {
             }
 
             if(index != -1) {
-                //console.warn(index)
+                //if (Debug.consoleLog) console.warn(index)
 
                 if(index > 0) {
                     for (let i = 0; i < index; i++) {
@@ -169,7 +169,7 @@ export class WorldSyncHelper {
                 }
             }
 
-            //console.warn("--");
+            //if (Debug.consoleLog) console.warn("--");
 
         }
 
@@ -193,15 +193,15 @@ export class WorldSyncHelper {
 
         for (const taskData of playerData.tasks) {
             
-            //console.warn("found task", taskData.action!)
+            //if (Debug.consoleLog) console.warn("found task", taskData.action!)
 
 
 
             if(!player.taskManager.hasTask(taskData.taskId)) {
                 /*
-                console.warn("add task")
-                console.log(taskData)
-                console.warn("--")
+                if (Debug.consoleLog) console.warn("add task")
+                if (Debug.consoleLog) console.log(taskData)
+                if (Debug.consoleLog) console.warn("--")
                 */
 
                 if(taskData.taskType == PlayerTaskType.WALK_TO_TILE) {

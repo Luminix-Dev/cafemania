@@ -1,3 +1,4 @@
+import { Debug } from "../debug/debug";
 import { Dish } from "../dish/dish";
 import { DishPlate } from "../dish/dishPlate";
 import { TileItemCounter } from "../tileItem/items/tileItemCounter";
@@ -97,7 +98,7 @@ export class PlayerWaiter extends Player {
 
         //this.taskWalkNearToTile(counter.tile);
 
-        console.warn("vai krl")
+        if (Debug.consoleLog) console.warn("vai krl")
 
         counter.amountWaitersComing++;
 
@@ -166,7 +167,7 @@ export class PlayerWaiter extends Player {
 
                 WorldTextManager.drawWorldText("served", table.position.x, table.position.y - 50, 1500, 0.3);
             } catch (error) {
-                console.warn(error);
+                if (Debug.consoleLog) console.warn(error);
             }
 
             this._goingToCounter = undefined;

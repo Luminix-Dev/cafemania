@@ -4,10 +4,10 @@ interface IDebugMessage {
 }
 
 export class Debug {
-
     public static enabled: boolean = true;
     public static messages: IDebugMessage[] = [];
     public static startedAt: number = Date.now();
+    public static consoleLog: boolean = false;
     public static maxMessages: number = 20;
 
     public static log(text: string) {

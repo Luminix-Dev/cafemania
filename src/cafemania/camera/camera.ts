@@ -4,6 +4,7 @@ import { HudLockZone } from '../hud/hudLockZone';
 import { Input } from '../input/input';
 import { GameScene } from '../scenes/gameScene';
 import { TileItemDrag } from '../tileItemDrag/tileItemDrag';
+import { Debug } from '../debug/debug';
 
 export class Camera {
     public static canMove = true;
@@ -59,7 +60,7 @@ export class Camera {
                     this._startMoveScenePosition.x = scene.cameras.main.scrollX + gameSize.width/2
                     this._startMoveScenePosition.y = scene.cameras.main.scrollY + gameSize.height/2
 
-                    console.log("camera begin drag")
+                    if (Debug.consoleLog) console.log("camera begin drag")
 
                 }
             }
@@ -68,7 +69,7 @@ export class Camera {
         Input.events.on('enddrag', (pointer) => {
             if(this._isMoving) {
                 this._isMoving = false;
-                console.log("camera end drag")
+                if (Debug.consoleLog) console.log("camera end drag")
             }
             
         });
@@ -78,7 +79,7 @@ export class Camera {
             if(TileItemDrag.isMovingAnyTileItem) return;
             
             if(this._isMoving) {
-                console.log("camera mov")
+                if (Debug.consoleLog) console.log("camera mov")
 
                 const scene = GameScene.Instance;
                 const zoom = scene.cameras.main.zoom;

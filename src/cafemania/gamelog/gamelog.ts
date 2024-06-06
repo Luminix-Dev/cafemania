@@ -1,3 +1,5 @@
+import { Debug } from "../debug/debug";
+
 const request = require('request');
 
 export class Gamelog {
@@ -21,7 +23,7 @@ export class Gamelog {
             isLocal: isLocal
         }
 
-        console.log("[gamelog] post", url, data)
+        if (Debug.consoleLog) console.log("[gamelog] post", url, data)
 
         request.post(
             url,
@@ -29,12 +31,12 @@ export class Gamelog {
             function (error, response, body) {
 
                 if(error) {
-                    console.log("[gamelog] post error");
+                    if (Debug.consoleLog) console.log("[gamelog] post error");
                     return
                 }
 
                 if (response.statusCode == 200) {
-                    console.log("[gamelog] post ok");
+                    if (Debug.consoleLog) console.log("[gamelog] post ok");
                 }
             }
         );

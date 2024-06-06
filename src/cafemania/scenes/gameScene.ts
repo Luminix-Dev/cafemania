@@ -85,7 +85,7 @@ export class GameScene extends Phaser.Scene {
     public create() {
         Debug.log("game scene");
 
-        console.log("yea, created")
+        if (Debug.consoleLog) console.log("yea, created")
         
         this.layerFloor = this.add.layer();
         this.layerFloor.setDepth(0);

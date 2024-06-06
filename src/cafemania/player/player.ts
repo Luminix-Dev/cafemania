@@ -84,7 +84,7 @@ class PlayerPathFindMovement {
 
             this._totalDistance += distance;
             
-            //console.log("d", distance, this._totalDistance)
+            //if (Debug.consoleLog) console.log("d", distance, this._totalDistance)
         }
 
         this._positions.push(position);
@@ -137,8 +137,8 @@ class PlayerPathFindMovement {
                     let walkedInThisTile = distance - (walked - distanceWalked);
                     const angle = Phaser.Math.Angle.BetweenPoints(prevPosition, position);
 
-                    //console.log("here", walkedInThisTile, "of", distance);
-                    //console.log(positionWhereStopped)
+                    //if (Debug.consoleLog) console.log("here", walkedInThisTile, "of", distance);
+                    //if (Debug.consoleLog) console.log(positionWhereStopped)
 
                     positionWhereStopped = new Phaser.Math.Vector2(
                         prevPosition.x + (Math.cos(angle) * walkedInThisTile),
@@ -171,7 +171,7 @@ class PlayerPathFindMovement {
             }
 
             if(tile == this._tiles[this._tiles.length-1]) {
-                //console.log("helo? end?")
+                //if (Debug.consoleLog) console.log("helo? end?")
 
                 const cb = this.onFinishCallback;
                 this.onFinishCallback = undefined;
@@ -312,18 +312,18 @@ export class Player extends BaseObject {
     }
 
     public playAnimation(animation: string) {
-        console.log("playAnimation", animation)
+        if (Debug.consoleLog) console.log("playAnimation", animation)
 
         this._playingAnimation = animation;
     }
 
     public stopPlayingAnimation() {
         this._playingAnimation = undefined;
-            console.log("stopped playAnimation");
+        if (Debug.consoleLog) console.log("stopped playAnimation");
     }
 
     public taskPlaySpecialAction(action: string, args: any[], callback?: () => void) {
-        console.log("added task", action, args)
+        if (Debug.consoleLog) console.log("added task", action, args)
 
         const task = new TaskPlaySpecialAction(this, action, args);
         task.timeToComplete = 1;
@@ -336,7 +336,7 @@ export class Player extends BaseObject {
     }
 
     public async startSpecialAction(action: string, args: any[]) {
-        console.warn(action, args);
+        if (Debug.consoleLog) console.warn(action, args);
 
         if(action == "look_to_tile") {
         
@@ -371,7 +371,7 @@ export class Player extends BaseObject {
 
     
     public taskWalkNearToTile(tile: Tile) {
-        console.warn("change");
+        if (Debug.consoleLog) console.warn("change");
         //need own TaskWalkNearToTile
 
         const tiles = tile.getAdjacentTiles().filter(tile => tile.getIsWalkable());
@@ -431,7 +431,7 @@ export class Player extends BaseObject {
     public update(dt: number) {
         this._taskManager.update(dt);
 
-        //  console.log(dt)
+        //if (Debug.consoleLog) console.log(dt)
     }
 
     public setPathFindDistanceWalked(distance: number) {
@@ -493,7 +493,7 @@ export class Player extends BaseObject {
 
         const d = Date.now();
         while(!pathFind.hasEnded) pathFind.process();
-        //console.log(`Took ${Date.now() - d}ms`);
+        //if (Debug.consoleLog) console.log(`Took ${Date.now() - d}ms`);
 
         const etime = Date.now() - d;
 
@@ -722,7 +722,7 @@ export class Player extends BaseObject {
 
         })
 
-        //console.log(tasks.length + " tasks")
+        //if (Debug.consoleLog) console.log(tasks.length + " tasks")
 
         const data: IPlayerSerializedData = {
             id: this.id,

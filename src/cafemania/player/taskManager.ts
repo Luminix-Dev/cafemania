@@ -89,7 +89,7 @@ export class TaskWalkToTile extends Task {
         
 
 
-        //console.log("START", this.player.pathFindMovement.getTotalDistance())
+        //if (Debug.consoleLog) console.log("START", this.player.pathFindMovement.getTotalDistance())
     }
 
     private updateTimeToComplete() {
@@ -101,14 +101,14 @@ export class TaskWalkToTile extends Task {
 
         //this.updateTimeToComplete();
 
-        //console.log("walktotileupdate")
-        //console.log(this.progress, '/', this.timeToComplete)
+        //if (Debug.consoleLog) console.log("walktotileupdate")
+        //if (Debug.consoleLog) console.log(this.progress, '/', this.timeToComplete)
 
         const p = this.progress / this.timeToComplete;
 
         const totalDistance = this.player.pathFindMovement.getTotalDistance();
 
-        //console.log(p, totalDistance, p * totalDistance)
+        //if (Debug.consoleLog) console.log(p, totalDistance, p * totalDistance)
 
         this.player.setPathFindDistanceWalked(p * totalDistance);
 
@@ -121,7 +121,7 @@ export class TaskWalkToTile extends Task {
             if(this.player.pathFindMovement.distanceWalked < this.targetWalkDistance) {
                 this.player.pathFindMovement.distanceWalked = this.targetWalkDistance;
 
-                //console.warn("fixed");
+                //if (Debug.consoleLog) console.warn("fixed");
             }
 
         }
@@ -226,7 +226,7 @@ export class TaskManager extends BaseObject {
 
             this.checkTasks();
 
-            //console.log(this.tasks.length + " left")
+            //if (Debug.consoleLog) console.log(this.tasks.length + " left")
         }
     }
 

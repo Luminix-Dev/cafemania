@@ -1,3 +1,5 @@
+import { Debug } from "../debug/debug";
+
 export class Node {
     public readonly x: number;
     public readonly y: number;
@@ -77,7 +79,7 @@ export class PathFind {
         }
 
         if(this._state == 2) {
-            console.error("End node not found");
+            if (Debug.consoleLog) console.error("End node not found");
         }
     }
 
@@ -117,7 +119,7 @@ export class PathFind {
 
         if(this.checkEndGoal(current)) return;
 
-        //console.log(`Processing ${current.id}`)
+        //if (Debug.consoleLog) console.log(`Processing ${current.id}`)
 
       
 
@@ -149,7 +151,7 @@ export class PathFind {
 
         
 
-        //console.log(`${frontier.length} left`)
+        //if (Debug.consoleLog) console.log(`${frontier.length} left`)
     }
 
     private getAvaliableNeighborsOfNode(node: Node) {
@@ -183,9 +185,9 @@ export class PathFind {
                             canWalkInThisDiagonal = false;
                         }
                     }
-                    //console.log(`diagonal ${neighbour.x} ${neighbour.y}: test ${dn.x}, ${dn.y} ${isInsideMainTest} (${canWalkInThisDiagonal})`)
+                    //if (Debug.consoleLog) console.log(`diagonal ${neighbour.x} ${neighbour.y}: test ${dn.x}, ${dn.y} ${isInsideMainTest} (${canWalkInThisDiagonal})`)
                 }
-                //console.log(`diagonal ${neighbour.x} ${neighbour.y}: (${canWalkInThisDiagonal})`)
+                //if (Debug.consoleLog) console.log(`diagonal ${neighbour.x} ${neighbour.y}: (${canWalkInThisDiagonal})`)
                 
                 canAddThisNeightbour = canWalkInThisDiagonal
                 //

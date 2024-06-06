@@ -3,6 +3,7 @@ import { Button } from "./button";
 import { TileItemCategory, TileItemInfo } from "../tileItem/tileItemInfo";
 import { GridList } from "./gridList";
 import { TileItemShopItem } from "./tileItemShopItem";
+import { Debug } from "../debug/debug";
 
 export class Item {
 
@@ -80,7 +81,7 @@ export class TileItemShop {
             button.onClick = () => {
                 
                 this._currentCategory = category;
-                console.log(category)
+                if (Debug.consoleLog) console.log(category)
 
                 this._gridList?.destroy();
                 this.createGridList();
@@ -121,7 +122,7 @@ export class TileItemShop {
         this.container.add(gridList.container!);
 
         gridList.onShowItem = (index: number, position: Phaser.Math.Vector2) => {
-            console.warn("showitem", index);
+            if (Debug.consoleLog) console.warn("showitem", index);
 
             const item = items[index];
 

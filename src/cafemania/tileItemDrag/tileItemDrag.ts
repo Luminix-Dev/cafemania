@@ -44,7 +44,7 @@ export class TileItemDrag {
         Input.events.on("begindrag", () => {
             if(this._selectedTileItem != undefined) {
                 if(this._selectedTileItem == this._hoveringTileItem) {
-                    console.log("begin drag tileitem");
+                    if (Debug.consoleLog) console.log("begin drag tileitem");
 
                     if(!this.isMovingAnyTileItem) {
 
@@ -176,7 +176,7 @@ export class TileItemDrag {
         if(this._hoveringWallOrFloor != wallOrFloor) {
             this._hoveringWallOrFloor = wallOrFloor;
 
-            console.log(`Trying to place at ${wallOrFloor.tile.x} ${wallOrFloor.tile.y}`);
+            if (Debug.consoleLog) console.log(`Trying to place at ${wallOrFloor.tile.x} ${wallOrFloor.tile.y}`);
 
 
             if(canBePlaced) {
@@ -189,7 +189,7 @@ export class TileItemDrag {
 
                 world.forceMoveTileItem(movingTileItem, wallOrFloor.tile)
                 
-                console.log(`Placed at at ${this._placeAtTile?.x} ${this._placeAtTile?.y}`);
+                if (Debug.consoleLog) console.log(`Placed at at ${this._placeAtTile?.x} ${this._placeAtTile?.y}`);
 
             }    
         } 
@@ -240,7 +240,7 @@ export class TileItemDrag {
     }
 
     public static trySelect(tileItem: TileItem) {
-        console.log("try select tileitem");
+        if (Debug.consoleLog) console.log("try select tileitem");
 
         if(this._selectedTileItem == tileItem) {
             this.unselectCurrentTileItem();

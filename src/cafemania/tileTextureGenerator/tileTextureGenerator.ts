@@ -24,7 +24,7 @@ export class TileTextureGenerator
 
     private static _frames: Frame[] = []
 
-    public static create(scene: Phaser.Scene, textureKey: string, generatedTextureKey: string, originTilePosition: Phaser.Math.Vector2, size: Phaser.Math.Vector2, totalLayers: Phaser.Math.Vector2): Phaser.Textures.CanvasTexture
+    public static create(scene: Phaser.Scene, textureKey: string, generatedTextureKey: string, originTilePosition: Phaser.Math.Vector2, size: Phaser.Math.Vector2, totalLayers: Phaser.Math.Vector2): Phaser.Textures.CanvasTexture | null
     {
         this.setup(scene, textureKey, generatedTextureKey, originTilePosition, size, totalLayers)
 
@@ -38,8 +38,10 @@ export class TileTextureGenerator
         )
 
         const iconCanvas = scene.textures.createCanvas(`${generatedTextureKey}_icon`, rectSize.width, rectSize.height)
-        iconCanvas.putData(iconImageData, 0, 0)
-        iconCanvas.refresh()
+        if (iconCanvas) {
+            iconCanvas.putData(iconImageData, 0, 0)
+            iconCanvas.refresh()
+        }
 
         for (let layerY = 0; layerY < totalLayers.y; layerY++)
         {
@@ -99,27 +101,31 @@ export class TileTextureGenerator
         sheet.organize()
 
         const canvas = this._scene!.textures.createCanvas(this._generatedTexureKey, sheet.width, sheet.height)
-        //canvas.context.fillStyle = "red"
-        //canvas.context.fillRect(0, 0, canvas.width, canvas.height)
-        canvas.refresh()
-        canvas.setFilter(Phaser.Textures.FilterMode.LINEAR)
-        //canvas.setFilter(Phaser.Textures.FilterMode.NEAREST)
-        canvas.add(`MAIN`, 0, 0, 0, canvas.width, canvas.height)
 
-        this._frames.map((frame, index) =>
-        {
-            const position = sheet.getItemPosition(`${index}`)
+        if (canvas) {
+            //canvas.context.fillStyle = "red"
+            //canvas.context.fillRect(0, 0, canvas.width, canvas.height)
+            canvas.refresh()
+            canvas.setFilter(Phaser.Textures.FilterMode.LINEAR)
+            //canvas.setFilter(Phaser.Textures.FilterMode.NEAREST)
+            canvas.add(`MAIN`, 0, 0, 0, canvas.width, canvas.height)
 
-            canvas.putData(frame.imageData, position.x, position.y)
-            canvas.add(`${frame.layerX}:${frame.layerY}:${frame.x}:${frame.y}`, 0, position.x, position.y, frame.cropRect.width, frame.cropRect.height)
-        })
+            this._frames.map((frame, index) =>
+            {
+                const position = sheet.getItemPosition(`${index}`)
 
-        canvas.refresh()
+                canvas.putData(frame.imageData, position.x, position.y)
+                canvas.add(`${frame.layerX}:${frame.layerY}:${frame.x}:${frame.y}`, 0, position.x, position.y, frame.cropRect.width, frame.cropRect.height)
+            })
 
-        this.destroy()
-        this._frames = []
+            canvas.refresh()
 
-        return canvas
+            this.destroy()
+            this._frames = []
+
+            return canvas
+        }
+        return null;
     }
 
     private static setup(scene: Phaser.Scene, textureKey: string, generatedTextureKey: string, originTilePosition: Phaser.Math.Vector2, size: Phaser.Math.Vector2, totalLayers: Phaser.Math.Vector2): void
@@ -129,15 +135,17 @@ export class TileTextureGenerator
         const src = texture.getSourceImage() as HTMLImageElement
         const canvas = manager.createCanvas('_TileTextureGenerator_BaseCanvas', src.width, src.height);
   
-        canvas.draw(0, 0, src);
+        if (canvas) {
+            canvas.draw(0, 0, src);
 
-        this._scene = scene
-        this._baseTexture = texture
-        this._baseCanvas = canvas
-        this._generatedTexureKey = generatedTextureKey
-        this._size = size
-        this._totalLayers = totalLayers
-        this._originTilePosition = originTilePosition
+            this._scene = scene
+            this._baseTexture = texture
+            this._baseCanvas = canvas
+            this._generatedTexureKey = generatedTextureKey
+            this._size = size
+            this._totalLayers = totalLayers
+            this._originTilePosition = originTilePosition
+        }
     }
 
     private static canTileBeCut(x: number, y: number): boolean

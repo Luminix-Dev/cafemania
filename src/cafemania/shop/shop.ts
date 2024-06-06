@@ -1,4 +1,5 @@
 
+import { Debug } from "../debug/debug";
 import { Game } from "../game/game";
 import { Gameface } from "../gameface/gameface";
 import { Tile } from "../tile/tile";
@@ -48,7 +49,7 @@ export class Shop {
 
         if(world.sync == WorldSyncType.SYNC) {
 
-            console.log("send to server")
+            if (Debug.consoleLog) console.log("send to server")
 
             Gameface.Instance.network.sendBuyTileItem(tileItemInfo, tile);
 
@@ -61,7 +62,7 @@ export class Shop {
 
         if(result) {
 
-            this._game.money -= 300;
+            this._game.gold -= 300;
 
             return tileItem;
         } else {
@@ -78,9 +79,9 @@ export class Shop {
        // tile.removeTileItem(tileItem);
         //world.removeTileItem(tileItem);
 
-        console.log("sold")
+        if (Debug.consoleLog) console.log("sold")
 
-        this._game.money += 300;
+        this._game.gold += 300;
     }
 
     public moveTileItem(tileItem: TileItem, toTile: Tile) {

@@ -93,7 +93,7 @@ export class PlayerWaiter extends Player {
 
             table.setDish(dish);
         } catch (error) {
-            console.warn("no data")
+            if (Debug.consoleLog) console.warn("no data")
         }
         
 
@@ -176,7 +176,7 @@ export class PlayerWaiter extends Player {
 
     /*
     private beginServe() {
-        console.log(this.waiterStatus)
+        if (Debug.consoleLog) console.log(this.waiterStatus)
 
         const counter = this.world.game.tileItemFactory.getTileItem(this.waiterStatus.counterId!) as TileItemCounter;
 

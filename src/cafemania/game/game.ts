@@ -13,6 +13,8 @@ export class Game extends BaseObject {
     public get dishFactory() { return this._dishFactory; }
     public get shop() { return this._shop; }
     
+    public get gold() { return this._gold }
+    public set gold(value: number) { this._gold = value; }
     public get money() { return this._money }
     public set money(value: number) { this._money = value; }
     public get experience() { return this._experience }
@@ -23,7 +25,8 @@ export class Game extends BaseObject {
     private _dishFactory: DishFactory;
     private _shop: Shop;
 
-    private _money: number = 800;
+    private _gold: number = 999999;
+    private _money: number = 999999;
     private _experience: number = 0;
 
     constructor() {
@@ -45,7 +48,7 @@ export class Game extends BaseObject {
     public start() { 
         this.log('start');
 
-        console.log("interval update")
+        if (Debug.consoleLog) console.log("interval update")
 
         var self = this;
         var lastUpdate = Date.now();

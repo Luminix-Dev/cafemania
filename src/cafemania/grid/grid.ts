@@ -1,3 +1,4 @@
+import { Debug } from "../debug/debug"
 import { Cell } from "./cell"
 import { Item } from "./item"
 
@@ -87,8 +88,8 @@ export class Grid {
             }
         }
 
-        //console.log(`Origin was changed from 0, 0 to ${pos[0][1].x}, ${pos[0][1].y}`)
-        //console.log(pos)
+        //if (Debug.consoleLog) console.log(`Origin was changed from 0, 0 to ${pos[0][1].x}, ${pos[0][1].y}`)
+        //if (Debug.consoleLog) console.log(pos)
 
         return pos
     }
@@ -110,11 +111,11 @@ export class Grid {
 
             let result = true
             
-            //console.log(`at ${coord.x}, ${coord.y}`)
+            //if (Debug.consoleLog) console.log(`at ${coord.x}, ${coord.y}`)
 
             for(const item of coordCell.ocuppiedByItems)
             {
-                //console.log(`found item ${item.name}`, item)
+                //if (Debug.consoleLog) console.log(`found item ${item.name}`, item)
 
                 if(compareFn(coordCell, item) === false) result = false
             }
@@ -164,7 +165,7 @@ export class Grid {
 
         this._items.delete(id);
 
-        //console.log(this._items)
+        //if (Debug.consoleLog) console.log(this._items)
 
         this.updateCells()
     }
@@ -195,10 +196,7 @@ export class Grid {
                 })
             }
 
-
-            
-
-            //console.log(coords)
+            //if (Debug.consoleLog) console.log(coords)
         }
     }
 

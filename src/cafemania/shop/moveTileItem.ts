@@ -45,13 +45,13 @@ export class KMoveTileItem {
                         this._hoveringWallOrFloor = wallOrFloor;
 
                         this.tryPlaceMovingTileItemAtTileItem(this._hoveringWallOrFloor);
-                        console.log("try place here")
+                        if (Debug.consoleLog) console.log("try place here")
                     }
                 }
                 
 
                 
-                console.log("moveing")
+                if (Debug.consoleLog) console.log("moveing")
             }
         })
 
@@ -61,7 +61,7 @@ export class KMoveTileItem {
 
             if(this._selectedTileItem != undefined) {
                 if(this._selectedTileItem == this._hoveringTileItem) {
-                    console.log("begin drag tileitem");
+                    if (Debug.consoleLog) console.log("begin drag tileitem");
 
                     if(!this.isMovingAnyTileItem) {
                         this.startMove(this._selectedTileItem);
@@ -100,7 +100,7 @@ export class KMoveTileItem {
         world.events.on(WorldEvent.TILE_ITEM_POINTER_UP, (tileItem: TileItem) => {
             Debug.log("tile_item_pointer_up")
 
-            console.warn("isdragging", Input.isDragging)
+            if (Debug.consoleLog) console.warn("isdragging", Input.isDragging)
 
             if(tileItem.tileItemInfo.type == TileItemType.FLOOR || tileItem.tileItemInfo.type == TileItemType.WALL || tileItem.tileItemInfo.type == TileItemType.STOVE) return;
 
@@ -109,7 +109,7 @@ export class KMoveTileItem {
             }
 
             if(!Input.isDragging && !this.isMovingAnyTileItem) {
-                console.log("try select tileitem");
+                if (Debug.consoleLog) console.log("try select tileitem");
 
                 if(this._selectedTileItem == tileItem) {
                     this.unselectCurrentTileItem();

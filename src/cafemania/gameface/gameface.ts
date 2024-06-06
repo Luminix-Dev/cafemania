@@ -89,7 +89,7 @@ export class Gameface extends BaseObject {
                 WorldSyncHelper.init();
                 TileItemDrag.init();
 
-                console.log("first load completed")
+                if (Debug.consoleLog) console.log("first load completed")
 
                 //Auth.init();
 
@@ -192,12 +192,12 @@ export class Gameface extends BaseObject {
             world.generateBaseWorld();
         }
 
-        console.log("start game scene..")
+        if (Debug.consoleLog) console.log("start game scene..")
 
         if(!Gameface.Instance.hasSceneStarted(GameScene)) {
             Gameface.Instance.startScene(GameScene);
 
-            console.log("created new");
+            if (Debug.consoleLog) console.log("created new");
         }
 
         this.setCurrentWorld(world);
@@ -269,7 +269,7 @@ export class Gameface extends BaseObject {
         const phaser = this.phaser;
         const key = scene.name;
 
-        console.log("removeScene", key, scene)
+        if (Debug.consoleLog) console.log("removeScene", key, scene)
 
         if(this.hasSceneStarted(scene)) {
             const s = phaser.scene.keys[key];

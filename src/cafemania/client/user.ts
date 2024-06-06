@@ -10,6 +10,7 @@ import { EventRegister } from '../utils/eventRegister';
 import { World } from "../world/world";
 import { WorldEvent } from '../world/worldEvent';
 import { Client } from './client';
+import { Debug } from '../debug/debug';
 
 export interface IUserInfo {
     id: string
@@ -80,7 +81,7 @@ export class User {
         }
         this.client.send(PACKET_TYPE.JOIN_SERVER_STATUS, packetData);
 
-        console.log(packetData)
+        if (Debug.consoleLog) console.log(packetData)
 
 
         const world = server.game.worlds[0];
@@ -136,7 +137,7 @@ export class User {
         }
         this.client.send(PACKET_TYPE.WORLD_DATA, packetData);
 
-        console.log("sent WORLD_DATA : onPlayerStateChangedEvent")
+        if (Debug.consoleLog) console.log("sent WORLD_DATA : onPlayerStateChangedEvent")
     }
 
     private onTileItemChangedEvent(tileItem: TileItem) {
@@ -201,7 +202,7 @@ export class User {
 
                 world.game.tileItemFactory.removeTileItem(tileItem.id);
 
-                console.log("nope")
+                if (Debug.consoleLog) console.log("nope")
 
             }
         }
@@ -216,7 +217,7 @@ export class User {
             
             const tile = world.tileMap.getTile(packetData.x, packetData.y);
 
-            //console.log(tileItem, tile)
+            //if (Debug.consoleLog) console.log(tileItem, tile)
 
             const result = world.tryMoveTileItem(tileItem, tile);
 
@@ -226,7 +227,7 @@ export class User {
 
                 //world.game.tileItemFactory.removeTileItem(tileItem.id);
 
-                console.log("nope")
+                if (Debug.consoleLog) console.log("nope")
 
             }
         }

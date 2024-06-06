@@ -1,4 +1,5 @@
 import { Auth } from "../auth/auth";
+import { Debug } from "../debug/debug";
 import { Gameface } from "../gameface/gameface";
 import { PACKET_TYPE } from "../network/packet";
 import { ServerListInfo } from "../server/server";
@@ -52,7 +53,7 @@ export class ServersListScene extends Phaser.Scene {
 
                 const button = new Button(this, serverName, 300, 50 + servers.indexOf(server) * 50, 360, 45, "button/signout");
                 button.onClick = () => {
-                    console.log("sv")
+                    if (Debug.consoleLog) console.log("sv")
 
                     Gameface.Instance.network.sendJoinServer(server.id);
                 }

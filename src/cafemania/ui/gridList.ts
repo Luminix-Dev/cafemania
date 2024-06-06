@@ -1,3 +1,4 @@
+import { Debug } from "../debug/debug";
 import { Button } from "./button";
 import { GridLayout } from "./gridLayout";
 
@@ -82,7 +83,7 @@ export class GridList {
             
             const index = startItem + i;
             if(index >= 0 && index < this._numberOfItems) {
-                console.log(`showing ${index} (${x},${y})`)
+                if (Debug.consoleLog) console.log(`showing ${index} (${x},${y})`)
 
 
                 if(!this._showingItems.includes(index)) {

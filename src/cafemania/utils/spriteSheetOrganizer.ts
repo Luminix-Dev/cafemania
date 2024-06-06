@@ -64,7 +64,7 @@ export class SpriteSheetOrganizer {
             item.position.x = currentRowWidth
             item.position.y = sheetSize.height
 
-            //console.log(`${row},${column} w${currentRowWidth}`)
+            //if (Debug.consoleLog) console.log(`${row},${column} w${currentRowWidth}`)
 
             currentRowWidth += item.width
             row++

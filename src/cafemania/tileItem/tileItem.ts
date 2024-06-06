@@ -126,7 +126,7 @@ export class TileItem extends BaseObject {
             }
 
             const onPointerOut = () => {
-                console.log("\n\nou\n\n")
+                if (Debug.consoleLog) console.log("\n\nou\n\n")
 
                 this.onPointerOut();
                 this.world.events.emit(WorldEvent.TILE_ITEM_POINTER_OUT, this);
@@ -214,7 +214,7 @@ export class TileItem extends BaseObject {
 
     /*
     public getNextRotation() {
-        console.log("current", this._direction)
+        if (Debug.consoleLog) console.log("current", this._direction)
 
         const rotationMap = [0, 2, 1, 3];
 
@@ -229,7 +229,7 @@ export class TileItem extends BaseObject {
         index++;
         if(index >= rotationMap.length) index = 0;
         
-        console.log(rotationMap, index)
+        if (Debug.consoleLog) console.log(rotationMap, index)
 
         
         return rotationMap[index];
@@ -252,9 +252,9 @@ export class TileItem extends BaseObject {
         this._isMoving = value;
 
         if(this._isMoving) {
-            console.warn("START MOVE")
+            if (Debug.consoleLog) console.warn("START MOVE")
         } else {
-            console.warn("NOT MOVING")
+            if (Debug.consoleLog) console.warn("NOT MOVING")
         }
 
         this.setTransparent(this._isMoving);

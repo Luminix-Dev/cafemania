@@ -1,6 +1,8 @@
+import { Debug } from "../debug/debug";
 import { SoundManager } from "../soundManager/soundManager";
 import { Tile } from "../tile/tile";
 import { TileItemChair } from "../tileItem/items/tileItemChair";
+import { TileItemDoor } from "../tileItem/items/tileItemDoor";
 import { Utils } from "../utils/utils";
 import { World } from "../world/world";
 import { WorldEvent } from "../world/worldEvent";
@@ -37,6 +39,7 @@ export class PlayerClient extends Player {
     private _findChairAttempts: number = 0;
     private _findChairTime: number = -1;
 
+    private _closestDoor: TileItemDoor | null = null
     private _isGoingToDoor = false;
     private _isGoingToChair = false;
     private _hasReachedDoor: boolean = false;
@@ -126,10 +129,10 @@ export class PlayerClient extends Player {
                 chair.setIsReserved(true);
             }
         }
-
+        
         //
         if(this._hasReachedDoor) {
-            //console.log("at door")
+            //if (Debug.consoleLog) console.log("at door")
 
             if(this._goingToChair) {
 
@@ -199,27 +202,29 @@ export class PlayerClient extends Player {
     }
 
     private walkInFrontAnyDoor() {
-        const doors = this.world.getDoors().filter(door => door.tile.getIsWalkable());
+        if (!this._closestDoor) {
+            const doors = this.world.getDoors().filter(door => door.tile.getIsWalkable());
 
-        if(doors.length == 0) {
-            console.error("no doors");
-            return;
+            if(doors.length == 0) {
+                if (Debug.consoleLog) console.error("no doors");
+                return;
+            }
+
+            const tiles = doors.map(door => door.tile);
+            this._closestDoor = Tile.getClosestTile(this.position, tiles).getDoor()!;
         }
-
-        const tiles = doors.map(door => door.tile);
-        const door = Tile.getClosestTile(this.position, tiles).getDoor()!;
 
         //this.log("walkInFrontAnyDoor " + door.id)
 
-        const tile = door.getTileBehind(2)!;
+        const tile = this._closestDoor.getTileBehind(2)!;
 
         this.taskWalkToTile(tile);
         this.taskExecuteAction(async () => {
             //this.log("behind door");
-
+            console.log(this._closestDoor);
             this._canFindChair = true;
         });
-        this.taskWalkToTile(door.tile);
+        this.taskWalkToTile(this._closestDoor.tile);
         this.taskExecuteAction(async () => {
             //this.log("at door");
 
@@ -260,7 +265,7 @@ export class PlayerClient extends Player {
 
         if(action == "client_exit_cafe") {
             
-            console.error("exit cafe")
+            if (Debug.consoleLog) console.error("exit cafe")
 
             const chair = this.getChairPlayerIsSitting();
 

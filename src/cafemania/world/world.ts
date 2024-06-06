@@ -69,12 +69,12 @@ export class World extends BaseObject {
         })
 
         this.events.on(WorldEvent.PLAYER_CLIENT_FINISH_EAT, (table: TileItemTable, dish: Dish) => {
-            const money = 16;
+            const gold = 16;
 
-            WorldTextManager.drawWorldText(`${money}`, table.position.x, table.position.y - 50, 1500, 0.3);
+            WorldTextManager.drawWorldText(`${gold}`, table.position.x, table.position.y - 50, 1500, 0.3);
             SoundManager.play("tip");
 
-            this.game.money += money;
+            this.game.gold += gold;
         })
 
         window['world'] = this;

@@ -35,7 +35,7 @@ export class LoadScene extends Phaser.Scene {
     }
 
     public init(data) {
-        console.log(data)
+        if (Debug.consoleLog) console.log(data)
         
         if(data.oncreate) {
             this._onCreateCallback = data.oncreate;
@@ -53,7 +53,7 @@ export class LoadScene extends Phaser.Scene {
 
             self.setProgress(self._amountLoaderAssetsLoaded / (self._amountLoaderAssets + self._loadTasks.length));
 
-            console.log(self._amountLoaderAssetsLoaded, '/', (self._amountLoaderAssets + self._loadTasks.length))
+            if (Debug.consoleLog) console.log(self._amountLoaderAssetsLoaded, '/', (self._amountLoaderAssets + self._loadTasks.length))
         });
 
         this._loadingBar = this.add.graphics();
@@ -76,7 +76,7 @@ export class LoadScene extends Phaser.Scene {
 
         return new Promise<void>(async (resolve) => {
             
-            console.log(self._amountLoaderAssets);
+            if (Debug.consoleLog) console.log(self._amountLoaderAssets);
 
            
             await new Promise<void>((res) => {
@@ -105,21 +105,21 @@ export class LoadScene extends Phaser.Scene {
     }
 
     public loadImage(key: string, url: string) {
-        console.log(`[loader] load image '${key}'`);
+        if (Debug.consoleLog) console.log(`[loader] load image '${key}'`);
 
         this._loader.image(key, url);
         this._amountLoaderAssets++;
     }
 
     public loadAudio(key: string, url: string) {
-        console.log(`[loader] load audio '${key}'`);
+        if (Debug.consoleLog) console.log(`[loader] load audio '${key}'`);
 
         this._loader.audio(key, url);
         this._amountLoaderAssets++;
     }
 
     public addLoadTask(name: string, fn: () => Promise<void>) {
-        console.log(`[loader] add load task '${name}'`);
+        if (Debug.consoleLog) console.log(`[loader] add load task '${name}'`);
 
         this._loadTasks.push({
             name: name,

@@ -1,4 +1,5 @@
 import { Auth } from "../auth/auth";
+import { Debug } from "../debug/debug";
 import { Gameface } from "../gameface/gameface";
 import { Button } from "../ui/button";
 import { LoginScene } from "./loginScene";
@@ -22,7 +23,7 @@ export class UserScene extends Phaser.Scene {
 
         const playbutton = new Button(this, `Play`, x, y - 25, 244, 45, "button/play");
         playbutton.onClick = () => {
-            console.log("play")
+            if (Debug.consoleLog) console.log("play")
 
             Gameface.Instance.removeScene(UserScene);
             Gameface.Instance.startScene(ServersListScene);
@@ -30,7 +31,7 @@ export class UserScene extends Phaser.Scene {
 
         const signOutButton = new Button(this, `Sign out`, x, y + 25, 244, 45, "button/signout");
         signOutButton.onClick = () => {
-            console.log("sign out")
+            if (Debug.consoleLog) console.log("sign out")
 
             Auth.signOut(() => {
 
@@ -42,7 +43,7 @@ export class UserScene extends Phaser.Scene {
 
         const singleplayer = new Button(this, `Singleplayer`, x, gameSize.height - 30, 244, 45, "button/play");
         singleplayer.onClick = () => {
-            console.log("singleplayer")
+            if (Debug.consoleLog) console.log("singleplayer")
 
             Gameface.Instance.createBaseWorld();
             Gameface.Instance.removeScene(UserScene);

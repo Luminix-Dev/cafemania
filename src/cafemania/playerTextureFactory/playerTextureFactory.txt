@@ -22,7 +22,7 @@ export class PlayerTextureFactory {
     public static skinColor: string = "#FFFFFF";
 
     public static async init(textureName: string) {
-        console.log(`[PlayerTextureFactory] Init`);
+        if (Debug.consoleLog) console.log(`[PlayerTextureFactory] Init`);
 
         const textureManager = PreloadScene.Instance.textures;
 
@@ -39,7 +39,7 @@ export class PlayerTextureFactory {
         this._playerModel = playerModel;
         //Three.setAnimationFrame(playerModel, 0, 3);
 
-        console.log(`[PlayerTextureFactory] Finish init`);
+        if (Debug.consoleLog) console.log(`[PlayerTextureFactory] Finish init`);
 
         //this._hairTexture = textureManager.createCanvas('PlayerTextureFactory_HairTexture', 1);
         //this._skinTexture = textureManager.createCanvas('PlayerTextureFactory_SkinTexture', 1);
@@ -86,7 +86,7 @@ export class PlayerTextureFactory {
         await this.applyTextureToObject(legsTexture, this._playerModel.object.children[0].getObjectByName("Legs")!)
         
    
-        console.log("updated")
+        if (Debug.consoleLog) console.log("updated")
 
         //skinTexture.destroy();
         //headTexture.destroy();

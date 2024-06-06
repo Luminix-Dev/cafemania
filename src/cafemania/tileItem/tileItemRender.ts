@@ -155,7 +155,7 @@ export class TileItemRender extends BaseObject {
                         image.setFrame(key)
                         //image.texture.setFilter(Phaser.Textures.FilterMode.LINEAR)
                     } else {
-                        console.error("no key found")
+                        if (Debug.consoleLog) console.error("no key found")
                     }
 
                     this._sprites[extraLayer][key] = sprite
@@ -213,7 +213,7 @@ export class TileItemRender extends BaseObject {
             if(image)
             {
                 
-                //console.log(sprite)
+                //if (Debug.consoleLog) console.log(sprite)
                 
                 image.setPosition(
                     position.x - Math.ceil(Tile.SIZE.x/2),

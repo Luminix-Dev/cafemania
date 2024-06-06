@@ -40,7 +40,7 @@ export class Test1Scene extends Phaser.Scene {
             /*
             var nextFrameIndex = (currentFrame >= idleAnim.frames) ? 0 : currentFrame+1;
             var nextFrameVal = idleAnim.frameOrder[nextFrameIndex];
-            console.log(currentFrame, nextFrameIndex, 'v', val, nextFrameVal)
+            if (Debug.consoleLog) console.log(currentFrame, nextFrameIndex, 'v', val, nextFrameVal)
             
             val += 0.1 * (nextFrameVal > val ? 1 : -1);
             */
@@ -66,16 +66,16 @@ export class Test1Scene extends Phaser.Scene {
         setTimeout(async () => {
             var t = Date.now();
             await PlayerTextureFactory.attachModelToBone('models/hair/2.glb', BonePart.HAIR);
-            console.log(Date.now() - t);
+            if (Debug.consoleLog) console.log(Date.now() - t);
         }, 1000);
         setTimeout(async () => {
             var t = Date.now();
             await PlayerTextureFactory.attachModelToBone('models/shoes/1.glb', BonePart.FEET_L);
-            console.log(Date.now() - t);
+            if (Debug.consoleLog) console.log(Date.now() - t);
 
             var t = Date.now();
             await PlayerTextureFactory.attachModelToBone('models/shoes/1.glb', BonePart.FEET_R);
-            console.log(Date.now() - t);
+            if (Debug.consoleLog) console.log(Date.now() - t);
         }, 1000);
     
 

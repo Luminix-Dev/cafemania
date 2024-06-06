@@ -18,8 +18,8 @@ export class ThreeModelManager {
     }
 
     public static load(path: string) {
-        const onProgress = () => console.log("onProgress")
-        const onError = (error) => console.log("onError", error)
+        const onProgress = () => {if (Debug.consoleLog) console.log("onProgress")}
+        const onError = (error) => {if (Debug.consoleLog) console.log("onError", error)}
 
         const models = this._models;
 

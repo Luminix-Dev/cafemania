@@ -130,17 +130,17 @@ export default class Three {
         if(!model.clip || !model.mixer) return;
 
         /*
-        console.log(this._clip.duration)
+        if (Debug.consoleLog) console.log(this._clip.duration)
 
         this._anim.time = frame * (this._clip.duration / totalFrames)
         this._mixer.update(0)
 
-        console.log(`setAnimFrame`, frame, totalFrames, this._clip.duration / totalFrames * (frame), this._clip.duration)
+        if (Debug.consoleLog) console.log(`setAnimFrame`, frame, totalFrames, this._clip.duration / totalFrames * (frame), this._clip.duration)
         */
         const timeInSeconds = frame * ((model.clip.duration - (model.clip.duration*0.01)) / (totalFrames-1))
         const animMixer: any = model.mixer
         
-        //console.log(this._clip.duration)
+        //if (Debug.consoleLog) console.log(this._clip.duration)
 
 
         animMixer.time=0;
@@ -156,7 +156,7 @@ export default class Three {
 
         const pixelBuffer = new Uint8Array(canvas.width * canvas.height * 4);   
 
-        console.log(gl.readPixels(0, 0, canvas.width, canvas.height, gl.RGBA, gl.UNSIGNED_BYTE, pixelBuffer))
+        if (Debug.consoleLog) console.log(gl.readPixels(0, 0, canvas.width, canvas.height, gl.RGBA, gl.UNSIGNED_BYTE, pixelBuffer))
 
         return pixelBuffer
     }

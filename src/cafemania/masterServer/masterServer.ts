@@ -5,6 +5,7 @@ import { Client } from '../client/client';
 import { IPacket } from '../network/packet';
 import { Server } from '../server/server';
 import { User } from '../client/user';
+import { Debug } from '../debug/debug';
 
 export class MasterServer extends BaseObject {
     public static Instance: MasterServer;
@@ -48,7 +49,7 @@ export class MasterServer extends BaseObject {
             try {
                 client.onReceivePacket(packet);
             } catch (error) {
-                console.error(error)
+                if (Debug.consoleLog) console.error(error)
             }
         });
 

@@ -1,5 +1,6 @@
 import * as NineSlicePlugin from 'phaser3-nineslice'
 import { config } from "./config";
+import { Debug } from '../debug/debug';
 
 enum PreloadState {
     NOT_LOADED,
@@ -18,7 +19,7 @@ export class PhaserLoad {
     }
 
     private static processLoad() {
-        console.log("processLoad", this._loadState)
+        if (Debug.consoleLog) console.log("processLoad", this._loadState)
 
         if(this._loadState == PreloadState.NOT_LOADED) {
             this._loadState = PreloadState.LOADING;
